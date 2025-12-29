@@ -33,6 +33,12 @@ from typing import List, Optional
 import subprocess
 
 try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass  # dotenv not installed, will rely on env vars being set manually
+
+try:
     from huggingface_hub import HfApi, login, snapshot_download, hf_hub_download
     from huggingface_hub.utils import HfHubHTTPError
 except ImportError:
@@ -52,6 +58,9 @@ LARGE_DIRS = [
     "artifacts/models",
     "artifacts/embeddings",
     "artifacts/logs",
+    "src/pipeline/artifacts/models",
+    "src/pipeline/artifacts/embeddings",
+    "src/pipeline/artifacts/logs",
     "indices/clapnq",
     "indices/cloud",
     "indices/fiqa",
@@ -80,8 +89,9 @@ DEFAULT_REPO_ID = None  # Will be set from config or user input
 
 
 def get_repo_id(config_path: Path = Path("configs/hf_sync.yaml")) -> str:
-    """Get HF repo ID from config or prompt user."""
+    """Get HF repo ID from config, env vars, or prompt user."""
     
+    # 1. Check config file
     if config_path.exists():
         import yaml
         with open(config_path) as f:
@@ -89,7 +99,16 @@ def get_repo_id(config_path: Path = Path("configs/hf_sync.yaml")) -> str:
             if config and "repo_id" in config:
                 return config["repo_id"]
     
-    # Prompt user
+    # 2. Check environment variables
+    username = os.getenv("HUGGINGFACE_USERNAME")
+    repo_name = os.getenv("HUGGINGFACE_REPO")
+    
+    if username and repo_name:
+        repo_id = f"{username}/{repo_name}"
+        logger.info(f"Found repo_id in environment: {repo_id}")
+        return repo_id
+
+    # 3. Prompt user
     username = input("Enter your HuggingFace username: ").strip()
     repo_name = input("Enter repo name (default: rag-benchmark-artifacts): ").strip()
     if not repo_name:
@@ -110,6 +129,19 @@ def get_repo_id(config_path: Path = Path("configs/hf_sync.yaml")) -> str:
 def setup_hf_auth():
     """Setup HuggingFace authentication."""
     logger.info("Setting up HuggingFace authentication...")
+    
+    token = os.getenv("HUGGINGFACE_TOKEN") or os.getenv("HF_TOKEN")
+    
+    if token:
+        logger.info("Found HUGGINGFACE_TOKEN in environment")
+        try:
+            login(token=token)
+            logger.info("✓ Authentication successful")
+            return True
+        except Exception as e:
+            logger.error(f"Authentication with env token failed: {e}")
+            # Fallback to interactive login
+    
     logger.info("You'll need a HuggingFace write token from: https://huggingface.co/settings/tokens")
     
     try:
