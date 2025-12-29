@@ -1,0 +1,148 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv
+
+# Environment variables
+.env
+.env.local
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# Data and indices (large files)
+data/raw/
+data/processed/
+data/submissions/test/  # Never commit test submissions!
+indices/*/
+*.index
+*.faiss
+data/passage_level_raw/
+data/passage_level_processed/**/*.jsonl
+data/passage_level_processed/**/*.json
+data/conversations/*.json
+data/conversations/*.jsonl
+data/retrieval_tasks/**/*.jsonl
+data/sample_data_task_a/
+
+# Keep only README and manifest files in data directories
+!data/**/README.md
+!data/**/manifest*.json
+
+# Experiment outputs
+experiments/*/
+mlruns/
+wandb/
+logs/*.log
+outputs/
+
+# Cache
+.cache/
+__cache__/
+*.pkl
+*.pickle
+.pytest_cache/
+
+# Model checkpoints (if storing locally)
+models/
+checkpoints/
+*.pt
+*.pth
+*.safetensors
+*.bin
+
+# ==============================================================================
+# ARTIFACTS - Large files managed outside git
+# ==============================================================================
+# See artifacts/README.md for cloud storage policy
+
+# Fine-tuned model checkpoints (store in HuggingFace Hub)
+artifacts/models/**/*.pt
+artifacts/models/**/*.pth
+artifacts/models/**/*.safetensors
+artifacts/models/**/*.bin
+artifacts/models/**/*.ckpt
+
+# Cached embeddings (regenerable, store in cloud if needed)
+artifacts/embeddings/**/*.npy
+artifacts/embeddings/**/*.pt
+artifacts/embeddings/**/*.h5
+artifacts/embeddings/**/*.pkl
+
+# Detailed execution logs (store in W&B)
+artifacts/logs/**/*.log
+artifacts/logs/**/*.txt
+artifacts/logs/**/*.json
+
+# IMPORTANT: Keep documentation and manifests versioned
+!artifacts/README.md
+!artifacts/**/README.md
+!artifacts/**/manifest.json
+!artifacts/models/.gitkeep
+!artifacts/embeddings/.gitkeep
+!artifacts/logs/.gitkeep
+
+# Coverage
+.coverage
+htmlcov/
+.tox/
+.coverage.*
+
+# MyPy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Documentation builds
+docs/_build/
+site/
+
+# OS
+Thumbs.db
+
+# Temporary files
+*.tmp
+*.temp
+tmp/
+temp/
+
+# Large data files
+*.csv.gz
+*.jsonl.gz
+*.parquet
+
+# Backup files
+*.bak
+*.backup

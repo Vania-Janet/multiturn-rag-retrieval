@@ -1,0 +1,239 @@
+# ==============================================================================
+# BASE CONFIGURATION - MT-RAG Benchmark
+# ==============================================================================
+# This file contains global defaults for all experiments.
+# Override these settings in domain-specific or experiment-specific configs.
+
+# ------------------------------------------------------------------------------
+# REPRODUCIBILITY
+# ------------------------------------------------------------------------------
+# Global seed for all random number generators
+seed: 42
+deterministic: true
+
+torch:
+  use_deterministic_algorithms: true
+  backends:
+    cudnn:
+      deterministic: true
+      benchmark: false  # Disable for reproducibility, enable for speed
+  manual_seed: 42
+  # Set number of threads for CPU operations
+  num_threads: 4
+  num_interop_threads: 1
+
+numpy:
+  random_seed: 42
+
+python:
+  random_seed: 42
+  hash_seed: 0  # PYTHONHASHSEED=0 for deterministic hashing
+
+# Additional environment variables for reproducibility
+environment:
+  CUBLAS_WORKSPACE_CONFIG: ":4096:8"  # For CUDA deterministic operations
+  OMP_NUM_THREADS: "4"
+  MKL_NUM_THREADS: "4"
+
+# ------------------------------------------------------------------------------
+# COMPUTE RESOURCES
+# ------------------------------------------------------------------------------
+num_threads: 4  # Global thread count for CPU operations
+num_workers: 4  # DataLoader workers
+
+batch_sizes:
+  default: 32
+  indexing: 100
+  inference: 16
+  retrieval: 64
+  reranking: 8
+  embedding: 128
+  training: 16
+  validation: 32
+
+device: "cuda"  # or "cpu", "mps"
+mixed_precision: true
+fp16: true  # Use FP16 for faster inference
+compile: false  # torch.compile() for PyTorch 2.0+
+
+# Memory management
+max_memory_gb: null  # null for automatic, or set limit
+gradient_accumulation_steps: 1
+gradient_checkpointing: false
+
+# ------------------------------------------------------------------------------
+# PATHS
+# ------------------------------------------------------------------------------
+paths:
+  data: "data"
+  raw: "data/raw"
+  processed: "data/processed"
+  indices: "indices"
+  experiments: "experiments"
+  artifacts: "artifacts"
+  logs: "logs"
+  cache: ".cache"
+
+# ------------------------------------------------------------------------------
+# RETRIEVAL DEFAULTS
+# ------------------------------------------------------------------------------
+retrieval:
+  top_k: 100
+  min_score: 0.0
+  normalize_scores: true
+  
+  sparse:
+    model: "bm25"
+    k1: 1.2
+    b: 0.75
+    
+  dense:
+    model: "BAAI/bge-base-en-v1.5"  # Baseline dense model (768 dim)
+    normalize_embeddings: true
+    similarity: "cosine"
+    batch_size: 128
+    
+  dense_alternatives:
+    bge_m3: "BAAI/bge-m3"  # Multilingual, 1024 dim
+    bge_large: "BAAI/bge-large-en-v1.5"  # Larger variant, 1024 dim
+    e5_base: "intfloat/e5-base-v2"  # Alternative baseline
+    
+  hybrid:
+    fusion_method: "rrf"  # or "linear", "weighted_sum"
+    sparse_weight: 0.5
+    dense_weight: 0.5
+    k: 60  # for RRF
+
+# ------------------------------------------------------------------------------
+# RERANKING DEFAULTS
+# ------------------------------------------------------------------------------
+reranking:
+  enabled: false
+  model: "cross-encoder/ms-marco-MiniLM-L-12-v2"
+  top_k: 20
+  batch_size: 8
+  max_length: 512
+
+# ------------------------------------------------------------------------------
+# QUERY PROCESSING
+# ------------------------------------------------------------------------------
+query:
+  max_length: 512
+  include_conversation_history: true
+  history_turns: 3
+  expansion:
+    enabled: false
+    method: "llm"  # or "pseudo_relevance_feedback"
+    num_terms: 5
+
+# ------------------------------------------------------------------------------
+# EVALUATION
+# ------------------------------------------------------------------------------
+evaluation:
+  metrics:
+    - "recall@5"
+    - "recall@10"
+    - "recall@20"
+    - "recall@100"
+    - "mrr"
+    - "ndcg@10"
+    - "map"
+  
+  relevance_threshold: 1  # minimum relevance score
+  
+  statistical_tests:
+    enabled: true
+    method: "paired_ttest"
+    alpha: 0.05
+    correction: "bonferroni"
+
+# ------------------------------------------------------------------------------
+# LOGGING
+# ------------------------------------------------------------------------------
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "logs/experiment.log"
+  console: true
+  
+  experiment_tracking:
+    mlflow:
+      enabled: false
+      tracking_uri: "file:./mlruns"
+      experiment_name: "mt-rag-benchmark"
+    
+    wandb:
+      enabled: false
+      project: "mt-rag-benchmark"
+      entity: null
+
+# ------------------------------------------------------------------------------
+# FINE-TUNING DEFAULTS
+# ------------------------------------------------------------------------------
+training:
+  epochs: 3
+  learning_rate: 2e-5
+  warmup_steps: 500
+  weight_decay: 0.01
+  max_grad_norm: 1.0
+  
+  optimizer: "adamw"
+  scheduler: "linear"
+  
+  early_stopping:
+    enabled: true
+    patience: 3
+    metric: "ndcg@10"
+    mode: "max"
+  
+  checkpointing:
+    save_best: true
+    save_last: true
+    monitor: "ndcg@10"
+    mode: "max"
+
+# ------------------------------------------------------------------------------
+# DATA PROCESSING
+# ------------------------------------------------------------------------------
+preprocessing:
+  chunking:
+    strategy: "sliding_window"
+    chunk_size: 512
+    overlap: 128
+    min_chunk_size: 100
+    tokenizer: "cl100k_base"
+  
+  text_cleaning:
+    lowercase: false
+    remove_special_chars: false
+    remove_urls: false
+    remove_emails: false
+  
+  deduplication:
+    enabled: true
+    threshold: 0.95
+    method: "minhash"
+
+# ------------------------------------------------------------------------------
+# CACHING
+# ------------------------------------------------------------------------------
+caching:
+  enabled: true
+  cache_dir: ".cache"
+  
+  embeddings:
+    enabled: true
+    backend: "disk"  # or "memory", "redis"
+  
+  index:
+    enabled: true
+    rebuild_on_change: true
+
+# ------------------------------------------------------------------------------
+# VALIDATION
+# ------------------------------------------------------------------------------
+validation:
+  check_corpus_integrity: true
+  check_query_format: true
+  check_splits_no_overlap: true
+  fail_on_warning: false

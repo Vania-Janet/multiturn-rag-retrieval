@@ -1,0 +1,18 @@
+# Government dataset splits
+# Document-set level splits for policy/regulation queries
+
+train_queries: []  # Query IDs for training (80%)
+
+val_queries: []  # Query IDs for validation (10%)
+
+test_queries: []  # Query IDs for test (10%) - pseudo-test
+
+# Split rationale:
+# - Query-level splits ensuring no document overlap in judgments
+# - Temporal split if dates available (older docs for train)
+# - 80/10/10 standard split
+
+split_strategy: query_level
+total_queries: 0  # To be filled after data loading
+split_ratio: [0.8, 0.1, 0.1]
+temporal_split: false  # Set to true if using temporal ordering

@@ -1,0 +1,3 @@
+# A11: Fine-tuned SPLADE
+# Query rewrite + fine-tuned SPLADE sparse retrieval
+# Uses SPLADE model fine-tuned on domain-specific corpus

@@ -1,0 +1,2 @@
+# A0: Baseline sparse retrieval (BM25/ELSER/SPLADE)
+# No query rewriting, no reranking
