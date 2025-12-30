@@ -1,0 +1,12 @@
+experiment:
+  name: "replication_bge15"
+  description: "Paper Replication: BGE 1.5 Baseline (Last Turn)"
+
+data:
+  query_mode: "last_turn"
+
+retrieval:
+  type: "dense"
+  model_name: "BAAI/bge-large-en-v1.5"
+  query_instruction: "Represent this sentence for searching relevant passages: "
+  top_k: 100

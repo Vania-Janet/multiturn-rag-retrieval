@@ -122,11 +122,16 @@ def build_index(domain, model, corpus_dir, output_dir, force, batch_size, logger
         logger.warning(f"Corpus not found: {corpus_path}")
         return False
     
-    # Check if index already exists
+    # Check if index already exists and is complete
     index_dir = output_dir / domain / model
-    if index_dir.exists() and not force:
-        logger.info(f"Index already exists (use --force to rebuild): {index_dir}")
+    done_flag = index_dir / "_SUCCESS"
+    
+    if done_flag.exists() and not force:
+        logger.info(f"Index already exists and is complete (use --force to rebuild): {index_dir}")
         return True
+    
+    if index_dir.exists() and not force:
+        logger.warning(f"Index directory exists but seems incomplete (missing _SUCCESS). Rebuilding: {index_dir}")
     
     # Create output directory
     index_dir.mkdir(parents=True, exist_ok=True)
@@ -136,44 +141,51 @@ def build_index(domain, model, corpus_dir, output_dir, force, batch_size, logger
     logger.info(f"  Output: {index_dir}")
     
     try:
-        # TODO: Import and call appropriate indexing function
-        # This is a placeholder - implement actual indexing logic
+        # Import indexing classes
+        from pipeline.indexing.build_indices import BGEIndexer, BM25Indexer, ELSERIndexer, load_corpus
+        
+        # Load documents
+        documents = load_corpus(domain, str(corpus_dir.parent)) # Assuming corpus_dir is data/processed/domain/.. or similar. 
+        # Wait, load_corpus takes (domain, processed_dir). 
+        # In build_index, corpus_dir is passed as "data/processed".
+        # So we should pass corpus_dir directly.
+        documents = load_corpus(domain, str(corpus_dir))
         
         if model == "bm25":
-            logger.info("  Building Elasticsearch BM25 index...")
-            # from indexing.bm25 import build_bm25_index
-            # build_bm25_index(corpus_path, index_dir, batch_size)
+            logger.info("  Building BM25 index...")
+            indexer = BM25Indexer(output_dir=str(output_dir))
+            indexer.build(documents, domain)
             
         elif model == "elser":
             logger.info("  Building ELSER index...")
-            # from indexing.elser import build_elser_index
-            # build_elser_index(corpus_path, index_dir, batch_size)
-            
-        elif model == "splade":
-            logger.info("  Building SPLADE index...")
-            # from indexing.splade import build_splade_index
-            # build_splade_index(corpus_path, index_dir, batch_size)
+            indexer = ELSERIndexer(output_dir=str(output_dir))
+            indexer.build(documents, domain)
             
         elif model == "bge-m3":
             logger.info("  Building BGE-M3 index...")
-            # from indexing.dense import build_dense_index
-            # build_dense_index(corpus_path, index_dir, "BAAI/bge-m3", batch_size)
+            indexer = BGEIndexer(model_name="BAAI/bge-m3", output_dir=str(output_dir), index_subdir="bge-m3")
+            indexer.build(documents, domain)
             
         elif model == "bge-base-1.5":
             logger.info("  Building BGE-base-en-v1.5 index (baseline)...")
-            # from indexing.dense import build_dense_index
-            # build_dense_index(corpus_path, index_dir, "BAAI/bge-base-en-v1.5", batch_size)
+            indexer = BGEIndexer(model_name="BAAI/bge-large-en-v1.5", output_dir=str(output_dir), index_subdir="bge")
+            indexer.build(documents, domain)
             
         elif model == "colbert":
             logger.info("  Building ColBERT index...")
-            # from indexing.colbert import build_colbert_index
-            # build_colbert_index(corpus_path, index_dir, batch_size)
+            # Placeholder for ColBERT
+            logger.warning("ColBERT indexing not yet implemented.")
+            return False
         
+        # Mark as successful
+        done_flag.touch()
         logger.info(f"  ✓ Index built successfully")
         return True
         
     except Exception as e:
         logger.error(f"  ✗ Failed to build index: {str(e)}")
+        import traceback
+        traceback.print_exc()
         return False
 
 
@@ -182,7 +194,12 @@ def main():
     
     # Setup logging
     log_level = logging.DEBUG if args.verbose else logging.INFO
-    logger = setup_logger("build_indices", level=log_level)
+    
+    # Ensure logs directory exists
+    log_dir = Path("logs")
+    log_dir.mkdir(exist_ok=True)
+    
+    logger = setup_logger("build_indices", log_file=log_dir / "build_indices.log", level=log_level)
     
     # Resolve domains and models
     domains = resolve_domains(args.domain, args.all)

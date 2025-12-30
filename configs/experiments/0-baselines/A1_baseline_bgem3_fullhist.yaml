@@ -1,0 +1,13 @@
+experiment:
+  name: "A1_baseline_dense_fullhist"
+  description: "Baseline Dense with Full History (BGE M3)"
+
+data:
+  query_mode: "full_history"
+
+retrieval:
+  type: "dense"
+  model_name: "BAAI/bge-m3"
+  query_instruction: "" # BGE M3 dense retrieval typically does not use an instruction
+  top_k: 100
+

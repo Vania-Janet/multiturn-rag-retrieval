@@ -1,0 +1,11 @@
+experiment:
+  name: "replication_bm25"
+  description: "Paper Replication: BM25 Baseline (Last Turn)"
+
+data:
+  query_mode: "last_turn"
+
+retrieval:
+  type: "sparse"
+  method: "bm25"
+  top_k: 100

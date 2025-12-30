@@ -1,0 +1,11 @@
+experiment:
+  name: "A0_baseline_sparse_fullhist"
+  description: "Baseline Sparse with Full History (BM25)"
+
+data:
+  query_mode: "full_history"
+
+retrieval:
+  type: "sparse"
+  method: "bm25"
+  top_k: 100

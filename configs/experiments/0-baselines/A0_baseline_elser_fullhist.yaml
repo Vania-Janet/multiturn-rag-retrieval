@@ -1,0 +1,11 @@
+experiment:
+  name: "A0_baseline_elser_fullhist"
+  description: "Baseline ELSER with Full History"
+
+data:
+  query_mode: "full_history"
+
+retrieval:
+  type: "sparse"
+  method: "elser"
+  top_k: 100
