@@ -3,7 +3,7 @@ import json
 import logging
 import time
 from pathlib import Path
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List, Optional, Union
 import numpy as np
 import pandas as pd
 
@@ -158,42 +158,52 @@ def run_pipeline(config: Dict[str, Any], output_dir: Path, domain: str):
     logger.info(f"Using query extraction mode: {query_mode}")
 
     for query in queries:
-        # Extract query based on mode
-        conversation_history = query.get("input", [])
+        # Support both BEIR format (_id + text) and full history format (input list)
         query_text = ""
+        query_id = query.get("task_id") or query.get("_id")
+        turn_id = query.get("turn", 0)
         
-        if not conversation_history:
-             logger.warning(f"Empty history for task {query.get('task_id')}")
-             continue
+        # Check if it's BEIR format (has 'text' field directly)
+        if "text" in query:
+            # BEIR format - text is already prepared
+            query_text = query["text"]
+            # Note: query_mode is ignored for BEIR format since text is pre-processed
+        elif "input" in query:
+            # Full history format - need to process based on query_mode
+            conversation_history = query.get("input", [])
+            
+            if not conversation_history:
+                logger.warning(f"Empty history for task {query_id}")
+                continue
 
-        if query_mode == "last_turn":
-            if conversation_history[-1]["speaker"] == "user":
-                query_text = conversation_history[-1]["text"]
+            if query_mode == "last_turn":
+                if conversation_history[-1]["speaker"] == "user":
+                    query_text = conversation_history[-1]["text"]
+                else:
+                    # Fallback: find last user turn
+                    for turn in reversed(conversation_history):
+                        if turn["speaker"] == "user":
+                            query_text = turn["text"]
+                            break
+            elif query_mode == "full_history":
+                # Concatenate all user questions
+                user_turns = [turn["text"] for turn in conversation_history if turn["speaker"] == "user"]
+                query_text = " ".join(user_turns)
+            elif query_mode == "full_context":
+                # Concatenate all turns (User + Agent)
+                all_turns = [turn["text"] for turn in conversation_history]
+                query_text = " ".join(all_turns)
             else:
-                # Fallback: find last user turn
-                for turn in reversed(conversation_history):
-                    if turn["speaker"] == "user":
-                        query_text = turn["text"]
-                        break
-        elif query_mode == "full_history":
-            # Concatenate all user questions
-            user_turns = [turn["text"] for turn in conversation_history if turn["speaker"] == "user"]
-            query_text = " ".join(user_turns)
-        elif query_mode == "full_context":
-             # Concatenate all turns (User + Agent)
-            all_turns = [turn["text"] for turn in conversation_history]
-            query_text = " ".join(all_turns)
+                logger.warning(f"Unknown query_mode {query_mode}, defaulting to last_turn")
+                if conversation_history[-1]["speaker"] == "user":
+                    query_text = conversation_history[-1]["text"]
         else:
-            logger.warning(f"Unknown query_mode {query_mode}, defaulting to last_turn")
-            if conversation_history[-1]["speaker"] == "user":
-                query_text = conversation_history[-1]["text"]
+            logger.warning(f"Unknown query format for {query_id}")
+            continue
 
         if not query_text:
-            logger.warning(f"Could not extract query for task {query.get('task_id')}")
+            logger.warning(f"Could not extract query for task {query_id}")
             continue
-            
-        query_id = query["task_id"]
-        turn_id = query.get("turn", 0)
         
         with latency_monitor:
             # Retrieve top-k

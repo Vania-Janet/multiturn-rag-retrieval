@@ -4,6 +4,8 @@ experiment:
 
 data:
   query_mode: "last_turn"
+  # Override domain config to use lastturn files
+  query_file_suffix: "lastturn"
 
 retrieval:
   type: "dense"
