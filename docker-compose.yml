@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  # Elasticsearch service for ELSER retrieval
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
+    container_name: mt-rag-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - xpack.ml.enabled=true
+      - ES_JAVA_OPTS=-Xms4g -Xmx4g
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+    networks:
+      - mt-rag-network
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    restart: unless-stopped
+
+  # Main application service
+  mt-rag-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mt-rag-app
+    runtime: nvidia
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
+      - ELASTICSEARCH_USER=
+      - ELASTICSEARCH_PASSWORD=
+      - PYTHONPATH=/workspace/src
+    volumes:
+      - .:/workspace
+      - ./data:/workspace/data
+      - ./indices:/workspace/indices
+      - ./experiments:/workspace/experiments
+    networks:
+      - mt-rag-network
+    depends_on:
+      elasticsearch:
+        condition: service_healthy
+    stdin_open: true
+    tty: true
+    command: bash
+
+volumes:
+  elasticsearch_data:
+    driver: local
+
+networks:
+  mt-rag-network:
+    driver: bridge

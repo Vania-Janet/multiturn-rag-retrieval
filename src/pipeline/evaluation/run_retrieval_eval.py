@@ -3,7 +3,7 @@ import os
 import pytrec_eval
 import argparse
 import csv, json
-from judge_utils import *
+# from judge_utils import *  # TODO: Module not found, commented out
 
 def evaluate(qrels: Dict[str, Dict[str, int]], 
                  results: Dict[str, Dict[str, float]], 

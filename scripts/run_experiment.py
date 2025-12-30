@@ -176,6 +176,14 @@ def main():
                     experiment_config=experiment_config_path
                 )
                 
+                # Handle query_file_suffix override for replication experiments
+                if "query_file_suffix" in config.get("data", {}):
+                    suffix = config["data"]["query_file_suffix"]
+                    # Replace 'questions' with the specified suffix in query_file path
+                    original_path = config["data"]["query_file"]
+                    config["data"]["query_file"] = original_path.replace("questions", suffix)
+                    logger.info(f"Using query file: {config['data']['query_file']}")
+                
                 # Setup output directory
                 output_dir = args.output_dir / experiment / domain
                 output_dir.mkdir(parents=True, exist_ok=True)

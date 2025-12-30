@@ -14,7 +14,7 @@ elastic-transport>=8.4.0
 sentence-transformers>=2.2.0
 transformers>=4.30.0
 torch>=2.0.0
-faiss-cpu>=1.7.4
+# faiss-cpu>=1.7.4  # REMOVED: Use faiss-gpu instead (installed separately)
 
 # Sparse retrieval
 ./external/splade

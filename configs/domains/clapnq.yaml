@@ -1,6 +1,6 @@
 # Domain-specific configuration for CLAPNQ
 data:
-  query_file: "data/retrieval_tasks/clapnq/clapnq_lastturn.jsonl"
+  query_file: "data/retrieval_tasks/clapnq/clapnq_questions.jsonl"
   qrels_file: "data/retrieval_tasks/clapnq/qrels/dev.tsv"
   corpus_path: "data/passage_level_processed/clapnq"
 
