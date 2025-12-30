@@ -1,1 +1,9 @@
 # Domain-specific configuration for CLAPNQ
+data:
+  query_file: "data/retrieval_tasks/clapnq/clapnq_lastturn.jsonl"
+  qrels_file: "data/retrieval_tasks/clapnq/qrels/dev.tsv"
+  corpus_path: "data/passage_level_processed/clapnq"
+
+retrieval:
+  index_name: "clapnq_sparse"
+  index_path: "indices/clapnq/dense"

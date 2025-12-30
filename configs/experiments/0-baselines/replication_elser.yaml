@@ -1,0 +1,11 @@
+experiment:
+  name: "replication_elser"
+  description: "Paper Replication: ELSER Baseline (Last Turn)"
+
+data:
+  query_mode: "last_turn"
+
+retrieval:
+  type: "sparse"
+  method: "elser"
+  top_k: 100

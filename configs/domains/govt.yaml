@@ -1,1 +1,9 @@
 # Domain-specific configuration for Government
+data:
+  query_file: "data/retrieval_tasks/govt/govt_lastturn.jsonl"
+  qrels_file: "data/retrieval_tasks/govt/qrels/dev.tsv"
+  corpus_path: "data/passage_level_processed/govt"
+
+retrieval:
+  index_name: "govt_sparse"
+  index_path: "indices/govt/dense"
