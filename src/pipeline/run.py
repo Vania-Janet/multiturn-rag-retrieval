@@ -22,7 +22,7 @@ from .retrieval import (
 )
 from .query_transform import get_rewriter
 from .reranking import CohereReranker
-from .evaluation.run_retrieval_eval import compute_results, load_qrels
+from .evaluation.run_retrieval_eval import compute_results, load_qrels, prepare_results_dict
 
 logger = logging.getLogger(__name__)
 
@@ -95,7 +95,7 @@ def load_corpus(corpus_path: Union[str, Path]) -> Dict[str, str]:
     logger.info(f"Loaded {len(corpus)} documents")
     return corpus
 
-def run_pipeline(config: Dict[str, Any], output_dir: Path, domain: str, force: bool = False):
+def run_pipeline(config: Dict[str, Any], output_dir: Path, domain: str, force: bool = False, baseline_path: Optional[Path] = None):
     """
     Run the full retrieval pipeline:
     1. Setup & Seeding
@@ -172,8 +172,11 @@ def run_pipeline(config: Dict[str, Any], output_dir: Path, domain: str, force: b
         if "voyage" in dense_model.lower():
             if domain == "fiqa":
                 dense_model = "voyage-finance-2"
+                logger.info(f"Domain is 'fiqa': Forcing Voyage model to '{dense_model}'")
             else:
                 dense_model = "voyage-large-2"
+                logger.info(f"Domain is '{domain}': Using Voyage model '{dense_model}'")
+            
             # Update config with selected model so retriever gets correct name
             config["retrieval"]["dense"]["model_name"] = dense_model
             dense_index = f"indices/{domain}/voyage"
@@ -227,6 +230,17 @@ def run_pipeline(config: Dict[str, Any], output_dir: Path, domain: str, force: b
     
     query_mode = config["data"].get("query_mode", "last_turn")
     logger.info(f"Using query extraction mode: {query_mode}")
+
+    # Initialize Reranker if enabled
+    reranker = None
+    if config.get("reranking", {}).get("enabled", False):
+        reranker_type = config["reranking"].get("type", "cohere")
+        if reranker_type == "cohere":
+            reranker = CohereReranker(
+                model_name=config["reranking"].get("model_name", "rerank-english-v3.0"),
+                config=config["reranking"]
+            )
+            logger.info(f"Reranking enabled: {reranker_type} ({config['reranking'].get('model_name')})")
 
     for query in queries:
         # Support both BEIR format (_id + text) and full history format (input list)
@@ -322,32 +336,26 @@ def run_pipeline(config: Dict[str, Any], output_dir: Path, domain: str, force: b
             contexts.append({"document_id": doc_id, "score": score, "text": text})
 
         # Apply Reranking if enabled
-        if config.get("reranking", {}).get("enabled", False):
-            reranker_type = config["reranking"].get("type", "cohere")
-            if reranker_type == "cohere":
-                reranker = CohereReranker(
-                    model_name=config["reranking"].get("model_name", "rerank-english-v3.0"),
-                    config=config["reranking"]
-                )
-                # Rerank the contexts
-                # Convert contexts to format expected by reranker (list of dicts with 'text')
-                # Note: contexts already has 'text' field
-                reranked_contexts = reranker.rerank(
-                    query=query_text,
-                    documents=contexts,
-                    top_k=config["reranking"].get("top_k", 100)
-                )
-                
-                # Update contexts with reranked results
-                # Map back to our format
-                contexts = []
-                for res in reranked_contexts:
-                    contexts.append({
-                        "document_id": res["document_id"],
-                        "score": res["score"],
-                        "text": res["text"]
-                    })
-                logger.debug(f"Reranked {len(contexts)} documents")
+        if reranker:
+            # Rerank the contexts
+            # Convert contexts to format expected by reranker (list of dicts with 'text')
+            # Note: contexts already has 'text' field
+            reranked_contexts = reranker.rerank(
+                query=query_text,
+                documents=contexts,
+                top_k=config["reranking"].get("top_k", 100)
+            )
+            
+            # Update contexts with reranked results
+            # Map back to our format
+            contexts = []
+            for res in reranked_contexts:
+                contexts.append({
+                    "document_id": res["document_id"],
+                    "score": res["score"],
+                    "text": res["text"]
+                })
+            logger.debug(f"Reranked {len(contexts)} documents")
 
         result_entry = {
             "task_id": query_id,
@@ -413,6 +421,36 @@ def run_pipeline(config: Dict[str, Any], output_dir: Path, domain: str, force: b
     ci_lower, ci_upper = bootstrap_confidence_interval(ndcg_10_scores)
     analysis_report["bootstrap_ci_ndcg_10"] = {"lower": ci_lower, "upper": ci_upper}
     
+    # Significance Testing (Wilcoxon)
+    if baseline_path and Path(baseline_path).exists():
+        logger.info(f"Comparing against baseline: {baseline_path}")
+        try:
+            # Load baseline results
+            baseline_results, _ = prepare_results_dict(baseline_path)
+            
+            # Evaluate baseline with SAME qrels
+            # Note: compute_results returns (scores_global, scores_per_query)
+            _, baseline_scores_per_query = compute_results(baseline_results, qrels)
+            
+            # Align scores
+            current_ndcg = []
+            baseline_ndcg = []
+            
+            for qid in scores_per_query:
+                if qid in baseline_scores_per_query:
+                    current_ndcg.append(scores_per_query[qid].get("ndcg_cut_10", 0.0))
+                    baseline_ndcg.append(baseline_scores_per_query[qid].get("ndcg_cut_10", 0.0))
+            
+            if current_ndcg:
+                wilcoxon_results = calculate_wilcoxon_significance(baseline_ndcg, current_ndcg)
+                analysis_report["significance_test"] = wilcoxon_results
+                logger.info(f"Wilcoxon Test Results: {wilcoxon_results}")
+            else:
+                logger.warning("No overlapping queries found between current run and baseline.")
+                
+        except Exception as e:
+            logger.error(f"Failed to run significance test: {e}")
+
     # Save analysis report
     analysis_file = output_dir / "analysis_report.json"
     with open(analysis_file, 'w') as f:

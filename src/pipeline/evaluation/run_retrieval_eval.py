@@ -51,7 +51,7 @@ def evaluate(qrels: Dict[str, Dict[str, int]],
 
 def compute_results(results, qrels):
 
-    k_values = [1, 3, 5]
+    k_values = [1, 3, 5, 10]
     if len(results) == 0:
         ndcg = _map = recall = precision = mrr = {i: '-' for i in k_values}
     else:

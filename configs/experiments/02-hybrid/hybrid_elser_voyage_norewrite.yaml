@@ -9,7 +9,10 @@ retrieval:
     method: "elser"
   dense:
     model_name: "voyage-large-2" # Will be overridden by run.py for fiqa
-  top_k: 100
+  top_k: 300
 
 query_transform:
   enabled: false
+
+data:
+  query_mode: "last_turn"

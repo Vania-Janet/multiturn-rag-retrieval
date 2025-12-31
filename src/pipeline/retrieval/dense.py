@@ -74,6 +74,21 @@ class BGERetriever(DenseRetriever):
         logger.info(f"Loading FAISS index from {faiss_path}")
         self.index = faiss.read_index(str(faiss_path))
         
+        # Move index to GPU if available
+        if self.device == "cuda":
+            try:
+                # Use all available GPUs for the index
+                res = faiss.StandardGpuResources()
+                # If multiple GPUs, use index_cpu_to_all_gpus
+                if torch.cuda.device_count() > 1:
+                    logger.info(f"Moving FAISS index to {torch.cuda.device_count()} GPUs")
+                    self.index = faiss.index_cpu_to_all_gpus(self.index)
+                else:
+                    logger.info("Moving FAISS index to GPU")
+                    self.index = faiss.index_cpu_to_gpu(res, 0, self.index)
+            except Exception as e:
+                logger.warning(f"Failed to move FAISS index to GPU: {e}. Continuing with CPU index.")
+        
         # Load Doc IDs
         ids_path = self.index_path / "doc_ids.json"
         if not ids_path.exists():
