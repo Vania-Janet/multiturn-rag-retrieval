@@ -42,6 +42,10 @@ ENV/
 .ipynb_checkpoints/
 *.ipynb_checkpoints
 
+# Logs
+*.log
+indexing.log
+
 # Data and indices (large files)
 data/raw/
 data/processed/

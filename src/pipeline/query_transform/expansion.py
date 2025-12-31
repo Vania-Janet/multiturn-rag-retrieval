@@ -117,22 +117,50 @@ class MultiQueryExpander(QueryExpander):
         self.model_name = model_name
         self.num_queries = num_queries
         
+        try:
+            from openai import OpenAI
+            import os
+            api_key = os.getenv("OPENAI_API_KEY")
+            if api_key:
+                self.client = OpenAI(api_key=api_key)
+            else:
+                logger.warning("OPENAI_API_KEY not found. MultiQueryExpander will fail.")
+                self.client = None
+        except ImportError:
+            logger.warning("OpenAI not installed.")
+            self.client = None
+        
     def expand(self, query: str, top_docs: Optional[List[str]] = None) -> List[str]:
         """
         Generate multiple query variations.
         
         Returns list of alternative queries (not expansion terms).
         """
-        
-        prompt = f"""Generate {self.num_queries} alternative queries for the following question. Each query should target a different aspect or rephrasing.
+        if not self.client:
+            return [query]
 
+        prompt = f"""Generate {self.num_queries} alternative queries for the following question. Each query should target a different aspect or rephrasing.
+        
 Original: {query}
 
-Alternative queries:"""
+Alternative queries (one per line, no numbering):"""
         
-        # TODO: Implement LLM call
-        logger.warning("MultiQueryExpander not fully implemented")
-        return []
+        try:
+            response = self.client.chat.completions.create(
+                model=self.model_name,
+                messages=[
+                    {"role": "system", "content": "You are a helpful assistant that generates diverse search queries."},
+                    {"role": "user", "content": prompt}
+                ],
+                temperature=0.7,
+                n=1
+            )
+            content = response.choices[0].message.content.strip()
+            queries = [line.strip() for line in content.split('\n') if line.strip()]
+            return queries[:self.num_queries]
+        except Exception as e:
+            logger.error(f"MultiQuery expansion failed: {e}")
+            return [query]
 
 
 class DomainExpander(QueryExpander):

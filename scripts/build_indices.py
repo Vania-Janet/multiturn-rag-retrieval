@@ -28,7 +28,7 @@ from utils.logger import setup_logger
 
 
 DOMAINS = ["clapnq", "fiqa", "govt", "cloud"]
-MODELS = ["bm25", "elser", "splade", "bge-m3", "bge-base-1.5", "colbert"]
+MODELS = ["bm25", "elser", "bge-m3", "bge-base-1.5"]
 
 
 def parse_args():
@@ -145,10 +145,6 @@ def build_index(domain, model, corpus_dir, output_dir, force, batch_size, logger
         from pipeline.indexing.build_indices import BGEIndexer, BM25Indexer, ELSERIndexer, load_corpus
         
         # Load documents
-        documents = load_corpus(domain, str(corpus_dir.parent)) # Assuming corpus_dir is data/processed/domain/.. or similar. 
-        # Wait, load_corpus takes (domain, processed_dir). 
-        # In build_index, corpus_dir is passed as "data/processed".
-        # So we should pass corpus_dir directly.
         documents = load_corpus(domain, str(corpus_dir))
         
         if model == "bm25":
@@ -171,12 +167,6 @@ def build_index(domain, model, corpus_dir, output_dir, force, batch_size, logger
             indexer = BGEIndexer(model_name="BAAI/bge-base-en-v1.5", output_dir=str(output_dir), index_subdir="bge")  # FIXED: Was bge-large
             indexer.build(documents, domain)
             
-        elif model == "colbert":
-            logger.info("  Building ColBERT index...")
-            # Placeholder for ColBERT
-            logger.warning("ColBERT indexing not yet implemented.")
-            return False
-        
         # Mark as successful
         done_flag.touch()
         logger.info(f"  ✓ Index built successfully")

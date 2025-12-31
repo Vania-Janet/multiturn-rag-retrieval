@@ -13,3 +13,105 @@
 2025-12-29 20:22:38,013 - INFO -   Domain: configs/domains/clapnq.yaml
 2025-12-29 20:22:38,013 - INFO -   Experiment: configs/experiments/0-baselines/replication_bm25.yaml
 2025-12-29 20:22:38,025 - INFO - ✓ Config merged successfully
+2025-12-31 01:47:51,695 - INFO -   Building BM25 index...
+2025-12-31 01:47:51,696 - INFO - Initializing BM25 Indexer for clapnq
+2025-12-31 01:47:51,697 - INFO - Tokenizing corpus...
+2025-12-31 01:47:51,697 - ERROR -   ✗ Failed to build index: name 'word_tokenize' is not defined
+2025-12-31 01:47:51,779 - INFO - 
+================================================================================
+2025-12-31 01:47:51,779 - INFO - SUMMARY
+2025-12-31 01:47:51,780 - INFO - ================================================================================
+2025-12-31 01:47:51,780 - INFO - Total indices: 1
+2025-12-31 01:47:51,780 - INFO - Successful: 0
+2025-12-31 01:47:51,780 - INFO - Failed: 1
+2025-12-31 01:47:51,780 - ERROR - 
+Failed indices:
+2025-12-31 01:47:51,780 - ERROR -   - clapnq/bm25
+2025-12-31 01:49:59,141 - INFO -   Building BM25 index...
+2025-12-31 01:49:59,144 - INFO - Initializing BM25 Indexer for clapnq
+2025-12-31 01:49:59,144 - INFO - Tokenizing corpus...
+2025-12-31 01:49:59,146 - ERROR -   ✗ Failed to build index: 
+**********************************************************************
+  Resource [93mpunkt_tab[0m not found.
+  Please use the NLTK Downloader to obtain the resource:
+
+  [31m>>> import nltk
+  >>> nltk.download('punkt_tab')
+  [0m
+  For more information see: https://www.nltk.org/data.html
+
+  Attempted to load [93mtokenizers/punkt_tab/english/[0m
+
+  Searched in:
+    - '/Users/vania/nltk_data'
+    - '/Users/vania/Downloads/rag-ss3/mt-rag-benchmark/task_a_retrieval/.venv/nltk_data'
+    - '/Users/vania/Downloads/rag-ss3/mt-rag-benchmark/task_a_retrieval/.venv/share/nltk_data'
+    - '/Users/vania/Downloads/rag-ss3/mt-rag-benchmark/task_a_retrieval/.venv/lib/nltk_data'
+    - '/usr/share/nltk_data'
+    - '/usr/local/share/nltk_data'
+    - '/usr/lib/nltk_data'
+    - '/usr/local/lib/nltk_data'
+**********************************************************************
+
+2025-12-31 01:49:59,149 - INFO - 
+================================================================================
+2025-12-31 01:49:59,150 - INFO - SUMMARY
+2025-12-31 01:49:59,150 - INFO - ================================================================================
+2025-12-31 01:49:59,150 - INFO - Total indices: 1
+2025-12-31 01:49:59,150 - INFO - Successful: 0
+2025-12-31 01:49:59,150 - INFO - Failed: 1
+2025-12-31 01:49:59,150 - ERROR - 
+Failed indices:
+2025-12-31 01:49:59,150 - ERROR -   - clapnq/bm25
+2025-12-31 01:50:40,221 - INFO -   Building BM25 index...
+2025-12-31 01:50:40,221 - INFO - Initializing BM25 Indexer for clapnq
+2025-12-31 01:50:40,221 - INFO - Tokenizing corpus...
+2025-12-31 01:50:40,222 - ERROR -   ✗ Failed to build index: 
+**********************************************************************
+  Resource [93mpunkt_tab[0m not found.
+  Please use the NLTK Downloader to obtain the resource:
+
+  [31m>>> import nltk
+  >>> nltk.download('punkt_tab')
+  [0m
+  For more information see: https://www.nltk.org/data.html
+
+  Attempted to load [93mtokenizers/punkt_tab/english/[0m
+
+  Searched in:
+    - '/Users/vania/nltk_data'
+    - '/Users/vania/Downloads/rag-ss3/mt-rag-benchmark/task_a_retrieval/.venv/nltk_data'
+    - '/Users/vania/Downloads/rag-ss3/mt-rag-benchmark/task_a_retrieval/.venv/share/nltk_data'
+    - '/Users/vania/Downloads/rag-ss3/mt-rag-benchmark/task_a_retrieval/.venv/lib/nltk_data'
+    - '/usr/share/nltk_data'
+    - '/usr/local/share/nltk_data'
+    - '/usr/lib/nltk_data'
+    - '/usr/local/lib/nltk_data'
+**********************************************************************
+
+2025-12-31 01:50:40,227 - INFO - 
+================================================================================
+2025-12-31 01:50:40,227 - INFO - SUMMARY
+2025-12-31 01:50:40,227 - INFO - ================================================================================
+2025-12-31 01:50:40,227 - INFO - Total indices: 1
+2025-12-31 01:50:40,227 - INFO - Successful: 0
+2025-12-31 01:50:40,227 - INFO - Failed: 1
+2025-12-31 01:50:40,227 - ERROR - 
+Failed indices:
+2025-12-31 01:50:40,227 - ERROR -   - clapnq/bm25
+2025-12-31 01:52:18,630 - INFO -   Building BM25 index...
+2025-12-31 01:52:18,631 - INFO - Initializing BM25 Indexer for clapnq
+2025-12-31 01:52:18,632 - INFO - Tokenizing corpus...
+2025-12-31 01:54:44,088 - INFO - Building BM25 index...
+2025-12-31 01:54:50,898 - INFO - Saving BM25 index to indices/clapnq/bm25/index.pkl...
+2025-12-31 01:54:56,597 - INFO - BM25 Indexing complete.
+2025-12-31 01:54:58,129 - INFO -   ✓ Index built successfully
+2025-12-31 01:54:58,130 - INFO - 
+================================================================================
+2025-12-31 01:54:58,130 - INFO - SUMMARY
+2025-12-31 01:54:58,131 - INFO - ================================================================================
+2025-12-31 01:54:58,131 - INFO - Total indices: 1
+2025-12-31 01:54:58,131 - INFO - Successful: 1
+2025-12-31 01:54:58,132 - INFO - Failed: 0
+2025-12-31 01:54:58,132 - INFO - 
+✓ All indices built successfully!

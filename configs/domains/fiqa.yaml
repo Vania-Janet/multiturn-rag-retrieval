@@ -1,6 +1,6 @@
 # Domain-specific configuration for FiQA
 data:
-  query_file: "data/retrieval_tasks/fiqa/fiqa_questions.jsonl"
+  query_file: "data/retrieval_tasks/fiqa/fiqa_tasks.jsonl"
   qrels_file: "data/retrieval_tasks/fiqa/qrels/dev.tsv"
   corpus_path: "data/passage_level_processed/fiqa"
 

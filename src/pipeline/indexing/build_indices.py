@@ -46,8 +46,13 @@ try:
         nltk.data.find('tokenizers/punkt')
     except LookupError:
         nltk.download('punkt')
+    try:
+        nltk.data.find('tokenizers/punkt_tab')
+    except LookupError:
+        nltk.download('punkt_tab')
 except ImportError:
-    pass
+    BM25Okapi = None
+    word_tokenize = None
 
 try:
     from elasticsearch import Elasticsearch, helpers
@@ -145,6 +150,9 @@ class BM25Indexer:
         self.output_dir = output_dir
         
     def build(self, documents: List[Dict[str, Any]], domain: str):
+        if BM25Okapi is None or word_tokenize is None:
+            raise ImportError("rank_bm25 and nltk are required for BM25Indexer. Please install them.")
+
         logger.info(f"Initializing BM25 Indexer for {domain}")
         
         index_dir = os.path.join(self.output_dir, domain, "bm25")

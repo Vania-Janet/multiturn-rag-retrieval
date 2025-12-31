@@ -67,9 +67,17 @@ class BGERetriever(DenseRetriever):
             self.model.half()
             
         # Load FAISS index
-        faiss_path = self.index_path / "index.faiss"
-        if not faiss_path.exists():
-            raise FileNotFoundError(f"FAISS index not found at {faiss_path}")
+        # Check for different possible filenames
+        possible_filenames = ["index.faiss", "faiss_index.bin"]
+        faiss_path = None
+        for fname in possible_filenames:
+            p = self.index_path / fname
+            if p.exists():
+                faiss_path = p
+                break
+        
+        if not faiss_path:
+            raise FileNotFoundError(f"FAISS index not found at {self.index_path} (checked {possible_filenames})")
             
         logger.info(f"Loading FAISS index from {faiss_path}")
         self.index = faiss.read_index(str(faiss_path))
@@ -90,12 +98,25 @@ class BGERetriever(DenseRetriever):
                 logger.warning(f"Failed to move FAISS index to GPU: {e}. Continuing with CPU index.")
         
         # Load Doc IDs
-        ids_path = self.index_path / "doc_ids.json"
-        if not ids_path.exists():
-            raise FileNotFoundError(f"Doc IDs not found at {ids_path}")
+        # Check for different possible filenames
+        possible_id_filenames = ["doc_ids.json", "documents.pkl"]
+        ids_path = None
+        for fname in possible_id_filenames:
+            p = self.index_path / fname
+            if p.exists():
+                ids_path = p
+                break
+                
+        if not ids_path:
+            raise FileNotFoundError(f"Doc IDs not found at {self.index_path} (checked {possible_id_filenames})")
             
-        with open(ids_path, 'r') as f:
-            self.doc_ids = json.load(f)
+        if ids_path.suffix == '.json':
+            with open(ids_path, 'r') as f:
+                self.doc_ids = json.load(f)
+        elif ids_path.suffix == '.pkl':
+            import pickle
+            with open(ids_path, 'rb') as f:
+                self.doc_ids = pickle.load(f)
             
         if len(self.doc_ids) != self.index.ntotal:
             logger.warning(f"Index size ({self.index.ntotal}) does not match doc IDs count ({len(self.doc_ids)})")

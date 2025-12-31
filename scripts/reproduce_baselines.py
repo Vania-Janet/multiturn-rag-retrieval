@@ -33,8 +33,8 @@ from utils.logger import setup_logger
 
 
 BASELINES = [
-    "A0_baseline_sparse",
-    "A1_dense_baseline",
+    "replication_bm25",
+    "replication_bgem3",
 ]
 
 DOMAINS = ["clapnq", "fiqa", "govt", "cloud"]

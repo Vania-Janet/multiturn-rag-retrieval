@@ -32,7 +32,7 @@ def reciprocal_rank_fusion(
     
     for result_list in result_lists:
         for rank, result in enumerate(result_list, start=1):
-            doc_id = result["doc_id"]
+            doc_id = result["id"]
             rrf_scores[doc_id] += 1.0 / (k + rank)
             
             # Keep document info from first occurrence
@@ -50,7 +50,7 @@ def reciprocal_rank_fusion(
     fused_results = []
     for doc_id, rrf_score in sorted_docs:
         result = doc_info[doc_id].copy()
-        result["rrf_score"] = rrf_score
+        result["score"] = rrf_score
         result["fusion_method"] = "rrf"
         fused_results.append(result)
     
@@ -90,10 +90,10 @@ def linear_combination(
         score_range = max_score - min_score
         
         if score_range == 0:
-            return {r["doc_id"]: 1.0 for r in results}
+            return {r["id"]: 1.0 for r in results}
         
         return {
-            r["doc_id"]: (r["score"] - min_score) / score_range 
+            r["id"]: (r["score"] - min_score) / score_range 
             for r in results
         }
     
@@ -107,8 +107,8 @@ def linear_combination(
     
     # Store document info
     for result in sparse_results + dense_results:
-        if result["doc_id"] not in doc_info:
-            doc_info[result["doc_id"]] = result
+        if result["id"] not in doc_info:
+            doc_info[result["id"]] = result
     
     # Calculate combined scores
     for doc_id in all_doc_ids:
@@ -173,10 +173,10 @@ def weighted_sum_fusion(
         score_range = max_score - min_score
         
         if score_range == 0:
-            normalized = {r["doc_id"]: 1.0 for r in results}
+            normalized = {r["id"]: 1.0 for r in results}
         else:
             normalized = {
-                r["doc_id"]: (r["score"] - min_score) / score_range
+                r["id"]: (r["score"] - min_score) / score_range
                 for r in results
             }
         
@@ -188,9 +188,9 @@ def weighted_sum_fusion(
     
     for results in result_lists:
         for result in results:
-            all_doc_ids.add(result["doc_id"])
-            if result["doc_id"] not in doc_info:
-                doc_info[result["doc_id"]] = result
+            all_doc_ids.add(result["id"])
+            if result["id"] not in doc_info:
+                doc_info[result["id"]] = result
     
     # Calculate weighted scores
     weighted_scores = {}

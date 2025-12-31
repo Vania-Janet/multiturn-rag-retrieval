@@ -87,11 +87,35 @@ class ELSERRetriever(SparseRetriever):
         self.es_user = os.getenv("ELASTICSEARCH_USER")
         self.es_password = os.getenv("ELASTICSEARCH_PASSWORD")
         self.domain = config.get("domain")
-        self.index_name = f"mt-rag-{self.domain}-elser"
+        # Use the exact index name format from the user's data
+        # e.g., mt-rag-clapnq-elser-512-100-20240503
+        # We will try to find the correct index name by pattern matching if possible
+        # or fallback to a constructed name
+        
+        # Try to find index matching pattern
+        try:
+            indices = self.es.cat.indices(format="json")
+            matching_indices = [
+                i['index'] for i in indices 
+                if f"mt-rag-{self.domain}-elser" in i['index']
+            ]
+            if matching_indices:
+                # Sort by date/length to get most specific/recent
+                self.index_name = sorted(matching_indices)[-1]
+                logger.info(f"Found ELSER index: {self.index_name}")
+            else:
+                self.index_name = f"mt-rag-{self.domain}-elser"
+                logger.warning(f"No matching index found, using default: {self.index_name}")
+        except Exception as e:
+            logger.warning(f"Failed to list indices: {e}")
+            self.index_name = f"mt-rag-{self.domain}-elser"
+
         self.model_id = ".elser_model_2"
         
         if not self.es_url:
-            raise ValueError("ELASTICSEARCH_URL environment variable not set")
+            # Fallback for local testing if env var not set
+            self.es_url = "http://localhost:9200"
+            logger.warning("ELASTICSEARCH_URL not set, defaulting to localhost:9200")
             
         self.es = Elasticsearch(
             self.es_url,
