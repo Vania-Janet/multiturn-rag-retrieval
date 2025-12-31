@@ -3,7 +3,7 @@ import os
 import pytrec_eval
 import argparse
 import csv, json
-# from judge_utils import *  # TODO: Module not found, commented out
+import pandas as pd
 
 def evaluate(qrels: Dict[str, Dict[str, int]], 
                  results: Dict[str, Dict[str, float]], 
@@ -33,25 +33,28 @@ def evaluate(qrels: Dict[str, Dict[str, int]],
         ndcg_string = "ndcg_cut." + ",".join([str(k) for k in k_values])
         recall_string = "recall." + ",".join([str(k) for k in k_values])
         precision_string = "P." + ",".join([str(k) for k in k_values])
-        # evaluator = pytrec_eval.RelevanceEvaluator(qrels, {map_string, ndcg_string, recall_string, precision_string})
-        evaluator = pytrec_eval.RelevanceEvaluator(qrels, {ndcg_string, recall_string})
+        
+        evaluator = pytrec_eval.RelevanceEvaluator(qrels, {map_string, ndcg_string, recall_string, precision_string})
         scores = evaluator.evaluate(results)
         
         for query_id in scores.keys():
             for k in k_values:
                 ndcg[f"NDCG@{k}"] += scores[query_id]["ndcg_cut_" + str(k)]
                 recall[f"Recall@{k}"] += scores[query_id]["recall_" + str(k)]
+                _map[f"MAP@{k}"] += scores[query_id]["map_cut_" + str(k)]
+                precision[f"P@{k}"] += scores[query_id]["P_" + str(k)]
         
         for k in k_values:
             ndcg[f"NDCG@{k}"] = round(ndcg[f"NDCG@{k}"]/len(scores), 5)
             recall[f"Recall@{k}"] = round(recall[f"Recall@{k}"]/len(scores), 5)
+            _map[f"MAP@{k}"] = round(_map[f"MAP@{k}"]/len(scores), 5)
+            precision[f"P@{k}"] = round(precision[f"P@{k}"]/len(scores), 5)
 
         return scores, ndcg, _map, recall, precision
     
 
-def compute_results(results, qrels):
+def compute_results(results, qrels, k_values: List[int] = [1, 3, 5, 10, 20, 100]):
 
-    k_values = [1, 3, 5, 10]
     if len(results) == 0:
         ndcg = _map = recall = precision = mrr = {i: '-' for i in k_values}
     else:
@@ -60,6 +63,8 @@ def compute_results(results, qrels):
     scores_global = {}
     scores_global[f"nDCG"] = list(ndcg.values())
     scores_global[f"Recall"] = list(recall.values())
+    scores_global[f"MAP"] = list(_map.values())
+    scores_global[f"Precision"] = list(precision.values())
     
     return scores_global, scores_per_query_id
    
@@ -102,7 +107,7 @@ def prepare_results_dict(input_file):
 
 def enrich_json_retrieval(input_file, scores_per_instance, output_file):
  
-    retrieval_predictions_pd = read_json_with_pandas(filepath=f"{input_file}")
+    retrieval_predictions_pd = pd.read_json(input_file, lines=True)
     
     retrieval_predictions_pd['retriever_scores'] = retrieval_predictions_pd['task_id'].map(scores_per_instance)
     retrieval_predictions_pd["retriever_scores"] = retrieval_predictions_pd["retriever_scores"].apply(lambda x: {} if pd.isna(x) else x)

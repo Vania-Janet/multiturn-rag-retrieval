@@ -55,16 +55,16 @@ EXPERIMENTS = [
     "hybrid_elser_bgem3_r1",
     "hybrid_elser_voyage_norewrite",
     "hybrid_elser_voyage_r1",
-    "A7_domain_gated",
+    # "A7_domain_gated",  # Future Work
     # Iterative
-    "A8_iterative_refinement",
+    # "A8_iterative_refinement",  # Future Work
     # Reranking
     "hybrid_cohere_norewrite",
     "hybrid_cohere_r1",
     "bgem3_cohere_norewrite",
     # Fine-tuned
-    "A10_finetuned_reranker",
-    "A11_finetuned_splade",
+    # "A10_finetuned_reranker",  # Future Work
+    # "A11_finetuned_splade",  # Future Work
 ]
 
 # Mapping of experiments to subdirectories (FIXED: Match actual directory names)
@@ -90,16 +90,16 @@ EXPERIMENT_DIRS = {
     "hybrid_elser_bgem3_r1": "02-hybrid",
     "hybrid_elser_voyage_norewrite": "02-hybrid",
     "hybrid_elser_voyage_r1": "02-hybrid",
-    "A7_domain_gated": "02-hybrid",
+    # "A7_domain_gated": "02-hybrid",  # Future Work
     # Iterative
-    "A8_iterative_refinement": "04-iterative",
+    # "A8_iterative_refinement": "04-iterative",  # Future Work
     # Reranking
     "hybrid_cohere_norewrite": "03-rerank",
     "hybrid_cohere_r1": "03-rerank",
     "bgem3_cohere_norewrite": "03-rerank",
     # Fine-tuned
-    "A10_finetuned_reranker": "05-finetune",
-    "A11_finetuned_splade": "05-finetune",
+    # "A10_finetuned_reranker": "05-finetune",  # Future Work
+    # "A11_finetuned_splade": "05-finetune",  # Future Work
 }
 
 

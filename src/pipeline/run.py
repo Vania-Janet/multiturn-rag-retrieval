@@ -95,7 +95,7 @@ def load_corpus(corpus_path: Union[str, Path]) -> Dict[str, str]:
     logger.info(f"Loaded {len(corpus)} documents")
     return corpus
 
-def run_pipeline(config: Dict[str, Any], output_dir: Path, domain: str, force: bool = False, baseline_path: Optional[Path] = None):
+def run_pipeline(config: Dict[str, Any], output_dir: Path, domain: str, force: bool = False, baseline_path: Optional[Path] = None, num_comparisons: int = 1):
     """
     Run the full retrieval pipeline:
     1. Setup & Seeding
@@ -380,7 +380,26 @@ def run_pipeline(config: Dict[str, Any], output_dir: Path, domain: str, force: b
     for r in results:
         results_dict[r["task_id"]] = {ctx["document_id"]: ctx["score"] for ctx in r["contexts"]}
         
-    scores_global, scores_per_query = compute_results(results_dict, qrels)
+    # Extract k_values from config
+    metrics_config = config.get("evaluation", {}).get("metrics", [])
+    k_values = set()
+    for m in metrics_config:
+        if "@" in m:
+            try:
+                k = int(m.split("@")[1])
+                k_values.add(k)
+            except ValueError:
+                pass
+    
+    if not k_values:
+        k_values = {1, 3, 5, 10, 20, 100}
+    
+    # Ensure 5 and 10 are always present for analysis
+    k_values.add(5)
+    k_values.add(10)
+    k_values = sorted(list(k_values))
+
+    scores_global, scores_per_query = compute_results(results_dict, qrels, k_values=k_values)
     
     # Save metrics
     metrics_file = output_dir / "metrics.json"
@@ -404,22 +423,31 @@ def run_pipeline(config: Dict[str, Any], output_dir: Path, domain: str, force: b
             "turn": r["turn_id"],
             "collection": r["Collection"],
             "ndcg_at_10": metrics.get("ndcg_cut_10", 0.0),
-            "recall_at_10": metrics.get("recall_10", 0.0)
+            "recall_at_10": metrics.get("recall_10", 0.0),
+            "ndcg_at_5": metrics.get("ndcg_cut_5", 0.0),
+            "recall_at_5": metrics.get("recall_5", 0.0),
+            "recall_at_20": metrics.get("recall_20", 0.0),
+            "recall_at_100": metrics.get("recall_100", 0.0),
+            "precision_at_5": metrics.get("P_5", 0.0),
+            "precision_at_10": metrics.get("P_10", 0.0)
         }
         data_for_df.append(row)
         
     df_results = pd.DataFrame(data_for_df)
     
+    # Use NDCG@5 for primary analysis as requested
+    primary_metric = "ndcg_at_5"
+    
     analysis_report = {
         "latency": latency_monitor.report(),
-        "hard_failures": analyze_hard_failures(df_results, metric_col="ndcg_at_10").to_dict(orient="records"),
-        "performance_by_turn": analyze_performance_by_turn(df_results, metric_col="ndcg_at_10", turn_col="turn").to_dict()
+        "hard_failures": analyze_hard_failures(df_results, metric_col=primary_metric).to_dict(orient="records"),
+        "performance_by_turn": analyze_performance_by_turn(df_results, metric_col=primary_metric, turn_col="turn").to_dict()
     }
     
-    # Bootstrap CI for NDCG@10
-    ndcg_10_scores = df_results["ndcg_at_10"].tolist()
-    ci_lower, ci_upper = bootstrap_confidence_interval(ndcg_10_scores)
-    analysis_report["bootstrap_ci_ndcg_10"] = {"lower": ci_lower, "upper": ci_upper}
+    # Bootstrap CI for NDCG@5
+    ndcg_5_scores = df_results[primary_metric].tolist()
+    ci_lower, ci_upper = bootstrap_confidence_interval(ndcg_5_scores)
+    analysis_report[f"bootstrap_ci_{primary_metric}"] = {"lower": ci_lower, "upper": ci_upper}
     
     # Significance Testing (Wilcoxon)
     if baseline_path and Path(baseline_path).exists():
@@ -429,8 +457,7 @@ def run_pipeline(config: Dict[str, Any], output_dir: Path, domain: str, force: b
             baseline_results, _ = prepare_results_dict(baseline_path)
             
             # Evaluate baseline with SAME qrels
-            # Note: compute_results returns (scores_global, scores_per_query)
-            _, baseline_scores_per_query = compute_results(baseline_results, qrels)
+            _, baseline_scores_per_query = compute_results(baseline_results, qrels, k_values=k_values)
             
             # Align scores
             current_ndcg = []
@@ -438,18 +465,30 @@ def run_pipeline(config: Dict[str, Any], output_dir: Path, domain: str, force: b
             
             for qid in scores_per_query:
                 if qid in baseline_scores_per_query:
-                    current_ndcg.append(scores_per_query[qid].get("ndcg_cut_10", 0.0))
-                    baseline_ndcg.append(baseline_scores_per_query[qid].get("ndcg_cut_10", 0.0))
+                    current_ndcg.append(scores_per_query[qid].get("ndcg_cut_5", 0.0))
+                    baseline_ndcg.append(baseline_scores_per_query[qid].get("ndcg_cut_5", 0.0))
             
             if current_ndcg:
                 wilcoxon_results = calculate_wilcoxon_significance(baseline_ndcg, current_ndcg)
+                
+                # Apply Bonferroni Correction
+                bonferroni_results = apply_bonferroni_correction(wilcoxon_results["p_value"], num_tests=num_comparisons)
+                wilcoxon_results["bonferroni"] = bonferroni_results
+                
                 analysis_report["significance_test"] = wilcoxon_results
-                logger.info(f"Wilcoxon Test Results: {wilcoxon_results}")
+                logger.info(f"Wilcoxon Test Results (NDCG@5): {wilcoxon_results}")
             else:
                 logger.warning("No overlapping queries found between current run and baseline.")
                 
         except Exception as e:
             logger.error(f"Failed to run significance test: {e}")
+
+    # Query Variance Analysis (Turn-based)
+    try:
+        variance_by_turn = analyze_query_variance(df_results, group_by_col="turn", metric_col=primary_metric)
+        analysis_report["variance_by_turn"] = variance_by_turn.to_dict()
+    except Exception as e:
+        logger.warning(f"Could not calculate variance by turn: {e}")
 
     # Save analysis report
     analysis_file = output_dir / "analysis_report.json"
