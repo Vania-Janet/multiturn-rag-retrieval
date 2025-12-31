@@ -50,10 +50,18 @@ class BGERetriever(DenseRetriever):
     
     def __init__(self, index_path: Path, config: Dict[str, Any]):
         super().__init__(index_path, config)
-        self.model_name = config.get("model_name", "BAAI/bge-large-en-v1.5")
+        self.model_name = config.get("model_name", "BAAI/bge-base-en-v1.5")
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
         
         logger.info(f"Loading BGE model: {self.model_name} on {self.device}")
+        # Use DataParallel if multiple GPUs are available and we are on CUDA
+        if self.device == "cuda" and torch.cuda.device_count() > 1:
+            logger.info(f"Using {torch.cuda.device_count()} GPUs for encoding")
+            # SentenceTransformer handles multi-gpu via device='cuda' usually, 
+            # but for explicit parallel encoding we rely on its internal implementation or just use the primary GPU for single query latency.
+            # For retrieval (single query), using one GPU is often faster due to overhead.
+            pass
+
         self.model = SentenceTransformer(self.model_name, device=self.device)
         if self.device == "cuda":
             self.model.half()
@@ -121,5 +129,9 @@ def get_dense_retriever(
     # Map common names to BGERetriever
     if "bge" in model_name.lower():
         return BGERetriever(index_path, config)
+    
+    if "voyage" in model_name.lower():
+        from .voyage import VoyageRetriever
+        return VoyageRetriever(index_path, config)
     
     raise ValueError(f"Unknown dense retriever: {model_name}")

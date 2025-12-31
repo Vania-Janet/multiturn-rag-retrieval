@@ -168,7 +168,7 @@ def build_index(domain, model, corpus_dir, output_dir, force, batch_size, logger
             
         elif model == "bge-base-1.5":
             logger.info("  Building BGE-base-en-v1.5 index (baseline)...")
-            indexer = BGEIndexer(model_name="BAAI/bge-large-en-v1.5", output_dir=str(output_dir), index_subdir="bge")
+            indexer = BGEIndexer(model_name="BAAI/bge-base-en-v1.5", output_dir=str(output_dir), index_subdir="bge")  # FIXED: Was bge-large
             indexer.build(documents, domain)
             
         elif model == "colbert":

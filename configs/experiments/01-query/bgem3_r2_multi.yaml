@@ -1,0 +1,22 @@
+experiment:
+  name: "bgem3_r2_multi"
+  description: "BGE-M3 + R2 Multi Diverse K=3 + RRF (GPT-4o-mini)"
+
+retrieval:
+  type: "dense"
+  model_name: "BAAI/bge-m3"
+  top_k: 100
+
+query_transform:
+  enabled: true
+  rewriter_type: "llm"
+  merge_strategy: "rrf"
+  rewriter_config:
+    model_name: "gpt-4o-mini"
+    temperature: 0
+    max_rewrites: 3
+    top_p: 1
+    max_tokens: 128
+
+fusion:
+  k: 60

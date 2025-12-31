@@ -1,0 +1,15 @@
+2025-12-29 20:18:01,582 - INFO - Merging configs:
+2025-12-29 20:18:01,582 - INFO -   Base: configs/base.yaml
+2025-12-29 20:18:01,582 - INFO -   Domain: configs/domains/clapnq.yaml
+2025-12-29 20:18:01,582 - INFO -   Experiment: configs/experiments/0-baselines/replication_bm25.yaml
+2025-12-29 20:18:01,600 - INFO - ✓ Config merged successfully
+2025-12-29 20:18:25,429 - INFO - Merging configs:
+2025-12-29 20:18:25,429 - INFO -   Base: configs/base.yaml
+2025-12-29 20:18:25,429 - INFO -   Domain: configs/domains/clapnq.yaml
+2025-12-29 20:18:25,429 - INFO -   Experiment: configs/experiments/0-baselines/replication_bm25.yaml
+2025-12-29 20:18:25,440 - INFO - ✓ Config merged successfully
+2025-12-29 20:22:38,012 - INFO - Merging configs:
+2025-12-29 20:22:38,013 - INFO -   Base: configs/base.yaml
+2025-12-29 20:22:38,013 - INFO -   Domain: configs/domains/clapnq.yaml
+2025-12-29 20:22:38,013 - INFO -   Experiment: configs/experiments/0-baselines/replication_bm25.yaml
+2025-12-29 20:22:38,025 - INFO - ✓ Config merged successfully

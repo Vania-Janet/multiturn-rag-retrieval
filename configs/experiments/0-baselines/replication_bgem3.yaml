@@ -1,0 +1,14 @@
+experiment:
+  name: "replication_bgem3"
+  description: "Paper Replication: BGE M3 Baseline (Last Turn)"
+
+data:
+  query_mode: "last_turn"
+  # Override domain config to use lastturn files
+  query_file_suffix: "lastturn"
+
+retrieval:
+  type: "dense"
+  model_name: "BAAI/bge-m3"
+  query_instruction: "" # BGE M3 dense retrieval typically does not use an instruction
+  top_k: 100

@@ -9,9 +9,19 @@ This module implements various query transformation techniques including:
 """
 
 import logging
+import os
 from typing import List, Optional, Dict, Any
 from abc import ABC, abstractmethod
+from dotenv import load_dotenv
 
+try:
+    from openai import OpenAI
+    OPENAI_AVAILABLE = True
+except ImportError:
+    OPENAI_AVAILABLE = False
+    OpenAI = None
+
+load_dotenv()
 logger = logging.getLogger(__name__)
 
 
@@ -47,43 +57,105 @@ class LLMRewriter(QueryRewriter):
     Uses a language model to rephrase queries for better retrieval.
     """
     
+    SYSTEM_PROMPT = """You are an information retrieval assistant.
+Your task is to rewrite conversational user questions into standalone,
+search-optimized queries suitable for document retrieval.
+
+Follow these rules strictly:
+- Preserve the original user intent exactly.
+- Resolve all coreferences and implicit references using the conversation history.
+- Do NOT add new facts, assumptions, or external knowledge.
+- Do NOT answer the question.
+- Do NOT explain your reasoning.
+- Output ONLY the rewritten query as a single sentence."""
+    
     def __init__(
         self,
-        model_name: str = "gpt-3.5-turbo",
-        temperature: float = 0.7,
-        max_rewrites: int = 3
+        model_name: str = "gpt-4o-mini",
+        temperature: float = 0.0,
+        max_rewrites: int = 1,
+        top_p: float = 1.0,
+        max_tokens: int = 100
     ):
         self.model_name = model_name
         self.temperature = temperature
         self.max_rewrites = max_rewrites
+        self.top_p = top_p
+        self.max_tokens = max_tokens
+        
+        if not OPENAI_AVAILABLE:
+            logger.warning("OpenAI not installed. Install with: pip install openai")
+            self.client = None
+        else:
+            api_key = os.getenv("OPENAI_API_KEY")
+            if not api_key:
+                logger.warning("OPENAI_API_KEY not found in environment")
+                self.client = None
+            else:
+                self.client = OpenAI(api_key=api_key)
         
     def rewrite(self, query: str, context: Optional[List[str]] = None) -> List[str]:
-        """Generate multiple query variations using LLM."""
+        """Generate query variations using LLM."""
         
-        prompt = self._build_prompt(query, context)
+        if not self.client:
+            logger.warning("OpenAI client not available - returning original query")
+            return [query]
         
-        # TODO: Implement actual LLM call
-        # For now, return original query
-        logger.warning("LLMRewriter not fully implemented - returning original query")
-        return [query]
+        try:
+            user_prompt = self._build_user_prompt(query, context)
+            
+            response = self.client.chat.completions.create(
+                model=self.model_name,
+                messages=[
+                    {"role": "system", "content": self.SYSTEM_PROMPT},
+                    {"role": "user", "content": user_prompt}
+                ],
+                temperature=self.temperature,
+                top_p=self.top_p,
+                max_tokens=self.max_tokens,
+                n=1
+            )
+            
+            content = response.choices[0].message.content.strip()
+            
+            if self.max_rewrites == 1:
+                return [content]
+            else:
+                queries = [line.strip() for line in content.split('\n') if line.strip()]
+                return queries[:self.max_rewrites] if queries else [query]
+                
+        except Exception as e:
+            logger.error(f"LLM rewriting failed: {e}")
+            return [query]
     
-    def _build_prompt(self, query: str, context: Optional[List[str]] = None) -> str:
-        """Build prompt for query rewriting."""
+    def _build_user_prompt(self, query: str, context: Optional[List[str]] = None) -> str:
+        """Build user prompt for query rewriting."""
         
-        base_prompt = f"""Rewrite the following query into {self.max_rewrites} variations that preserve the intent but use different wording. This will help retrieve relevant documents.
-
-Original query: {query}
-
-Generate {self.max_rewrites} alternative phrasings:"""
+        conversation_history = ""
+        if context and len(context) > 0:
+            conversation_history = "\n".join(context[-6:])
+        else:
+            conversation_history = "(No prior conversation)"
         
-        if context:
-            context_str = "\n".join(f"- {c}" for c in context[-3:])
-            base_prompt = f"""Conversation context:
-{context_str}
+        if self.max_rewrites == 1:
+            return f"""Conversation history:
+{conversation_history}
 
-{base_prompt}"""
-        
-        return base_prompt
+Current user question:
+{query}
+
+Rewrite the current question into a standalone, context-complete query
+that can be used directly for document retrieval."""
+        else:
+            return f"""Conversation history:
+{conversation_history}
+
+Current user question:
+{query}
+
+Generate {self.max_rewrites} different rewritten standalone queries that preserve the same intent
+but vary in phrasing or focus. Each query must be suitable for document retrieval.
+Return each query on a separate line. Do not number them."""
 
 
 class QueryDecomposer(QueryRewriter):
@@ -111,8 +183,44 @@ class ContextualRewriter(QueryRewriter):
     Resolves pronouns and references from previous turns.
     """
     
-    def __init__(self, model_name: str = "gpt-3.5-turbo"):
+    SYSTEM_PROMPT = """You are an information retrieval assistant.
+Your task is to rewrite conversational user questions into standalone,
+search-optimized queries suitable for document retrieval.
+
+Follow these rules strictly:
+- Preserve the original user intent exactly.
+- Resolve all coreferences and implicit references using the conversation history.
+- Do NOT add new facts, assumptions, or external knowledge.
+- Do NOT answer the question.
+- Do NOT explain your reasoning.
+- Output ONLY the rewritten query as a single sentence."""
+    
+    def __init__(
+        self,
+        model_name: str = "gpt-4o-mini",
+        temperature: float = 0.0,
+        top_p: float = 1.0,
+        max_tokens: int = 100,
+        include_context: bool = True,
+        context_turns: int = 3
+    ):
         self.model_name = model_name
+        self.temperature = temperature
+        self.top_p = top_p
+        self.max_tokens = max_tokens
+        self.include_context = include_context
+        self.context_turns = context_turns
+        
+        if not OPENAI_AVAILABLE:
+            logger.warning("OpenAI not installed. Install with: pip install openai")
+            self.client = None
+        else:
+            api_key = os.getenv("OPENAI_API_KEY")
+            if not api_key:
+                logger.warning("OPENAI_API_KEY not found in environment")
+                self.client = None
+            else:
+                self.client = OpenAI(api_key=api_key)
         
     def rewrite(self, query: str, context: Optional[List[str]] = None) -> List[str]:
         """
@@ -124,12 +232,43 @@ class ContextualRewriter(QueryRewriter):
             Output: ["What is the population of Paris?"]
         """
         
-        if not context or len(context) == 0:
+        if not self.include_context or not context or len(context) == 0:
             return [query]
         
-        # TODO: Implement contextual rewriting
-        logger.warning("ContextualRewriter not fully implemented - returning original query")
-        return [query]
+        if not self.client:
+            logger.warning("OpenAI client not available - returning original query")
+            return [query]
+        
+        try:
+            conversation_history = "\n".join(context[-self.context_turns * 2:])
+            
+            user_prompt = f"""Conversation history:
+{conversation_history}
+
+Current user question:
+{query}
+
+Rewrite the current question into a standalone, context-complete query
+that can be used directly for document retrieval."""
+            
+            response = self.client.chat.completions.create(
+                model=self.model_name,
+                messages=[
+                    {"role": "system", "content": self.SYSTEM_PROMPT},
+                    {"role": "user", "content": user_prompt}
+                ],
+                temperature=self.temperature,
+                top_p=self.top_p,
+                max_tokens=self.max_tokens,
+                n=1
+            )
+            
+            rewritten = response.choices[0].message.content.strip()
+            return [rewritten]
+            
+        except Exception as e:
+            logger.error(f"Contextual rewriting failed: {e}")
+            return [query]
 
 
 class TemplateRewriter(QueryRewriter):
@@ -167,29 +306,92 @@ class HyDERewriter(QueryRewriter):
     Hypothetical Document Embeddings (HyDE).
     
     Generates a hypothetical answer to the query, then uses that for retrieval.
+    Instead of searching with the question, we search with a hypothetical document
+    that would answer it, which often yields better semantic matching.
     
     Reference: https://arxiv.org/abs/2212.10496
     """
     
-    def __init__(self, model_name: str = "gpt-3.5-turbo"):
+    SYSTEM_PROMPT = """You are a knowledgeable assistant that writes informative passages.
+Your task is to write a concise, factual passage that would directly answer the given question.
+
+Follow these rules strictly:
+- Write as if you are a document that contains the answer.
+- Be specific and factual.
+- Keep the passage between 2-4 sentences.
+- Use natural language suitable for document retrieval.
+- Do NOT include phrases like "The answer is" or "According to".
+- Do NOT use conversational language.
+- Write in a neutral, encyclopedic style."""
+    
+    def __init__(
+        self,
+        model_name: str = "gpt-4o-mini",
+        temperature: float = 0.0,
+        top_p: float = 1.0,
+        max_tokens: int = 150
+    ):
         self.model_name = model_name
+        self.temperature = temperature
+        self.top_p = top_p
+        self.max_tokens = max_tokens
+        
+        if not OPENAI_AVAILABLE:
+            logger.warning("OpenAI not installed. Install with: pip install openai")
+            self.client = None
+        else:
+            api_key = os.getenv("OPENAI_API_KEY")
+            if not api_key:
+                logger.warning("OPENAI_API_KEY not found in environment")
+                self.client = None
+            else:
+                self.client = OpenAI(api_key=api_key)
         
     def rewrite(self, query: str, context: Optional[List[str]] = None) -> List[str]:
         """
         Generate hypothetical document that would answer the query.
         
-        Returns both original query and generated document.
+        Returns the generated hypothetical passage for retrieval.
         """
         
-        prompt = f"""Write a brief passage that would answer the following question:
+        if not self.client:
+            logger.warning("OpenAI client not available - returning original query")
+            return [query]
+        
+        try:
+            # Build user prompt
+            user_prompt = f"""Question: {query}
+
+Write a passage that would answer this question."""
+            
+            # If context provided, resolve references first
+            if context and len(context) > 0:
+                context_str = "\n".join(context[-4:])
+                user_prompt = f"""Conversation context:
+{context_str}
 
 Question: {query}
 
-Passage:"""
-        
-        # TODO: Implement actual LLM call to generate hypothetical document
-        logger.warning("HyDERewriter not fully implemented - returning original query")
-        return [query]
+Write a passage that would answer this question, taking into account the conversation context."""
+            
+            response = self.client.chat.completions.create(
+                model=self.model_name,
+                messages=[
+                    {"role": "system", "content": self.SYSTEM_PROMPT},
+                    {"role": "user", "content": user_prompt}
+                ],
+                temperature=self.temperature,
+                top_p=self.top_p,
+                max_tokens=self.max_tokens,
+                n=1
+            )
+            
+            hypothetical_doc = response.choices[0].message.content.strip()
+            return [hypothetical_doc]
+            
+        except Exception as e:
+            logger.error(f"HyDE generation failed: {e}")
+            return [query]
 
 
 def get_rewriter(rewriter_type: str, **kwargs) -> QueryRewriter:

@@ -83,7 +83,7 @@ def load_corpus(domain: str, processed_dir: str) -> List[Dict[str, Any]]:
     return documents
 
 class BGEIndexer:
-    def __init__(self, model_name: str = "BAAI/bge-large-en-v1.5", output_dir: str = "indices", index_subdir: str = "bge"):
+    def __init__(self, model_name: str = "BAAI/bge-base-en-v1.5", output_dir: str = "indices", index_subdir: str = "bge"):
         self.model_name = model_name
         self.output_dir = output_dir
         self.index_subdir = index_subdir
@@ -294,7 +294,7 @@ def main():
             documents = load_corpus(domain, args.data_dir)
             
             if "bge" in args.models:
-                indexer = BGEIndexer(model_name="BAAI/bge-large-en-v1.5", output_dir=args.output_dir, index_subdir="bge")
+                indexer = BGEIndexer(model_name="BAAI/bge-base-en-v1.5", output_dir=args.output_dir, index_subdir="bge")
                 indexer.build(documents, domain)
                 
             if "bge-m3" in args.models:

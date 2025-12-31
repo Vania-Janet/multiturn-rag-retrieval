@@ -1,0 +1,22 @@
+experiment:
+  name: "bm25_r2_multi"
+  description: "BM25 + R2 Multi Diverse K=3 + RRF (GPT-4o-mini)"
+
+retrieval:
+  type: "sparse"
+  method: "bm25"
+  top_k: 100
+
+query_transform:
+  enabled: true
+  rewriter_type: "llm"
+  merge_strategy: "rrf"
+  rewriter_config:
+    model_name: "gpt-4o-mini"
+    temperature: 0
+    max_rewrites: 3
+    top_p: 1
+    max_tokens: 128
+
+fusion:
+  k: 60
