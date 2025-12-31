@@ -20,9 +20,41 @@ from .retrieval import (
     bootstrap_confidence_interval,
     apply_bonferroni_correction
 )
+from .query_transform import get_rewriter
+from .reranking import CohereReranker
 from .evaluation.run_retrieval_eval import compute_results, load_qrels
 
 logger = logging.getLogger(__name__)
+
+def apply_rrf(result_lists: List[List[Dict[str, Any]]], k: int = 60, top_k: int = 100) -> List[Dict[str, Any]]:
+    """
+    Apply Reciprocal Rank Fusion to merge multiple ranked lists.
+    
+    Args:
+        result_lists: List of retrieval result lists, each containing dicts with 'id' and 'score'
+        k: RRF parameter (default 60)
+        top_k: Number of results to return
+        
+    Returns:
+        Merged and re-ranked results
+    """
+    rrf_scores = {}
+    
+    for results in result_lists:
+        for rank, result in enumerate(results, start=1):
+            doc_id = result["id"]
+            rrf_score = 1.0 / (k + rank)
+            rrf_scores[doc_id] = rrf_scores.get(doc_id, 0.0) + rrf_score
+    
+    # Sort by RRF score and return top_k
+    sorted_docs = sorted(rrf_scores.items(), key=lambda x: x[1], reverse=True)[:top_k]
+    
+    # Format results
+    merged_results = []
+    for doc_id, score in sorted_docs:
+        merged_results.append({"id": doc_id, "score": score})
+    
+    return merged_results
 
 def load_queries(query_file: str) -> List[Dict[str, Any]]:
     """Load queries from a JSONL file."""
@@ -63,7 +95,7 @@ def load_corpus(corpus_path: Union[str, Path]) -> Dict[str, str]:
     logger.info(f"Loaded {len(corpus)} documents")
     return corpus
 
-def run_pipeline(config: Dict[str, Any], output_dir: Path, domain: str):
+def run_pipeline(config: Dict[str, Any], output_dir: Path, domain: str, force: bool = False):
     """
     Run the full retrieval pipeline:
     1. Setup & Seeding
@@ -80,9 +112,21 @@ def run_pipeline(config: Dict[str, Any], output_dir: Path, domain: str):
     
     output_dir.mkdir(parents=True, exist_ok=True)
     
+    # Setup query transformation if enabled
+    query_rewriter = None
+    if config.get("query_transform", {}).get("enabled", False):
+        rewriter_type = config["query_transform"].get("rewriter_type", "identity")
+        rewriter_config = config["query_transform"].get("rewriter_config", {})
+        query_rewriter = get_rewriter(rewriter_type, **rewriter_config)
+        logger.info(f"Query transformation enabled: {rewriter_type}")
+    
     # 2. Initialize Retriever
     retrieval_type = config.get("retrieval", {}).get("type", "sparse")
     logger.info(f"Initializing {retrieval_type} retriever for domain {domain}")
+    
+    # Inject domain into retrieval config for retrievers that need it (like ELSER)
+    if "retrieval" in config:
+        config["retrieval"]["domain"] = domain
     
     if retrieval_type == "sparse":
         method = config["retrieval"].get("method", "bm25")
@@ -100,7 +144,7 @@ def run_pipeline(config: Dict[str, Any], output_dir: Path, domain: str):
             config=config["retrieval"]
         )
     elif retrieval_type == "dense":
-        model_name = config["retrieval"].get("model_name", "BAAI/bge-large-en-v1.5")
+        model_name = config["retrieval"].get("model_name", "BAAI/bge-base-en-v1.5")
         
         # Determine default index path based on model
         if "bge-m3" in model_name.lower():
@@ -118,18 +162,45 @@ def run_pipeline(config: Dict[str, Any], output_dir: Path, domain: str):
             config=config["retrieval"]
         )
     elif retrieval_type == "hybrid":
-        # Example hybrid setup - would need more specific config handling in a real scenario
+        # Hybrid retrieval combining sparse and dense
+        sparse_method = config["retrieval"].get("sparse", {}).get("method", "bm25")
+        sparse_index = f"indices/{domain}/{sparse_method}"
+        
+        dense_model = config["retrieval"].get("dense", {}).get("model_name", "BAAI/bge-base-en-v1.5")
+        
+        # Handle Voyage model selection logic
+        if "voyage" in dense_model.lower():
+            if domain == "fiqa":
+                dense_model = "voyage-finance-2"
+            else:
+                dense_model = "voyage-large-2"
+            # Update config with selected model so retriever gets correct name
+            config["retrieval"]["dense"]["model_name"] = dense_model
+            dense_index = f"indices/{domain}/voyage"
+        elif "bge-m3" in dense_model.lower():
+            dense_index = f"indices/{domain}/bge-m3"
+        else:
+            dense_index = f"indices/{domain}/bge"
+
         sparse = get_sparse_retriever(
-            method="bm25", 
-            index_name=f"{domain}_sparse",
+            model_name=sparse_method,
+            index_path=sparse_index,
             config=config["retrieval"].get("sparse", {})
         )
         dense = get_dense_retriever(
-            model_name="BAAI/bge-large-en-v1.5",
-            index_path=f"indices/{domain}/dense",
+            model_name=dense_model,
+            index_path=dense_index,
             config=config["retrieval"].get("dense", {})
         )
-        retriever = HybridRetriever(sparse, dense, alpha=config["retrieval"].get("alpha", 0.5))
+        # FIXED: Use sparse_weight/dense_weight instead of alpha
+        alpha = config["retrieval"].get("alpha", 0.5)
+        retriever = HybridRetriever(
+            sparse, 
+            dense, 
+            fusion_method="rrf",  # Can be "rrf" or "linear"
+            sparse_weight=alpha,
+            dense_weight=1-alpha
+        )
     else:
         raise ValueError(f"Unknown retrieval type: {retrieval_type}")
 
@@ -167,6 +238,9 @@ def run_pipeline(config: Dict[str, Any], output_dir: Path, domain: str):
         if "text" in query:
             # BEIR format - text is already prepared
             query_text = query["text"]
+            # Clean artifacts like |user|: if present
+            if query_text:
+                query_text = query_text.replace("|user|:", "").replace("|agent|:", "").replace("|model|:", "").strip()
             # Note: query_mode is ignored for BEIR format since text is pre-processed
         elif "input" in query:
             # Full history format - need to process based on query_mode
@@ -205,11 +279,39 @@ def run_pipeline(config: Dict[str, Any], output_dir: Path, domain: str):
             logger.warning(f"Could not extract query for task {query_id}")
             continue
         
+        # Apply query transformation if enabled
+        queries_to_retrieve = [query_text]
+        if query_rewriter:
+            conversation_context = None
+            # Pass context to rewriters that support it
+            if "input" in query and query_rewriter.__class__.__name__ in ["ContextualRewriter", "LLMRewriter", "HyDERewriter"]:
+                conversation_context = [turn["text"] for turn in query.get("input", [])[:-1]]
+            
+            queries_to_retrieve = query_rewriter.rewrite(query_text, context=conversation_context)
+            logger.debug(f"Rewrote query into {len(queries_to_retrieve)} variants")
+        
+        # Handle multiple query variants
+        all_retrieved_results = []
+        merge_strategy = config.get("query_transform", {}).get("merge_strategy", "replace")
+        
         with latency_monitor:
-            # Retrieve top-k
             top_k = config["retrieval"].get("top_k", 100)
-            # Use retrieve() instead of search()
-            retrieved_results = retriever.retrieve(query_text, top_k=top_k)
+            
+            if merge_strategy == "replace" or len(queries_to_retrieve) == 1:
+                retrieved_results = retriever.retrieve(queries_to_retrieve[0], top_k=top_k)
+            elif merge_strategy == "rrf":
+                # Retrieve for each variant and fuse with RRF
+                all_results = []
+                for variant_query in queries_to_retrieve:
+                    variant_results = retriever.retrieve(variant_query, top_k=top_k)
+                    all_results.append(variant_results)
+                
+                # Apply Reciprocal Rank Fusion
+                rrf_k = config.get("fusion", {}).get("k", 60)
+                retrieved_results = apply_rrf(all_results, rrf_k, top_k)
+            else:
+                logger.warning(f"Unknown merge_strategy: {merge_strategy}, using first query only")
+                retrieved_results = retriever.retrieve(queries_to_retrieve[0], top_k=top_k)
         
         # Format result
         contexts = []
@@ -218,6 +320,34 @@ def run_pipeline(config: Dict[str, Any], output_dir: Path, domain: str):
             score = res["score"]
             text = corpus.get(doc_id, "")
             contexts.append({"document_id": doc_id, "score": score, "text": text})
+
+        # Apply Reranking if enabled
+        if config.get("reranking", {}).get("enabled", False):
+            reranker_type = config["reranking"].get("type", "cohere")
+            if reranker_type == "cohere":
+                reranker = CohereReranker(
+                    model_name=config["reranking"].get("model_name", "rerank-english-v3.0"),
+                    config=config["reranking"]
+                )
+                # Rerank the contexts
+                # Convert contexts to format expected by reranker (list of dicts with 'text')
+                # Note: contexts already has 'text' field
+                reranked_contexts = reranker.rerank(
+                    query=query_text,
+                    documents=contexts,
+                    top_k=config["reranking"].get("top_k", 100)
+                )
+                
+                # Update contexts with reranked results
+                # Map back to our format
+                contexts = []
+                for res in reranked_contexts:
+                    contexts.append({
+                        "document_id": res["document_id"],
+                        "score": res["score"],
+                        "text": res["text"]
+                    })
+                logger.debug(f"Reranked {len(contexts)} documents")
 
         result_entry = {
             "task_id": query_id,

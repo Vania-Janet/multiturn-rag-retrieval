@@ -19,47 +19,30 @@ class HybridRetriever:
     
     def __init__(
         self,
-        sparse_config: Dict[str, Any],
-        dense_config: Dict[str, Any],
+        sparse_retriever: SparseRetriever,
+        dense_retriever: DenseRetriever,
         fusion_method: str = "rrf",
-        fusion_params: Optional[Dict[str, Any]] = None
+        fusion_params: Optional[Dict[str, Any]] = None,
+        sparse_weight: float = 0.5,
+        dense_weight: float = 0.5
     ):
         """
         Initialize hybrid retriever.
         
         Args:
-            sparse_config: Configuration for sparse retriever
-                {
-                    "model": "splade",
-                    "index_path": "indices/clapnq/splade",
-                    "weight": 0.6
-                }
-            dense_config: Configuration for dense retriever
-                {
-                    "model": "bge-m3",
-                    "index_path": "indices/clapnq/bge-m3",
-                    "weight": 0.4
-                }
+            sparse_retriever: Initialized sparse retriever instance
+            dense_retriever: Initialized dense retriever instance
             fusion_method: Method to combine results ("rrf" or "linear")
-            fusion_params: Additional parameters for fusion
+            fusion_params: Additional parameters for fusion (e.g., {"k": 60} for RRF)
+            sparse_weight: Weight for sparse results in linear fusion (default: 0.5)
+            dense_weight: Weight for dense results in linear fusion (default: 0.5)
         """
-        self.sparse_config = sparse_config
-        self.dense_config = dense_config
+        self.sparse_retriever = sparse_retriever
+        self.dense_retriever = dense_retriever
         self.fusion_method = fusion_method
         self.fusion_params = fusion_params or {}
-        
-        # Initialize retrievers
-        self.sparse_retriever = get_sparse_retriever(
-            model_name=sparse_config["model"],
-            index_path=Path(sparse_config["index_path"]),
-            config=sparse_config
-        )
-        
-        self.dense_retriever = get_dense_retriever(
-            model_name=dense_config["model"],
-            index_path=Path(dense_config["index_path"]),
-            config=dense_config
-        )
+        self.sparse_weight = sparse_weight
+        self.dense_weight = dense_weight
     
     def retrieve(self, query: str, top_k: int = 100) -> List[Dict[str, Any]]:
         """
@@ -72,17 +55,11 @@ class HybridRetriever:
         Returns:
             Fused and ranked results
         """
-        # Retrieve from sparse
-        sparse_results = self.sparse_retriever.retrieve(
-            query, 
-            top_k=self.sparse_config.get("top_k", top_k * 2)
-        )
+        # Retrieve from sparse (get more for better fusion)
+        sparse_results = self.sparse_retriever.retrieve(query, top_k=top_k * 2)
         
-        # Retrieve from dense
-        dense_results = self.dense_retriever.retrieve(
-            query,
-            top_k=self.dense_config.get("top_k", top_k * 2)
-        )
+        # Retrieve from dense (get more for better fusion)
+        dense_results = self.dense_retriever.retrieve(query, top_k=top_k * 2)
         
         # Fuse results
         if self.fusion_method == "rrf":
@@ -94,8 +71,8 @@ class HybridRetriever:
             fused_results = linear_combination(
                 sparse_results=sparse_results,
                 dense_results=dense_results,
-                sparse_weight=self.sparse_config.get("weight", 0.5),
-                dense_weight=self.dense_config.get("weight", 0.5)
+                sparse_weight=self.sparse_weight,
+                dense_weight=self.dense_weight
             )
         else:
             raise ValueError(f"Unknown fusion method: {self.fusion_method}")

@@ -1,0 +1,15 @@
+experiment:
+  name: "hybrid_elser_bgem3_norewrite"
+  description: "Hybrid Fusion (ELSER + BGE-M3) Rewrite OFF"
+
+retrieval:
+  type: "hybrid"
+  alpha: 0.5
+  sparse:
+    method: "elser"
+  dense:
+    model_name: "BAAI/bge-m3"
+  top_k: 100
+
+query_transform:
+  enabled: false

@@ -1,0 +1,23 @@
+experiment:
+  name: "hybrid_elser_voyage_r1"
+  description: "Hybrid Fusion (ELSER + Voyage) Rewrite ON (R1)"
+
+retrieval:
+  type: "hybrid"
+  alpha: 0.5
+  sparse:
+    method: "elser"
+  dense:
+    model_name: "voyage-large-2" # Will be overridden by run.py for fiqa
+  top_k: 100
+
+query_transform:
+  enabled: true
+  rewriter_type: "llm"
+  merge_strategy: "replace"
+  rewriter_config:
+    model_name: "gpt-4o-mini"
+    temperature: 0
+    max_rewrites: 1
+    top_p: 1
+    max_tokens: 128

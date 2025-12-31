@@ -1,0 +1,23 @@
+experiment:
+  name: "hybrid_elser_bgem3_r1"
+  description: "Hybrid Fusion (ELSER + BGE-M3) Rewrite ON (R1)"
+
+retrieval:
+  type: "hybrid"
+  alpha: 0.5
+  sparse:
+    method: "elser"
+  dense:
+    model_name: "BAAI/bge-m3"
+  top_k: 100
+
+query_transform:
+  enabled: true
+  rewriter_type: "llm"
+  merge_strategy: "replace"
+  rewriter_config:
+    model_name: "gpt-4o-mini"
+    temperature: 0
+    max_rewrites: 1
+    top_p: 1
+    max_tokens: 128

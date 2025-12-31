@@ -45,7 +45,7 @@ for domain in domains:
 
 # 3. Index Configuration
 print("\n[3] BGE 1.5 Configuration:")
-print(f"  - Model: BAAI/bge-large-en-v1.5")
+print(f"  - Model: BAAI/bge-base-en-v1.5")
 print(f"  - Device: {'cuda' if torch.cuda.is_available() else 'cpu'}")
 print(f"  - Precision: FP16 (if CUDA available)")
 print(f"  - Batch Size: 1024 (optimized for A100)")

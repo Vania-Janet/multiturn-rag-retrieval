@@ -14,6 +14,7 @@ from .colbert import (
     ColBERTv2Reranker,
     get_colbert_reranker
 )
+from .cohere_rerank import CohereReranker
 
 __all__ = [
     # Cross-encoder
@@ -25,4 +26,7 @@ __all__ = [
     "ColBERTReranker",
     "ColBERTv2Reranker",
     "get_colbert_reranker",
+
+    # Cohere
+    "CohereReranker",
 ]

@@ -1,0 +1,18 @@
+experiment:
+  name: "elser_r3_hyde"
+  description: "ELSER + R3 HyDE (GPT-4o-mini)"
+
+retrieval:
+  type: "sparse"
+  method: "elser"
+  top_k: 100
+
+query_transform:
+  enabled: true
+  rewriter_type: "hyde"
+  merge_strategy: "replace"
+  rewriter_config:
+    model_name: "gpt-4o-mini"
+    temperature: 0
+    top_p: 1
+    max_tokens: 128

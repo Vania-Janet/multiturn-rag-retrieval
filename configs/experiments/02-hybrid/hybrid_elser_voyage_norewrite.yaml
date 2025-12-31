@@ -1,0 +1,15 @@
+experiment:
+  name: "hybrid_elser_voyage_norewrite"
+  description: "Hybrid Fusion (ELSER + Voyage) Rewrite OFF"
+
+retrieval:
+  type: "hybrid"
+  alpha: 0.5
+  sparse:
+    method: "elser"
+  dense:
+    model_name: "voyage-large-2" # Will be overridden by run.py for fiqa
+  top_k: 100
+
+query_transform:
+  enabled: false

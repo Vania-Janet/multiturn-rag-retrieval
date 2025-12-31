@@ -1,1 +1,22 @@
-# Query rewrite + SPLADE experiment configuration
+experiment:
+  name: "A2_rewrite_splade"
+  description: "Single query rewrite + SPLADE sparse retrieval"
+
+data:
+  query_mode: "full_history"
+
+query_transform:
+  enabled: true
+  rewriter_type: "llm"
+  rewriter_config:
+    model_name: "gpt-4o-mini"
+    temperature: 0.0
+    top_p: 1.0
+    max_tokens: 100
+    max_rewrites: 1
+  merge_strategy: "replace"
+
+retrieval:
+  type: "sparse"
+  method: "elser"
+  top_k: 100

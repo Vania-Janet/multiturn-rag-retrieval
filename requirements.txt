@@ -4,6 +4,7 @@
 # Data processing
 pandas>=2.0.0
 numpy>=1.24.0
+scipy>=1.10.0  # FIXED: Missing dependency for statistical analysis
 datasets>=2.14.0
 
 # Elasticsearch
@@ -14,11 +15,15 @@ elastic-transport>=8.4.0
 sentence-transformers>=2.2.0
 transformers>=4.30.0
 torch>=2.0.0
-# faiss-cpu>=1.7.4  # REMOVED: Use faiss-gpu instead (installed separately)
+# faiss-cpu>=1.7.4
+faiss-gpu>=1.7.4
+voyageai>=0.2.0
+cohere>=5.0.0
 
 # Sparse retrieval
 ./external/splade
 rank-bm25>=0.2.2
+nltk>=3.8  # FIXED: Missing dependency for BM25 tokenization
 
 # Reranking
 # pygaggle>=0.0.3.1
@@ -30,6 +35,7 @@ langchain>=0.1.0
 tiktoken>=0.5.0
 
 # Evaluation
+pytrec-eval>=0.5  # FIXED: Missing dependency
 evaluate>=0.4.0
 rouge-score>=0.1.2
 bert-score>=0.3.13
