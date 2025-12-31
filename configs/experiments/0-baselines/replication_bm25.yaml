@@ -10,4 +10,4 @@ data:
 retrieval:
   type: "sparse"
   method: "bm25"
-  top_k: 100
+  top_k: 300

@@ -38,23 +38,23 @@ environment:
 # ------------------------------------------------------------------------------
 # COMPUTE RESOURCES
 # ------------------------------------------------------------------------------
-num_threads: 4  # Global thread count for CPU operations
-num_workers: 4  # DataLoader workers
+num_threads: 16  # Increased for 128GB RAM / High Core count
+num_workers: 8   # Increased for NVMe
 
 batch_sizes:
-  default: 32
-  indexing: 100
-  inference: 16
-  retrieval: 64
-  reranking: 8
-  embedding: 128
-  training: 16
-  validation: 32
+  default: 64
+  indexing: 256
+  inference: 64
+  retrieval: 128
+  reranking: 32
+  embedding: 256
+  training: 32
+  validation: 64
 
 device: "cuda"  # or "cpu", "mps"
 mixed_precision: true
 fp16: true  # Use FP16 for faster inference
-compile: false  # torch.compile() for PyTorch 2.0+
+compile: true  # Enable torch.compile() for RTX 4090 (PyTorch 2.0+)
 
 # Memory management
 max_memory_gb: null  # null for automatic, or set limit

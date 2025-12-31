@@ -153,6 +153,12 @@ def parse_args():
         action="store_true",
         help="Overwrite existing results"
     )
+
+    parser.add_argument(
+        "--baseline-path",
+        type=str,
+        help="Path to baseline results file for significance testing"
+    )
     
     return parser.parse_args()
 
@@ -247,7 +253,8 @@ def main():
                         config=config,
                         domain=domain,
                         output_dir=output_dir,
-                        force=args.force
+                        force=args.force,
+                        baseline_path=args.baseline_path
                     )
                     
                     duration = (datetime.now() - start_time).total_seconds()

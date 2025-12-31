@@ -9,7 +9,10 @@ retrieval:
     method: "elser"
   dense:
     model_name: "BAAI/bge-m3"
-  top_k: 100
+  top_k: 300
 
 query_transform:
   enabled: false
+
+data:
+  query_mode: "last_turn"

@@ -5,7 +5,7 @@ experiment:
 retrieval:
   type: "dense"
   model_name: "BAAI/bge-m3"
-  top_k: 100
+  top_k: 300
 
 query_transform:
   enabled: false
@@ -13,5 +13,8 @@ query_transform:
 reranking:
   enabled: true
   type: "cohere"
-  model_name: "rerank-v3.5"
-  top_k: 100
+  model_name: "rerank-v4.0-pro"
+  top_k: 300
+
+data:
+  query_mode: "last_turn"

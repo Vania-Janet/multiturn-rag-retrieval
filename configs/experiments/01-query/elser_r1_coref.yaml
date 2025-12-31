@@ -5,7 +5,7 @@ experiment:
 retrieval:
   type: "sparse"
   method: "elser"
-  top_k: 100
+  top_k: 300
 
 query_transform:
   enabled: true
@@ -17,3 +17,6 @@ query_transform:
     max_rewrites: 1
     top_p: 1
     max_tokens: 128
+
+data:
+  query_mode: "last_turn"

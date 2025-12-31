@@ -10,6 +10,9 @@ This module implements various query transformation techniques including:
 
 import logging
 import os
+import json
+import hashlib
+from pathlib import Path
 from typing import List, Optional, Dict, Any
 from abc import ABC, abstractmethod
 from dotenv import load_dotenv
@@ -24,6 +27,15 @@ except ImportError:
 load_dotenv()
 logger = logging.getLogger(__name__)
 
+CACHE_DIR = Path(".cache/rewrites")
+CACHE_DIR.mkdir(parents=True, exist_ok=True)
+
+def get_cache_key(prefix: str, data: Dict[str, Any]) -> str:
+    """Generate a stable cache key from a dictionary of data."""
+    # Sort keys to ensure stability
+    serialized = json.dumps(data, sort_keys=True)
+    hash_obj = hashlib.md5(serialized.encode('utf-8'))
+    return f"{prefix}_{hash_obj.hexdigest()}"
 
 class QueryRewriter(ABC):
     """Base class for query rewriting strategies."""
@@ -101,6 +113,28 @@ Follow these rules strictly:
             logger.warning("OpenAI client not available - returning original query")
             return [query]
         
+        # Check cache
+        cache_data = {
+            "type": "llm_rewriter",
+            "model": self.model_name,
+            "temp": self.temperature,
+            "max_rewrites": self.max_rewrites,
+            "query": query,
+            "context": context,
+            "system_prompt": self.SYSTEM_PROMPT
+        }
+        cache_key = get_cache_key("llm", cache_data)
+        cache_file = CACHE_DIR / f"{cache_key}.json"
+        
+        if cache_file.exists():
+            try:
+                with open(cache_file, 'r') as f:
+                    cached_result = json.load(f)
+                logger.debug(f"Cache hit for rewrite: {cache_key}")
+                return cached_result
+            except Exception as e:
+                logger.warning(f"Failed to read cache {cache_file}: {e}")
+
         try:
             user_prompt = self._build_user_prompt(query, context)
             
@@ -118,11 +152,21 @@ Follow these rules strictly:
             
             content = response.choices[0].message.content.strip()
             
+            result = []
             if self.max_rewrites == 1:
-                return [content]
+                result = [content]
             else:
                 queries = [line.strip() for line in content.split('\n') if line.strip()]
-                return queries[:self.max_rewrites] if queries else [query]
+                result = queries[:self.max_rewrites] if queries else [query]
+            
+            # Save to cache
+            try:
+                with open(cache_file, 'w') as f:
+                    json.dump(result, f)
+            except Exception as e:
+                logger.warning(f"Failed to write cache {cache_file}: {e}")
+                
+            return result
                 
         except Exception as e:
             logger.error(f"LLM rewriting failed: {e}")
@@ -238,6 +282,27 @@ Follow these rules strictly:
         if not self.client:
             logger.warning("OpenAI client not available - returning original query")
             return [query]
+            
+        # Check cache
+        cache_data = {
+            "type": "contextual_rewriter",
+            "model": self.model_name,
+            "temp": self.temperature,
+            "query": query,
+            "context": context,
+            "system_prompt": self.SYSTEM_PROMPT
+        }
+        cache_key = get_cache_key("contextual", cache_data)
+        cache_file = CACHE_DIR / f"{cache_key}.json"
+        
+        if cache_file.exists():
+            try:
+                with open(cache_file, 'r') as f:
+                    cached_result = json.load(f)
+                logger.debug(f"Cache hit for contextual rewrite: {cache_key}")
+                return cached_result
+            except Exception as e:
+                logger.warning(f"Failed to read cache {cache_file}: {e}")
         
         try:
             conversation_history = "\n".join(context[-self.context_turns * 2:])
@@ -264,7 +329,16 @@ that can be used directly for document retrieval."""
             )
             
             rewritten = response.choices[0].message.content.strip()
-            return [rewritten]
+            result = [rewritten]
+            
+            # Save to cache
+            try:
+                with open(cache_file, 'w') as f:
+                    json.dump(result, f)
+            except Exception as e:
+                logger.warning(f"Failed to write cache {cache_file}: {e}")
+                
+            return result
             
         except Exception as e:
             logger.error(f"Contextual rewriting failed: {e}")
@@ -357,6 +431,27 @@ Follow these rules strictly:
         if not self.client:
             logger.warning("OpenAI client not available - returning original query")
             return [query]
+            
+        # Check cache
+        cache_data = {
+            "type": "hyde_rewriter",
+            "model": self.model_name,
+            "temp": self.temperature,
+            "query": query,
+            "context": context,
+            "system_prompt": self.SYSTEM_PROMPT
+        }
+        cache_key = get_cache_key("hyde", cache_data)
+        cache_file = CACHE_DIR / f"{cache_key}.json"
+        
+        if cache_file.exists():
+            try:
+                with open(cache_file, 'r') as f:
+                    cached_result = json.load(f)
+                logger.debug(f"Cache hit for HyDE: {cache_key}")
+                return cached_result
+            except Exception as e:
+                logger.warning(f"Failed to read cache {cache_file}: {e}")
         
         try:
             # Build user prompt
@@ -387,7 +482,16 @@ Write a passage that would answer this question, taking into account the convers
             )
             
             hypothetical_doc = response.choices[0].message.content.strip()
-            return [hypothetical_doc]
+            result = [hypothetical_doc]
+            
+            # Save to cache
+            try:
+                with open(cache_file, 'w') as f:
+                    json.dump(result, f)
+            except Exception as e:
+                logger.warning(f"Failed to write cache {cache_file}: {e}")
+                
+            return result
             
         except Exception as e:
             logger.error(f"HyDE generation failed: {e}")
