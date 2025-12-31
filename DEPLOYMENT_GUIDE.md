@@ -324,6 +324,25 @@ docker cp mt-rag-app:/workspace/logs ./logs_backup
 docker-compose down
 
 echo "✅ All experiments completed! Results are in ./experiments/ directory"
+
+# ============================================================================
+# STEP 8: SYNC ARTIFACTS TO HUGGING FACE (Optional)
+# ============================================================================
+
+# If you need to upload indices, models, or results to Hugging Face Hub
+# This script handles large files (indices, artifacts) automatically.
+# It uses the configuration in scripts/hf_sync.py to identify large directories.
+
+# 1. Login to Hugging Face (if not already logged in)
+huggingface-cli login
+
+# 2. Run the sync script
+# This will upload:
+# - indices/ (FAISS, BM25, etc.)
+# - artifacts/ (Fine-tuned models)
+# - experiments/ (Results and logs)
+python scripts/hf_sync.py
+
 ```
 
 ---
