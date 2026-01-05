@@ -1,12 +1,11 @@
 experiment:
-  name: "elser_r1_coref"
-  description: "ELSER + R1 Single Coref Rewrite (GPT-4o-mini)"
+  name: "bgem3_r1_condensation"
+  description: "BGE-M3 + R1 Query Condensation (GPT-4o-mini)"
 
 retrieval:
-  type: "sparse"
-  method: "elser"
+  type: "dense"
+  model_name: "BAAI/bge-m3"
   top_k: 300
-  index_path: "indices/clapnq/elser"
 
 query_transform:
   enabled: true

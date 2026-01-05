@@ -124,6 +124,8 @@ def run_pipeline(config: Dict[str, Any], output_dir: Path, domain: str, force: b
         # Determine index path based on method
         if method == "bm25":
             default_index_path = f"indices/{domain}/bm25"
+        elif method == "splade":
+            default_index_path = f"indices/{domain}/splade"
         else:
             default_index_path = f"indices/{domain}/elser" # Placeholder, ELSER uses ES
             
@@ -366,7 +368,8 @@ def run_pipeline(config: Dict[str, Any], output_dir: Path, domain: str, force: b
     logger.info("Running evaluation...")
     qrels = load_qrels(qrels_file)
     
-    # Convert results to dict format for evaluation
+    # Convert results to dict format for evaluation - NO ID MAPPING NEEDED
+    # If lastturn.jsonl is used, IDs already match qrels format
     results_dict = {}
     for r in results:
         results_dict[r["task_id"]] = {ctx["document_id"]: ctx["score"] for ctx in r["contexts"]}

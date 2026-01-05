@@ -1,13 +1,13 @@
 experiment:
-  name: "hybrid_elser_voyage_norewrite"
-  description: "Hybrid Fusion (ELSER + Voyage) Rewrite OFF"
+  name: "hybrid_splade_voyage_norewrite"
+  description: "Hybrid Fusion (SPLADE + Voyage) Rewrite OFF"
 
 retrieval:
   type: "hybrid"
   alpha: 0.5
   sparse:
-    method: "elser"
-    index_path: "indices/clapnq/elser"
+    method: "splade"
+    index_path: "indices/clapnq/splade"
   dense:
     model_name: "voyage-large-2" # Will be overridden by run.py for fiqa
     index_path: "indices/clapnq/dense"

@@ -1,17 +1,12 @@
 experiment:
-  name: "hybrid_elser_bgem3_r1"
-  description: "Hybrid Fusion (ELSER + BGE-M3) Rewrite ON (R1)"
+  name: "bm25_r1_condensation"
+  description: "BM25 + R1 Query Condensation (GPT-4o-mini)"
 
 retrieval:
-  type: "hybrid"
-  alpha: 0.5
-  sparse:
-    method: "elser"
-    index_path: "indices/clapnq/elser"
-  dense:
-    model_name: "BAAI/bge-m3"
-    index_path: "indices/clapnq/dense"
+  type: "sparse"
+  method: "bm25"
   top_k: 300
+  index_path: "indices/clapnq/bm25"
 
 query_transform:
   enabled: true

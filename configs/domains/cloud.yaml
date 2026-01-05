@@ -1,6 +1,6 @@
 # Domain-specific configuration for Cloud
 data:
-  query_file: "data/retrieval_tasks/cloud/cloud_tasks.jsonl"
+  query_file: "data/retrieval_tasks/cloud/cloud_questions.jsonl"
   qrels_file: "data/retrieval_tasks/cloud/qrels/dev.tsv"
   corpus_path: "data/passage_level_processed/cloud"
 

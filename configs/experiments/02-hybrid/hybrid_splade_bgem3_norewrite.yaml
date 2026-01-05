@@ -1,13 +1,13 @@
 experiment:
-  name: "hybrid_elser_bgem3_norewrite"
-  description: "Hybrid Fusion (ELSER + BGE-M3) Rewrite OFF"
+  name: "hybrid_splade_bgem3_norewrite"
+  description: "Hybrid Fusion (SPLADE + BGE-M3) Rewrite OFF"
 
 retrieval:
   type: "hybrid"
   alpha: 0.5
   sparse:
-    method: "elser"
-    index_path: "indices/clapnq/elser"
+    method: "splade"
+    index_path: "indices/clapnq/splade"
   dense:
     model_name: "BAAI/bge-m3"
     index_path: "indices/clapnq/dense"

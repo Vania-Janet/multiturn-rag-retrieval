@@ -29,7 +29,7 @@ from utils.hf_manager import HFManager
 
 
 DOMAINS = ["clapnq", "fiqa", "govt", "cloud"]
-MODELS = ["bm25", "elser", "bge-m3", "bge-base-1.5"]
+MODELS = ["bm25", "elser", "bge-m3", "bge-base-1.5", "splade"]
 
 
 def parse_args():
@@ -143,7 +143,7 @@ def build_index(domain, model, corpus_dir, output_dir, force, batch_size, logger
     
     try:
         # Import indexing classes
-        from pipeline.indexing.build_indices import BGEIndexer, BM25Indexer, ELSERIndexer, load_corpus
+        from pipeline.indexing.build_indices import BGEIndexer, BM25Indexer, ELSERIndexer, SpladeIndexer, load_corpus
         
         # Load documents
         documents = load_corpus(domain, str(corpus_dir))
@@ -156,6 +156,11 @@ def build_index(domain, model, corpus_dir, output_dir, force, batch_size, logger
         elif model == "elser":
             logger.info("  Building ELSER index...")
             indexer = ELSERIndexer(output_dir=str(output_dir))
+            indexer.build(documents, domain)
+            
+        elif model == "splade":
+            logger.info("  Building SPLADE index...")
+            indexer = SpladeIndexer(output_dir=str(output_dir))
             indexer.build(documents, domain)
             
         elif model == "bge-m3":
