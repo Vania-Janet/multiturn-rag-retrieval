@@ -228,7 +228,10 @@ class ELSERIndexer:
             es = Elasticsearch(
                 self.es_url,
                 basic_auth=(self.es_user, self.es_password) if self.es_user else None,
-                verify_certs=False
+                verify_certs=False,
+                request_timeout=300,  # 5 minutes timeout
+                max_retries=3,
+                retry_on_timeout=True
             )
             
             if not es.ping():
@@ -301,8 +304,25 @@ class ELSERIndexer:
                     }
 
             logger.info(f"Bulk indexing {len(documents)} documents to {index_name}...")
-            success, failed = helpers.bulk(es, generate_actions(), chunk_size=100, stats_only=True)
-            logger.info(f"ELSER Indexing complete. Success: {success}, Failed: {failed}")
+            
+            # Try parallel bulk for better performance
+            from elasticsearch.helpers import parallel_bulk
+            successes = 0
+            for success, info in parallel_bulk(
+                es,
+                generate_actions(),
+                chunk_size=50,  # Increased from 10
+                thread_count=4,  # Parallel threads
+                request_timeout=300,
+                max_chunk_bytes=10485760  # 10MB
+            ):
+                if success:
+                    successes += 1
+                else:
+                    logger.warning(f"Failed to index document: {info}")
+                    
+            failed = len(documents) - successes
+            logger.info(f"ELSER Indexing complete. Success: {successes}, Failed: {failed}")
 
         except Exception as e:
             logger.error(f"ELSER Indexing failed: {e}")
