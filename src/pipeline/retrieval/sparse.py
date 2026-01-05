@@ -87,12 +87,27 @@ class ELSERRetriever(SparseRetriever):
         self.es_user = os.getenv("ELASTICSEARCH_USER")
         self.es_password = os.getenv("ELASTICSEARCH_PASSWORD")
         self.domain = config.get("domain")
+        
+        # 1. INITIALIZE ELASTICSEARCH CONNECTION FIRST
+        if not self.es_url:
+            self.es_url = "http://localhost:9200"
+            logger.warning("ELASTICSEARCH_URL not set, defaulting to localhost:9200")
+            
+        self.es = Elasticsearch(
+            self.es_url,
+            basic_auth=(self.es_user, self.es_password) if self.es_user else None,
+            verify_certs=False
+        )
+        
+        if not self.es.ping():
+            raise ConnectionError(f"Could not connect to Elasticsearch at {self.es_url}")
+        
+        logger.info(f"Connected to Elasticsearch at {self.es_url}")
+        
+        # 2. NOW SEARCH FOR THE INDEX (uses self.es)
         # Use the exact index name format from the user's data
         # e.g., mt-rag-clapnq-elser-512-100-20240503
-        # We will try to find the correct index name by pattern matching if possible
-        # or fallback to a constructed name
-        
-        # Try to find index matching pattern
+        # We will try to find the correct index name by pattern matching
         try:
             indices = self.es.cat.indices(format="json")
             matching_indices = [
@@ -111,20 +126,6 @@ class ELSERRetriever(SparseRetriever):
             self.index_name = f"mt-rag-{self.domain}-elser"
 
         self.model_id = ".elser_model_2"
-        
-        if not self.es_url:
-            # Fallback for local testing if env var not set
-            self.es_url = "http://localhost:9200"
-            logger.warning("ELASTICSEARCH_URL not set, defaulting to localhost:9200")
-            
-        self.es = Elasticsearch(
-            self.es_url,
-            basic_auth=(self.es_user, self.es_password) if self.es_user else None,
-            verify_certs=False
-        )
-        
-        if not self.es.ping():
-            raise ConnectionError("Could not connect to Elasticsearch")
             
     def retrieve(self, query: str, top_k: int = 100) -> List[Dict[str, Any]]:
         """Retrieve using ELSER."""

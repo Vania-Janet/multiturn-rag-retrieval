@@ -23,6 +23,7 @@ from .retrieval import (
 from .query_transform import get_rewriter
 from .reranking import CohereReranker
 from .evaluation.run_retrieval_eval import compute_results, load_qrels, prepare_results_dict
+from .retrieval.fusion import reciprocal_rank_fusion
 
 logger = logging.getLogger(__name__)
 
@@ -30,31 +31,21 @@ def apply_rrf(result_lists: List[List[Dict[str, Any]]], k: int = 60, top_k: int 
     """
     Apply Reciprocal Rank Fusion to merge multiple ranked lists.
     
+    Wrapper around fusion.reciprocal_rank_fusion that adds top_k truncation.
+    
     Args:
         result_lists: List of retrieval result lists, each containing dicts with 'id' and 'score'
         k: RRF parameter (default 60)
         top_k: Number of results to return
         
     Returns:
-        Merged and re-ranked results
+        Merged and re-ranked results, truncated to top_k
     """
-    rrf_scores = {}
+    # Use the canonical RRF implementation from fusion.py
+    fused_results = reciprocal_rank_fusion(result_lists, k=k)
     
-    for results in result_lists:
-        for rank, result in enumerate(results, start=1):
-            doc_id = result["id"]
-            rrf_score = 1.0 / (k + rank)
-            rrf_scores[doc_id] = rrf_scores.get(doc_id, 0.0) + rrf_score
-    
-    # Sort by RRF score and return top_k
-    sorted_docs = sorted(rrf_scores.items(), key=lambda x: x[1], reverse=True)[:top_k]
-    
-    # Format results
-    merged_results = []
-    for doc_id, score in sorted_docs:
-        merged_results.append({"id": doc_id, "score": score})
-    
-    return merged_results
+    # Truncate to top_k
+    return fused_results[:top_k]
 
 def load_queries(query_file: str) -> List[Dict[str, Any]]:
     """Load queries from a JSONL file."""
@@ -237,7 +228,7 @@ def run_pipeline(config: Dict[str, Any], output_dir: Path, domain: str, force: b
         reranker_type = config["reranking"].get("type", "cohere")
         if reranker_type == "cohere":
             reranker = CohereReranker(
-                model_name=config["reranking"].get("model_name", "rerank-english-v3.0"),
+                model_name=config["reranking"].get("model_name", "rerank-v4.0-pro"),
                 config=config["reranking"]
             )
             logger.info(f"Reranking enabled: {reranker_type} ({config['reranking'].get('model_name')})")

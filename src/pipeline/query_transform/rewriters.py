@@ -207,16 +207,30 @@ class QueryDecomposer(QueryRewriter):
     Decompose complex queries into simpler sub-queries.
     
     Useful for multi-hop questions that require multiple retrieval steps.
+    
+    ⚠️ WARNING: This rewriter is NOT implemented. If you set rewriter_type='decompose'
+    in your config, the system will silently return the original query unchanged.
+    This class exists as a placeholder for future implementation.
     """
     
     def __init__(self, model_name: str = "gpt-3.5-turbo"):
         self.model_name = model_name
+        logger.warning(
+            "QueryDecomposer is NOT IMPLEMENTED. "
+            "Using this rewriter will return the original query unchanged. "
+            "Consider using 'contextual', 'llm', or 'hyde' instead."
+        )
         
     def rewrite(self, query: str, context: Optional[List[str]] = None) -> List[str]:
-        """Decompose complex query into sub-queries."""
+        """
+        Decompose complex query into sub-queries.
         
-        # TODO: Implement decomposition logic
-        logger.warning("QueryDecomposer not fully implemented - returning original query")
+        ⚠️ NOT IMPLEMENTED - returns original query unchanged.
+        """
+        logger.warning(
+            f"QueryDecomposer.rewrite() called but not implemented. "
+            f"Returning original query: '{query[:50]}...'"
+        )
         return [query]
 
 
@@ -305,7 +319,17 @@ Follow these rules strictly:
                 logger.warning(f"Failed to read cache {cache_file}: {e}")
         
         try:
-            conversation_history = "\n".join(context[-self.context_turns * 2:])
+            # Format conversation history with clear role labels
+            # Assume context alternates: [user1, assistant1, user2, assistant2, ...]
+            formatted_context = []
+            recent_turns = context[-self.context_turns * 2:]
+            
+            for i, turn in enumerate(recent_turns):
+                # Alternate between User and Assistant based on position
+                role = "User" if i % 2 == 0 else "Assistant"
+                formatted_context.append(f"{role}: {turn}")
+            
+            conversation_history = "\n".join(formatted_context) if formatted_context else "(No prior conversation)"
             
             user_prompt = f"""Conversation history:
 {conversation_history}

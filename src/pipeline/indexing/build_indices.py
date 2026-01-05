@@ -120,14 +120,38 @@ class BGEIndexer:
         logger.info(f"Encoding {len(texts)} documents...")
         
         # Encode
-        embeddings = model.encode(
-            texts,
-            batch_size=BATCH_SIZE,
-            show_progress_bar=True,
-            normalize_embeddings=True,
-            convert_to_numpy=True,
-            device=self.device
-        )
+        if self.device == "cuda" and torch.cuda.device_count() > 1:
+            logger.info(f"🚀 Using {torch.cuda.device_count()} GPUs for parallel encoding!")
+            
+            # Start the multi-process pool on all available CUDA devices
+            pool = model.start_multi_process_pool()
+            
+            # Compute the embeddings using the multi-process pool
+            embeddings = model.encode_multi_process(texts, pool, batch_size=BATCH_SIZE)
+            
+            # Stop the multi-process pool
+            model.stop_multi_process_pool(pool)
+            
+            # Ensure embeddings are numpy array and normalized
+            # encode_multi_process returns numpy array, but normalization might need check
+            # SentenceTransformer.encode_multi_process usually normalizes if normalize_embeddings=True is passed to encode?
+            # Actually encode_multi_process doesn't take normalize_embeddings directly in older versions, 
+            # but let's check if we can normalize manually if needed.
+            # However, BGE models usually need normalization.
+            
+            # Manual normalization if needed (L2 norm)
+            norms = np.linalg.norm(embeddings, axis=1, keepdims=True)
+            embeddings = embeddings / norms
+            
+        else:
+            embeddings = model.encode(
+                texts,
+                batch_size=BATCH_SIZE,
+                show_progress_bar=True,
+                normalize_embeddings=True,
+                convert_to_numpy=True,
+                device=self.device
+            )
         
         # Save Embeddings and IDs (Checkpoint)
         logger.info("Saving embeddings and IDs...")

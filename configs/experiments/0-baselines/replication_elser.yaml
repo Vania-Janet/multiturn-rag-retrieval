@@ -11,3 +11,4 @@ retrieval:
   type: "sparse"
   method: "elser"
   top_k: 300
+  index_path: "indices/clapnq/elser"

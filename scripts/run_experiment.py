@@ -28,6 +28,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 from pipeline.run import run_pipeline
 from utils.config_loader import load_config, merge_configs
 from utils.logger import setup_logger
+from utils.hf_manager import HFManager
 
 
 DOMAINS = ["clapnq", "fiqa", "govt", "cloud"]
@@ -198,6 +199,9 @@ def main():
     logger.info(f"Experiments: {', '.join(experiments)}")
     logger.info(f"Domains: {', '.join(domains)}")
     
+    # Initialize HF Manager
+    hf_manager = HFManager()
+
     # Run experiments
     total_runs = len(experiments) * len(domains)
     current_run = 0
@@ -259,6 +263,10 @@ def main():
                     
                     duration = (datetime.now() - start_time).total_seconds()
                     logger.info(f"✓ Completed in {duration:.2f}s")
+                    
+                    # Upload results to Hugging Face if enabled
+                    if hf_manager.enabled:
+                        hf_manager.upload_directory(output_dir)
                     
             except Exception as e:
                 logger.error(f"✗ Failed: {experiment}/{domain}")

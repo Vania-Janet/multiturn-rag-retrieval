@@ -4,8 +4,14 @@ Cohere Rerank implementation.
 
 import os
 import logging
+import time
 from typing import List, Dict, Any, Optional
 from dotenv import load_dotenv
+
+try:
+    import backoff
+except ImportError:
+    backoff = None
 
 try:
     import cohere
@@ -23,7 +29,7 @@ class CohereReranker:
     
     def __init__(
         self, 
-        model_name: str = "rerank-english-v3.0",
+        model_name: str = "rerank-v4.0-pro",
         api_key: Optional[str] = None,
         config: Optional[Dict[str, Any]] = None
     ):
@@ -42,6 +48,16 @@ class CohereReranker:
         else:
             self.client = cohere.Client(self.api_key)
             
+    def _get_retry_decorator(self):
+        """Helper to get retry decorator safely."""
+        if backoff and COHERE_AVAILABLE:
+            return backoff.on_exception(
+                backoff.expo,
+                (cohere.errors.TooManyRequestsError, cohere.errors.ServiceUnavailableError),
+                max_tries=5
+            )
+        return lambda x: x
+
     def rerank(
         self, 
         query: str, 
@@ -49,7 +65,7 @@ class CohereReranker:
         top_k: Optional[int] = None
     ) -> List[Dict[str, Any]]:
         """
-        Rerank documents using Cohere API.
+        Rerank documents using Cohere API with retry logic.
         """
         if not self.client or not documents:
             return documents
@@ -64,13 +80,30 @@ class CohereReranker:
                     # Fallback to other fields if text is missing
                     text = doc.get("content", "")
                 docs_to_rerank.append(text)
+            
+            # Define the API call wrapper
+            def api_call():
+                return self.client.rerank(
+                    model=self.model_name,
+                    query=query,
+                    documents=docs_to_rerank,
+                    top_n=top_k or len(documents)
+                )
+            
+            # Apply retry logic if available
+            if backoff and COHERE_AVAILABLE:
+                # We need to wrap the function call
+                @backoff.on_exception(
+                    backoff.expo,
+                    (cohere.errors.TooManyRequestsError, cohere.errors.ServiceUnavailableError),
+                    max_tries=5
+                )
+                def call_with_retry():
+                    return api_call()
                 
-            response = self.client.rerank(
-                model=self.model_name,
-                query=query,
-                documents=docs_to_rerank,
-                top_n=top_k or len(documents)
-            )
+                response = call_with_retry()
+            else:
+                response = api_call()
             
             # Map results back to original documents
             reranked_docs = []

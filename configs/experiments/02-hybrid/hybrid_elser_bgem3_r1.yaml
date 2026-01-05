@@ -7,8 +7,10 @@ retrieval:
   alpha: 0.5
   sparse:
     method: "elser"
+    index_path: "indices/clapnq/elser"
   dense:
     model_name: "BAAI/bge-m3"
+    index_path: "indices/clapnq/dense"
   top_k: 300
 
 query_transform:

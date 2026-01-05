@@ -39,7 +39,7 @@ environment:
 # COMPUTE RESOURCES
 # ------------------------------------------------------------------------------
 num_threads: 16  # Increased for 128GB RAM / High Core count
-num_workers: 8   # Increased for NVMe
+num_workers: 4   # Reduced to 4 to prevent RAM saturation with large datasets
 
 batch_sizes:
   default: 64
