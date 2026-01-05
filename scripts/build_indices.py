@@ -160,12 +160,12 @@ def build_index(domain, model, corpus_dir, output_dir, force, batch_size, logger
             
         elif model == "bge-m3":
             logger.info("  Building BGE-M3 index...")
-            indexer = BGEIndexer(model_name="BAAI/bge-m3", output_dir=str(output_dir), index_subdir="bge-m3")
+            indexer = BGEIndexer(model_name="BAAI/bge-m3", output_dir=str(output_dir), index_subdir="bge-m3", batch_size=batch_size)
             indexer.build(documents, domain)
             
         elif model == "bge-base-1.5":
             logger.info("  Building BGE-base-en-v1.5 index (baseline)...")
-            indexer = BGEIndexer(model_name="BAAI/bge-base-en-v1.5", output_dir=str(output_dir), index_subdir="bge")  # FIXED: Was bge-large
+            indexer = BGEIndexer(model_name="BAAI/bge-base-en-v1.5", output_dir=str(output_dir), index_subdir="bge", batch_size=batch_size)  # FIXED: Was bge-large
             indexer.build(documents, domain)
             
         # Mark as successful

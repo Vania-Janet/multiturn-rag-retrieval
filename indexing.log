@@ -115,3 +115,196 @@ Failed indices:
 2025-12-31 01:54:58,132 - INFO - Failed: 0
 2025-12-31 01:54:58,132 - INFO - 
 ✓ All indices built successfully!
+2026-01-05 19:15:11,584 - INFO -   Building BM25 index...
+2026-01-05 19:15:11,584 - INFO - Initializing BM25 Indexer for cloud
+2026-01-05 19:15:11,584 - INFO - Tokenizing corpus...
+2026-01-05 19:15:18,735 - INFO -   Building BM25 index...
+2026-01-05 19:15:18,735 - INFO - Initializing BM25 Indexer for cloud
+2026-01-05 19:15:18,735 - INFO - Tokenizing corpus...
+2026-01-05 19:15:32,476 - INFO -   Building BM25 index...
+2026-01-05 19:15:32,476 - INFO - Initializing BM25 Indexer for fiqa
+2026-01-05 19:15:32,476 - INFO - Tokenizing corpus...
+2026-01-05 19:16:01,429 - INFO -   Building BM25 index...
+2026-01-05 19:16:01,429 - INFO - Initializing BM25 Indexer for fiqa
+2026-01-05 19:16:01,429 - INFO - Tokenizing corpus...
+2026-01-05 19:16:39,510 - INFO - Building BM25 index...
+2026-01-05 19:16:41,514 - INFO - Saving BM25 index to indices/fiqa/bm25/index.pkl...
+2026-01-05 19:16:43,097 - INFO - BM25 Indexing complete.
+2026-01-05 19:16:43,327 - INFO -   ✓ Index built successfully
+2026-01-05 19:16:43,327 - INFO - 
+================================================================================
+2026-01-05 19:16:43,327 - INFO - Index 3/4: govt/bm25
+2026-01-05 19:16:43,327 - INFO - ================================================================================
+
+2026-01-05 19:16:43,327 - WARNING - Index directory exists but seems incomplete (missing _SUCCESS). Rebuilding: indices/govt/bm25
+2026-01-05 19:16:43,327 - INFO - Building bm25 index for govt
+2026-01-05 19:16:43,328 - INFO -   Corpus: data/passage_level_processed/govt/corpus.jsonl
+2026-01-05 19:16:43,328 - INFO -   Output: indices/govt/bm25
+2026-01-05 19:16:43,832 - INFO -   Building BM25 index...
+2026-01-05 19:16:43,832 - INFO - Initializing BM25 Indexer for govt
+2026-01-05 19:16:43,832 - INFO - Tokenizing corpus...
+2026-01-05 19:17:33,952 - INFO - Building BM25 index...
+2026-01-05 19:17:36,818 - INFO - Saving BM25 index to indices/govt/bm25/index.pkl...
+2026-01-05 19:17:39,160 - INFO - BM25 Indexing complete.
+2026-01-05 19:17:39,505 - INFO -   ✓ Index built successfully
+2026-01-05 19:17:39,529 - INFO - 
+================================================================================
+2026-01-05 19:17:39,529 - INFO - Index 4/4: cloud/bm25
+2026-01-05 19:17:39,529 - INFO - ================================================================================
+
+2026-01-05 19:17:39,529 - WARNING - Index directory exists but seems incomplete (missing _SUCCESS). Rebuilding: indices/cloud/bm25
+2026-01-05 19:17:39,529 - INFO - Building bm25 index for cloud
+2026-01-05 19:17:39,529 - INFO -   Corpus: data/passage_level_processed/cloud/corpus.jsonl
+2026-01-05 19:17:39,529 - INFO -   Output: indices/cloud/bm25
+2026-01-05 19:17:40,096 - INFO -   Building BM25 index...
+2026-01-05 19:17:40,096 - INFO - Initializing BM25 Indexer for cloud
+2026-01-05 19:17:40,096 - INFO - Tokenizing corpus...
+2026-01-05 19:18:24,503 - INFO -   Building BGE-M3 index...
+2026-01-05 19:18:24,503 - INFO - Initializing BGE Indexer with BAAI/bge-m3 on cuda
+2026-01-05 19:18:24,505 - INFO - Load pretrained SentenceTransformer: BAAI/bge-m3
+2026-01-05 19:18:38,732 - INFO - Encoding 183408 documents...
+2026-01-05 19:18:38,733 - INFO - 🚀 Using 2 GPUs for parallel encoding!
+2026-01-05 19:18:38,733 - INFO - Start multi-process pool on devices: cuda:0, cuda:1
+2026-01-05 19:19:00,087 - INFO - Building BM25 index...
+2026-01-05 19:19:03,884 - INFO - Saving BM25 index to indices/cloud/bm25/index.pkl...
+2026-01-05 19:19:06,455 - INFO - BM25 Indexing complete.
+2026-01-05 19:19:06,945 - INFO -   ✓ Index built successfully
+2026-01-05 19:19:06,987 - INFO - 
+================================================================================
+2026-01-05 19:19:06,987 - INFO - SUMMARY
+2026-01-05 19:19:06,987 - INFO - ================================================================================
+2026-01-05 19:19:06,987 - INFO - Total indices: 4
+2026-01-05 19:19:06,988 - INFO - Successful: 4
+2026-01-05 19:19:06,988 - INFO - Failed: 0
+2026-01-05 19:19:06,988 - INFO - 
+✓ All indices built successfully!
+2026-01-05 19:22:58,378 - INFO - Saving embeddings and IDs...
+2026-01-05 19:22:58,498 - INFO - Building FAISS index...
+2026-01-05 19:22:59,656 - INFO - BGE Index saved to indices/clapnq/bge-m3/index.faiss
+2026-01-05 19:22:59,744 - INFO -   ✓ Index built successfully
+2026-01-05 19:22:59,744 - INFO - 
+================================================================================
+2026-01-05 19:22:59,744 - INFO - Index 2/4: fiqa/bge-m3
+2026-01-05 19:22:59,744 - INFO - ================================================================================
+
+2026-01-05 19:22:59,745 - WARNING - Index directory exists but seems incomplete (missing _SUCCESS). Rebuilding: indices/fiqa/bge-m3
+2026-01-05 19:22:59,745 - INFO - Building bge-m3 index for fiqa
+2026-01-05 19:22:59,745 - INFO -   Corpus: data/passage_level_processed/fiqa/corpus.jsonl
+2026-01-05 19:22:59,745 - INFO -   Output: indices/fiqa/bge-m3
+2026-01-05 19:23:00,035 - INFO -   Building BGE-M3 index...
+2026-01-05 19:23:00,035 - INFO - Initializing BGE Indexer with BAAI/bge-m3 on cuda
+2026-01-05 19:23:00,036 - INFO - Load pretrained SentenceTransformer: BAAI/bge-m3
+2026-01-05 19:23:03,366 - INFO - Encoding 60984 documents...
+2026-01-05 19:23:03,367 - INFO - 🚀 Using 2 GPUs for parallel encoding!
+2026-01-05 19:23:03,367 - INFO - Start multi-process pool on devices: cuda:0, cuda:1
+2026-01-05 19:24:34,120 - INFO - Saving embeddings and IDs...
+2026-01-05 19:24:34,159 - INFO - Building FAISS index...
+2026-01-05 19:24:34,557 - INFO - BGE Index saved to indices/fiqa/bge-m3/index.faiss
+2026-01-05 19:24:34,588 - INFO -   ✓ Index built successfully
+2026-01-05 19:24:34,617 - INFO - 
+================================================================================
+2026-01-05 19:24:34,618 - INFO - Index 3/4: govt/bge-m3
+2026-01-05 19:24:34,618 - INFO - ================================================================================
+
+2026-01-05 19:24:34,619 - WARNING - Index directory exists but seems incomplete (missing _SUCCESS). Rebuilding: indices/govt/bge-m3
+2026-01-05 19:24:34,619 - INFO - Building bge-m3 index for govt
+2026-01-05 19:24:34,619 - INFO -   Corpus: data/passage_level_processed/govt/corpus.jsonl
+2026-01-05 19:24:34,619 - INFO -   Output: indices/govt/bge-m3
+2026-01-05 19:24:35,151 - INFO -   Building BGE-M3 index...
+2026-01-05 19:24:35,151 - INFO - Initializing BGE Indexer with BAAI/bge-m3 on cuda
+2026-01-05 19:24:35,153 - INFO - Load pretrained SentenceTransformer: BAAI/bge-m3
+2026-01-05 19:24:38,736 - INFO - Encoding 49607 documents...
+2026-01-05 19:24:38,736 - INFO - 🚀 Using 2 GPUs for parallel encoding!
+2026-01-05 19:24:38,736 - INFO - Start multi-process pool on devices: cuda:0, cuda:1
+2026-01-05 19:26:15,815 - INFO -   Building BM25 index...
+2026-01-05 19:26:15,815 - INFO - Initializing BM25 Indexer for clapnq
+2026-01-05 19:26:15,815 - INFO - Tokenizing corpus...
+2026-01-05 19:27:21,442 - INFO -   Building BGE-M3 index...
+2026-01-05 19:27:21,442 - INFO - Initializing BGE Indexer with BAAI/bge-m3 on cuda
+2026-01-05 19:27:21,444 - INFO - Load pretrained SentenceTransformer: BAAI/bge-m3
+2026-01-05 19:27:24,669 - INFO - Encoding 72439 documents...
+2026-01-05 19:27:24,670 - INFO - 🚀 Using 2 GPUs for parallel encoding!
+2026-01-05 19:27:24,670 - INFO - Start multi-process pool on devices: cuda:0, cuda:1
+2026-01-05 19:27:36,829 - INFO - Building BM25 index...
+2026-01-05 19:27:41,838 - INFO - Saving BM25 index to indices/clapnq/bm25/index.pkl...
+2026-01-05 19:27:46,676 - INFO - BM25 Indexing complete.
+2026-01-05 19:27:47,191 - INFO -   ✓ Index built successfully
+2026-01-05 19:27:47,191 - INFO - 
+================================================================================
+2026-01-05 19:27:47,191 - INFO - SUMMARY
+2026-01-05 19:27:47,191 - INFO - ================================================================================
+2026-01-05 19:27:47,191 - INFO - Total indices: 1
+2026-01-05 19:27:47,192 - INFO - Successful: 1
+2026-01-05 19:27:47,192 - INFO - Failed: 0
+2026-01-05 19:27:47,192 - INFO - 
+✓ All indices built successfully!
+2026-01-05 19:29:05,606 - INFO -   Building BM25 index...
+2026-01-05 19:29:05,606 - INFO - Initializing BM25 Indexer for clapnq
+2026-01-05 19:29:05,606 - INFO - BM25 index already exists for clapnq. Skipping.
+2026-01-05 19:29:05,606 - INFO -   ✓ Index built successfully
+2026-01-05 19:29:05,606 - INFO - 
+================================================================================
+2026-01-05 19:29:05,606 - INFO - SUMMARY
+2026-01-05 19:29:05,606 - INFO - ================================================================================
+2026-01-05 19:29:05,606 - INFO - Total indices: 1
+2026-01-05 19:29:05,606 - INFO - Successful: 1
+2026-01-05 19:29:05,606 - INFO - Failed: 0
+2026-01-05 19:29:05,606 - INFO - 
+✓ All indices built successfully!
+2026-01-05 19:29:11,919 - INFO -   Building BGE-M3 index...
+2026-01-05 19:29:11,920 - INFO - Initializing BGE Indexer with BAAI/bge-m3 on cuda
+2026-01-05 19:29:11,921 - INFO - Load pretrained SentenceTransformer: BAAI/bge-m3
+2026-01-05 19:29:15,266 - INFO - Encoding 72439 documents...
+2026-01-05 19:29:15,266 - INFO - 🚀 Using 2 GPUs for parallel encoding!
+2026-01-05 19:29:15,266 - INFO - Start multi-process pool on devices: cuda:0, cuda:1
+2026-01-05 19:32:21,624 - INFO -   Building BGE-M3 index...
+2026-01-05 19:32:21,624 - INFO - Initializing BGE Indexer with BAAI/bge-m3 on cuda
+2026-01-05 19:32:21,626 - INFO - Load pretrained SentenceTransformer: BAAI/bge-m3
+2026-01-05 19:32:24,958 - INFO - Encoding 72439 documents...
+2026-01-05 19:32:30,446 - ERROR -   ✗ Failed to build index: CUDA out of memory. Tried to allocate 10.99 GiB. GPU 0 has a total capacity of 23.53 GiB of which 10.79 GiB is free. Including non-PyTorch memory, this process has 12.72 GiB memory in use. Of the allocated memory 12.22 GiB is allocated by PyTorch, and 69.12 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+2026-01-05 19:32:30,450 - INFO - 
+================================================================================
+2026-01-05 19:32:30,450 - INFO - SUMMARY
+2026-01-05 19:32:30,451 - INFO - ================================================================================
+2026-01-05 19:32:30,451 - INFO - Total indices: 1
+2026-01-05 19:32:30,451 - INFO - Successful: 0
+2026-01-05 19:32:30,451 - INFO - Failed: 1
+2026-01-05 19:32:30,451 - ERROR - 
+Failed indices:
+2026-01-05 19:32:30,451 - ERROR -   - cloud/bge-m3
+2026-01-05 19:32:37,113 - INFO -   Building BGE-M3 index...
+2026-01-05 19:32:37,114 - INFO - Initializing BGE Indexer with BAAI/bge-m3 on cuda
+2026-01-05 19:32:37,115 - INFO - Load pretrained SentenceTransformer: BAAI/bge-m3
+2026-01-05 19:32:40,528 - INFO - Encoding 49607 documents...
+2026-01-05 19:32:44,238 - ERROR -   ✗ Failed to build index: CUDA out of memory. Tried to allocate 10.36 GiB. GPU 0 has a total capacity of 23.53 GiB of which 3.03 GiB is free. Including non-PyTorch memory, this process has 20.49 GiB memory in use. Of the allocated memory 19.98 GiB is allocated by PyTorch, and 63.99 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+2026-01-05 19:32:44,242 - INFO - 
+================================================================================
+2026-01-05 19:32:44,242 - INFO - SUMMARY
+2026-01-05 19:32:44,242 - INFO - ================================================================================
+2026-01-05 19:32:44,242 - INFO - Total indices: 1
+2026-01-05 19:32:44,242 - INFO - Successful: 0
+2026-01-05 19:32:44,243 - INFO - Failed: 1
+2026-01-05 19:32:44,243 - ERROR - 
+Failed indices:
+2026-01-05 19:32:44,243 - ERROR -   - govt/bge-m3
+2026-01-05 19:35:18,277 - INFO -   Building BGE-M3 index...
+2026-01-05 19:35:18,278 - INFO - Initializing BGE Indexer with BAAI/bge-m3 on cuda
+2026-01-05 19:35:18,279 - INFO - Load pretrained SentenceTransformer: BAAI/bge-m3
+2026-01-05 19:35:21,521 - INFO - Encoding 72439 documents...
+2026-01-05 19:39:33,383 - INFO - Saving embeddings and IDs...
+2026-01-05 19:39:33,430 - INFO - Building FAISS index...
+2026-01-05 19:39:33,885 - INFO - BGE Index saved to indices/cloud/bge-m3/index.faiss
+2026-01-05 19:39:33,917 - INFO -   ✓ Index built successfully
+2026-01-05 19:39:33,917 - INFO - 
+================================================================================
+2026-01-05 19:39:33,917 - INFO - SUMMARY
+2026-01-05 19:39:33,917 - INFO - ================================================================================
+2026-01-05 19:39:33,917 - INFO - Total indices: 1
+2026-01-05 19:39:33,917 - INFO - Successful: 1
+2026-01-05 19:39:33,917 - INFO - Failed: 0
+2026-01-05 19:39:33,917 - INFO - 
+✓ All indices built successfully!
+2026-01-05 19:39:40,489 - INFO -   Building BGE-M3 index...
+2026-01-05 19:39:40,489 - INFO - Initializing BGE Indexer with BAAI/bge-m3 on cuda
+2026-01-05 19:39:40,491 - INFO - Load pretrained SentenceTransformer: BAAI/bge-m3
+2026-01-05 19:39:43,690 - INFO - Encoding 49607 documents...
