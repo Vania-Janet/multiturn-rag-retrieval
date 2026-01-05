@@ -1,20 +1,21 @@
 experiment:
-  name: "elser_r3_hyde"
-  description: "ELSER + R3 HyDE (GPT-4o-mini)"
+  name: "splade_r1_condensation"
+  description: "SPLADE + R1 Query Condensation (GPT-4o-mini)"
 
 retrieval:
   type: "sparse"
-  method: "elser"
+  method: "splade"
   top_k: 300
-  index_path: "indices/clapnq/elser"
+  index_path: "indices/clapnq/splade"
 
 query_transform:
   enabled: true
-  rewriter_type: "hyde"
+  rewriter_type: "llm"
   merge_strategy: "replace"
   rewriter_config:
     model_name: "gpt-4o-mini"
     temperature: 0
+    max_rewrites: 1
     top_p: 1
     max_tokens: 128
 

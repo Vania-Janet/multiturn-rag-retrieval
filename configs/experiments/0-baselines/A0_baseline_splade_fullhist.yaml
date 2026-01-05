@@ -1,0 +1,12 @@
+experiment:
+  name: "A0_baseline_splade_fullhist"
+  description: "Baseline SPLADE with Full History"
+
+data:
+  query_mode: "full_history"
+
+retrieval:
+  type: "sparse"
+  method: "splade"
+  top_k: 300
+  index_path: "indices/clapnq/splade"

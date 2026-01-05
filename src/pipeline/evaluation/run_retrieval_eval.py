@@ -135,14 +135,17 @@ def main():
     for collection_name in collections:
         print("\ncollection_name:", collection_name)
 
-        if collection_name == "mt-rag-clapnq-elser-512-100-20240503":
+        if "clapnq" in collection_name:
             qrels_file = os.path.join(script_dir, "../../human/retrieval_tasks_convid/clapnq/qrels/dev.tsv")
-        if collection_name == "mt-rag-govt-elser-512-100-20240611":
+        elif "govt" in collection_name:
             qrels_file = os.path.join(script_dir, "../../human/retrieval_tasks_convid/govt/qrels/dev.tsv")
-        if collection_name == "mt-rag-fiqa-beir-elser-512-100-20240501":
+        elif "fiqa" in collection_name:
             qrels_file = os.path.join(script_dir, "../../human/retrieval_tasks_convid/fiqa/qrels/dev.tsv")
-        if collection_name == "mt-rag-ibmcloud-elser-512-100-20240502":
+        elif "cloud" in collection_name or "ibmcloud" in collection_name:
             qrels_file = os.path.join(script_dir, "../../human/retrieval_tasks_convid/cloud/qrels/dev.tsv")
+        else:
+            print(f"Warning: Could not determine qrels for {collection_name}")
+            continue
             
         qrels = load_qrels(qrels_file)
         

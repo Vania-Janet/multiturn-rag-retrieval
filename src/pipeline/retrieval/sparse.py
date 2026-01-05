@@ -16,6 +16,9 @@ try:
     from rank_bm25 import BM25Okapi
     from nltk.tokenize import word_tokenize
     from elasticsearch import Elasticsearch
+    import torch
+    from transformers import AutoModelForMaskedLM, AutoTokenizer
+    import scipy.sparse
 except ImportError:
     pass
 
@@ -152,6 +155,71 @@ class ELSERRetriever(SparseRetriever):
             })
         return results
 
+class SPLADERetriever(SparseRetriever):
+    """SPLADE retrieval."""
+    
+    def __init__(self, index_path: Path, config: Dict[str, Any]):
+        super().__init__(index_path, config)
+        self.model_name = config.get("model_name", "naver/splade-cocondenser-ensembledistil")
+        self.device = "cuda" if torch.cuda.is_available() else "cpu"
+        
+        # Load Index
+        index_file = self.index_path / "index.npz"
+        if not index_file.exists():
+            raise FileNotFoundError(f"SPLADE index not found at {index_file}")
+            
+        logger.info(f"Loading SPLADE index from {index_file}")
+        self.index_matrix = scipy.sparse.load_npz(index_file)
+        
+        # Load Doc IDs
+        ids_path = self.index_path / "doc_ids.json"
+        if not ids_path.exists():
+            raise FileNotFoundError(f"Doc IDs not found at {ids_path}")
+            
+        with open(ids_path, 'r') as f:
+            self.doc_ids = json.load(f)
+            
+        # Load Model
+        logger.info(f"Loading SPLADE model: {self.model_name}")
+        self.tokenizer = AutoTokenizer.from_pretrained(self.model_name)
+        self.model = AutoModelForMaskedLM.from_pretrained(self.model_name)
+        self.model.to(self.device)
+        self.model.eval()
+
+    def encode_query(self, query: str):
+        with torch.no_grad():
+            inputs = self.tokenizer(query, return_tensors="pt", truncation=True, max_length=512).to(self.device)
+            outputs = self.model(**inputs)
+            logits = outputs.logits
+            attention_mask = inputs["attention_mask"].unsqueeze(-1)
+            values = torch.log(1 + torch.relu(logits)) * attention_mask
+            sparse_vec = torch.max(values, dim=1).values
+            return sparse_vec.cpu().numpy()
+
+    def retrieve(self, query: str, top_k: int = 100) -> List[Dict[str, Any]]:
+        """Retrieve using SPLADE."""
+        query_vec = self.encode_query(query) # Shape (1, vocab_size)
+        
+        # Sparse Dot Product
+        query_sparse = scipy.sparse.csr_matrix(query_vec)
+        scores = self.index_matrix.dot(query_sparse.T).toarray().flatten()
+        
+        # Get top-k
+        if len(scores) > top_k:
+            top_indices = np.argpartition(scores, -top_k)[-top_k:]
+            top_indices = top_indices[np.argsort(scores[top_indices])[::-1]]
+        else:
+            top_indices = np.argsort(scores)[::-1]
+            
+        results = []
+        for idx in top_indices:
+            if scores[idx] > -100: # Simple threshold, though usually positive
+                results.append({
+                    "id": self.doc_ids[idx],
+                    "score": float(scores[idx])
+                })
+        return results
+
 def get_sparse_retriever(
     model_name: str, 
     index_path: Path, 
@@ -161,6 +229,7 @@ def get_sparse_retriever(
     retrievers = {
         "bm25": BM25Retriever,
         "elser": ELSERRetriever,
+        "splade": SPLADERetriever,
     }
     
     if model_name not in retrievers:

@@ -646,3 +646,169 @@ Failed indices:
 2026-01-05 20:32:26,327 - INFO - PUT http://localhost:9200/mt-rag-clapnq-elser [status:200 duration:0.071s]
 2026-01-05 20:32:26,327 - INFO - Index mt-rag-clapnq-elser created.
 2026-01-05 20:32:26,327 - INFO - Bulk indexing 183408 documents to mt-rag-clapnq-elser...
+2026-01-05 20:33:04,744 - INFO - PUT http://localhost:9200/_bulk [status:200 duration:38.129s]
+2026-01-05 20:33:05,599 - INFO - PUT http://localhost:9200/_bulk [status:200 duration:38.981s]
+2026-01-05 20:33:06,560 - INFO - PUT http://localhost:9200/_bulk [status:200 duration:39.944s]
+2026-01-05 20:33:08,243 - INFO - PUT http://localhost:9200/_bulk [status:200 duration:41.624s]
+2026-01-05 20:33:33,344 - INFO - PUT http://localhost:9200/_bulk [status:200 duration:28.595s]
+2026-01-05 20:33:56,461 - INFO - PUT http://localhost:9200/_bulk [status:200 duration:50.857s]
+2026-01-05 20:34:23,219 - INFO - PUT http://localhost:9200/_bulk [status:200 duration:76.653s]
+2026-01-05 20:34:48,395 - INFO - PUT http://localhost:9200/_bulk [status:200 duration:100.147s]
+2026-01-05 20:35:13,183 - INFO - PUT http://localhost:9200/_bulk [status:200 duration:99.835s]
+2026-01-05 22:22:24,224 - INFO -   Building SPLADE index...
+2026-01-05 22:22:24,224 - INFO - Initializing SPLADE Indexer with naver/splade-v3
+2026-01-05 22:22:24,378 - ERROR -   ✗ Failed to build index: You are trying to access a gated repo.
+Make sure to have access to it at https://huggingface.co/naver/splade-v3.
+403 Client Error. (Request ID: Root=1-695c39a0-7480394578f21ffb270512ca;9254f091-5201-43ff-b867-c25b622f81df)
+
+Cannot access gated repo for url https://huggingface.co/naver/splade-v3/resolve/main/config.json.
+Access to model naver/splade-v3 is restricted and you are not in the authorized list. Visit https://huggingface.co/naver/splade-v3 to ask for access.
+2026-01-05 22:22:24,382 - INFO - 
+================================================================================
+2026-01-05 22:22:24,383 - INFO - Index 6/20: fiqa/bm25
+2026-01-05 22:22:24,383 - INFO - ================================================================================
+
+2026-01-05 22:22:24,383 - INFO - Index already exists and is complete (use --force to rebuild): indices/fiqa/bm25
+2026-01-05 22:22:24,383 - INFO - 
+================================================================================
+2026-01-05 22:22:24,383 - INFO - Index 7/20: fiqa/elser
+2026-01-05 22:22:24,383 - INFO - ================================================================================
+
+2026-01-05 22:22:24,383 - INFO - Index already exists and is complete (use --force to rebuild): indices/fiqa/elser
+2026-01-05 22:22:24,383 - INFO - 
+================================================================================
+2026-01-05 22:22:24,383 - INFO - Index 8/20: fiqa/bge-m3
+2026-01-05 22:22:24,383 - INFO - ================================================================================
+
+2026-01-05 22:22:24,384 - INFO - Index already exists and is complete (use --force to rebuild): indices/fiqa/bge-m3
+2026-01-05 22:22:24,384 - INFO - 
+================================================================================
+2026-01-05 22:22:24,384 - INFO - Index 9/20: fiqa/bge-base-1.5
+2026-01-05 22:22:24,384 - INFO - ================================================================================
+
+2026-01-05 22:22:24,384 - INFO - Index already exists and is complete (use --force to rebuild): indices/fiqa/bge-base-1.5
+2026-01-05 22:22:24,384 - INFO - 
+================================================================================
+2026-01-05 22:22:24,384 - INFO - Index 10/20: fiqa/splade
+2026-01-05 22:22:24,384 - INFO - ================================================================================
+
+2026-01-05 22:22:24,384 - WARNING - Index directory exists but seems incomplete (missing _SUCCESS). Rebuilding: indices/fiqa/splade
+2026-01-05 22:22:24,384 - INFO - Building splade index for fiqa
+2026-01-05 22:22:24,385 - INFO -   Corpus: data/passage_level_processed/fiqa/corpus.jsonl
+2026-01-05 22:22:24,385 - INFO -   Output: indices/fiqa/splade
+2026-01-05 22:22:24,735 - INFO -   Building SPLADE index...
+2026-01-05 22:22:24,736 - INFO - Initializing SPLADE Indexer with naver/splade-v3
+2026-01-05 22:22:25,093 - ERROR -   ✗ Failed to build index: You are trying to access a gated repo.
+Make sure to have access to it at https://huggingface.co/naver/splade-v3.
+403 Client Error. (Request ID: Root=1-695c39a1-385d62017e1abdff1ecdb245;92ed8c75-7870-470a-9858-197234747350)
+
+Cannot access gated repo for url https://huggingface.co/naver/splade-v3/resolve/main/config.json.
+Access to model naver/splade-v3 is restricted and you are not in the authorized list. Visit https://huggingface.co/naver/splade-v3 to ask for access.
+2026-01-05 22:22:25,094 - INFO - 
+================================================================================
+2026-01-05 22:22:25,094 - INFO - Index 11/20: govt/bm25
+2026-01-05 22:22:25,094 - INFO - ================================================================================
+
+2026-01-05 22:22:25,094 - INFO - Index already exists and is complete (use --force to rebuild): indices/govt/bm25
+2026-01-05 22:22:25,095 - INFO - 
+================================================================================
+2026-01-05 22:22:25,095 - INFO - Index 12/20: govt/elser
+2026-01-05 22:22:25,095 - INFO - ================================================================================
+
+2026-01-05 22:22:25,095 - INFO - Index already exists and is complete (use --force to rebuild): indices/govt/elser
+2026-01-05 22:22:25,095 - INFO - 
+================================================================================
+2026-01-05 22:22:25,095 - INFO - Index 13/20: govt/bge-m3
+2026-01-05 22:22:25,095 - INFO - ================================================================================
+
+2026-01-05 22:22:25,095 - INFO - Index already exists and is complete (use --force to rebuild): indices/govt/bge-m3
+2026-01-05 22:22:25,095 - INFO - 
+================================================================================
+2026-01-05 22:22:25,095 - INFO - Index 14/20: govt/bge-base-1.5
+2026-01-05 22:22:25,095 - INFO - ================================================================================
+
+2026-01-05 22:22:25,095 - INFO - Index already exists and is complete (use --force to rebuild): indices/govt/bge-base-1.5
+2026-01-05 22:22:25,095 - INFO - 
+================================================================================
+2026-01-05 22:22:25,095 - INFO - Index 15/20: govt/splade
+2026-01-05 22:22:25,095 - INFO - ================================================================================
+
+2026-01-05 22:22:25,095 - WARNING - Index directory exists but seems incomplete (missing _SUCCESS). Rebuilding: indices/govt/splade
+2026-01-05 22:22:25,095 - INFO - Building splade index for govt
+2026-01-05 22:22:25,096 - INFO -   Corpus: data/passage_level_processed/govt/corpus.jsonl
+2026-01-05 22:22:25,096 - INFO -   Output: indices/govt/splade
+2026-01-05 22:22:25,695 - INFO -   Building SPLADE index...
+2026-01-05 22:22:25,695 - INFO - Initializing SPLADE Indexer with naver/splade-v3
+2026-01-05 22:22:25,818 - ERROR -   ✗ Failed to build index: You are trying to access a gated repo.
+Make sure to have access to it at https://huggingface.co/naver/splade-v3.
+403 Client Error. (Request ID: Root=1-695c39a1-07b1db2e69b979565d509c9b;549c3c52-0d44-4618-80fc-12f1ae18d375)
+
+Cannot access gated repo for url https://huggingface.co/naver/splade-v3/resolve/main/config.json.
+Access to model naver/splade-v3 is restricted and you are not in the authorized list. Visit https://huggingface.co/naver/splade-v3 to ask for access.
+2026-01-05 22:22:25,820 - INFO - 
+================================================================================
+2026-01-05 22:22:25,820 - INFO - Index 16/20: cloud/bm25
+2026-01-05 22:22:25,820 - INFO - ================================================================================
+
+2026-01-05 22:22:25,820 - INFO - Index already exists and is complete (use --force to rebuild): indices/cloud/bm25
+2026-01-05 22:22:25,820 - INFO - 
+================================================================================
+2026-01-05 22:22:25,820 - INFO - Index 17/20: cloud/elser
+2026-01-05 22:22:25,820 - INFO - ================================================================================
+
+2026-01-05 22:22:25,820 - INFO - Index already exists and is complete (use --force to rebuild): indices/cloud/elser
+2026-01-05 22:22:25,820 - INFO - 
+================================================================================
+2026-01-05 22:22:25,820 - INFO - Index 18/20: cloud/bge-m3
+2026-01-05 22:22:25,820 - INFO - ================================================================================
+
+2026-01-05 22:22:25,820 - INFO - Index already exists and is complete (use --force to rebuild): indices/cloud/bge-m3
+2026-01-05 22:22:25,820 - INFO - 
+================================================================================
+2026-01-05 22:22:25,821 - INFO - Index 19/20: cloud/bge-base-1.5
+2026-01-05 22:22:25,821 - INFO - ================================================================================
+
+2026-01-05 22:22:25,821 - INFO - Index already exists and is complete (use --force to rebuild): indices/cloud/bge-base-1.5
+2026-01-05 22:22:25,821 - INFO - 
+================================================================================
+2026-01-05 22:22:25,821 - INFO - Index 20/20: cloud/splade
+2026-01-05 22:22:25,821 - INFO - ================================================================================
+
+2026-01-05 22:22:25,821 - WARNING - Index directory exists but seems incomplete (missing _SUCCESS). Rebuilding: indices/cloud/splade
+2026-01-05 22:22:25,821 - INFO - Building splade index for cloud
+2026-01-05 22:22:25,821 - INFO -   Corpus: data/passage_level_processed/cloud/corpus.jsonl
+2026-01-05 22:22:25,821 - INFO -   Output: indices/cloud/splade
+2026-01-05 22:22:26,433 - INFO -   Building SPLADE index...
+2026-01-05 22:22:26,433 - INFO - Initializing SPLADE Indexer with naver/splade-v3
+2026-01-05 22:22:26,568 - ERROR -   ✗ Failed to build index: You are trying to access a gated repo.
+Make sure to have access to it at https://huggingface.co/naver/splade-v3.
+403 Client Error. (Request ID: Root=1-695c39a2-664b9551168f5ea972fc191f;21d59836-a7f6-431f-85a5-0a4cceb40066)
+
+Cannot access gated repo for url https://huggingface.co/naver/splade-v3/resolve/main/config.json.
+Access to model naver/splade-v3 is restricted and you are not in the authorized list. Visit https://huggingface.co/naver/splade-v3 to ask for access.
+2026-01-05 22:22:26,569 - INFO - 
+================================================================================
+2026-01-05 22:22:26,569 - INFO - SUMMARY
+2026-01-05 22:22:26,569 - INFO - ================================================================================
+2026-01-05 22:22:26,569 - INFO - Total indices: 20
+2026-01-05 22:22:26,569 - INFO - Successful: 16
+2026-01-05 22:22:26,569 - INFO - Failed: 4
+2026-01-05 22:22:26,570 - ERROR - 
+Failed indices:
+2026-01-05 22:22:26,570 - ERROR -   - clapnq/splade
+2026-01-05 22:22:26,570 - ERROR -   - fiqa/splade
+2026-01-05 22:22:26,570 - ERROR -   - govt/splade
+2026-01-05 22:22:26,570 - ERROR -   - cloud/splade
+2026-01-05 22:23:32,400 - INFO -   Building SPLADE index...
+2026-01-05 22:23:32,401 - INFO - Initializing SPLADE Indexer with naver/splade-cocondenser-ensembledistil
+2026-01-05 22:23:36,124 - INFO - Encoding 183408 documents with SPLADE...
+2026-01-05 22:24:11,126 - INFO -   Building SPLADE index...
+2026-01-05 22:24:11,126 - INFO - Initializing SPLADE Indexer with naver/splade-cocondenser-ensembledistil
+2026-01-05 22:24:12,058 - INFO - Encoding 183408 documents with SPLADE...
+2026-01-05 22:25:25,513 - INFO -   Building SPLADE index...
+2026-01-05 22:25:25,513 - INFO - Initializing SPLADE Indexer with naver/splade-cocondenser-ensembledistil
+2026-01-05 22:25:26,368 - INFO - Encoding 183408 documents with SPLADE...
+2026-01-05 22:29:47,631 - INFO -   Building SPLADE index...
+2026-01-05 22:29:47,631 - INFO - Initializing SPLADE Indexer with naver/splade-cocondenser-ensembledistil
+2026-01-05 22:29:48,506 - INFO - 🚀 Using 2 GPUs for SPLADE encoding!
+2026-01-05 22:29:48,507 - INFO - Encoding 183408 documents with SPLADE...

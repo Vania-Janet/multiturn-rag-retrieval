@@ -1,15 +1,15 @@
 experiment:
-  name: "hybrid_elser_voyage_r1"
-  description: "Hybrid Fusion (ELSER + Voyage) Rewrite ON (R1)"
+  name: "hybrid_splade_bgem3_r1"
+  description: "Hybrid Fusion (SPLADE + BGE-M3) Rewrite ON (R1)"
 
 retrieval:
   type: "hybrid"
   alpha: 0.5
   sparse:
-    method: "elser"
-    index_path: "indices/clapnq/elser"
+    method: "splade"
+    index_path: "indices/clapnq/splade"
   dense:
-    model_name: "voyage-large-2" # Will be overridden by run.py for fiqa
+    model_name: "BAAI/bge-m3"
     index_path: "indices/clapnq/dense"
   top_k: 300
 

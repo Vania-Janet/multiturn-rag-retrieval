@@ -1,6 +1,6 @@
 experiment:
-  name: "replication_elser"
-  description: "Paper Replication: ELSER Baseline (Last Turn)"
+  name: "replication_splade"
+  description: "Paper Replication: SPLADE Baseline (Last Turn)"
 
 data:
   query_mode: "last_turn"
@@ -9,6 +9,6 @@ data:
 
 retrieval:
   type: "sparse"
-  method: "elser"
+  method: "splade"
   top_k: 300
-  index_path: "indices/clapnq/elser"
+  index_path: "indices/clapnq/splade"

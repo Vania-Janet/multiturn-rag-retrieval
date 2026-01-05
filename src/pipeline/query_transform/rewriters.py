@@ -64,22 +64,21 @@ class IdentityRewriter(QueryRewriter):
 
 class LLMRewriter(QueryRewriter):
     """
-    LLM-based query rewriting.
+    LLM-based query rewriting (Query Condensation).
     
-    Uses a language model to rephrase queries for better retrieval.
+    Uses a language model to condense the conversation history and current query
+    into a single standalone search query.
     """
     
-    SYSTEM_PROMPT = """You are an information retrieval assistant.
-Your task is to rewrite conversational user questions into standalone,
-search-optimized queries suitable for document retrieval.
+    SYSTEM_PROMPT = """You are a helpful assistant that formulates standalone search queries.
+Your task is to condense the conversation history and the latest user question into a single, standalone question that can be understood without the chat history.
 
 Follow these rules strictly:
-- Preserve the original user intent exactly.
-- Resolve all coreferences and implicit references using the conversation history.
-- Do NOT add new facts, assumptions, or external knowledge.
+- The standalone question must fully represent the user's intent.
+- Incorporate necessary context from previous turns to make the question self-contained.
 - Do NOT answer the question.
 - Do NOT explain your reasoning.
-- Output ONLY the rewritten query as a single sentence."""
+- Output ONLY the condensed, standalone question as a single sentence."""
     
     def __init__(
         self,
@@ -236,22 +235,20 @@ class QueryDecomposer(QueryRewriter):
 
 class ContextualRewriter(QueryRewriter):
     """
-    Add conversational context to standalone queries.
+    Add conversational context to standalone queries (Query Condensation).
     
-    Resolves pronouns and references from previous turns.
+    Condenses the conversation history and the current query into a single standalone query.
     """
     
-    SYSTEM_PROMPT = """You are an information retrieval assistant.
-Your task is to rewrite conversational user questions into standalone,
-search-optimized queries suitable for document retrieval.
+    SYSTEM_PROMPT = """You are a helpful assistant that formulates standalone search queries.
+Your task is to condense the conversation history and the latest user question into a single, standalone question that can be understood without the chat history.
 
 Follow these rules strictly:
-- Preserve the original user intent exactly.
-- Resolve all coreferences and implicit references using the conversation history.
-- Do NOT add new facts, assumptions, or external knowledge.
+- The standalone question must fully represent the user's intent.
+- Incorporate necessary context from previous turns to make the question self-contained.
 - Do NOT answer the question.
 - Do NOT explain your reasoning.
-- Output ONLY the rewritten query as a single sentence."""
+- Output ONLY the condensed, standalone question as a single sentence."""
     
     def __init__(
         self,

@@ -59,6 +59,11 @@ try:
 except ImportError:
     pass
 
+try:
+    import scipy.sparse
+except ImportError:
+    pass
+
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
@@ -327,10 +332,121 @@ class ELSERIndexer:
         except Exception as e:
             logger.error(f"ELSER Indexing failed: {e}")
 
+class SpladeIndexer:
+    def __init__(self, model_name: str = "naver/splade-cocondenser-ensembledistil", output_dir: str = "indices", batch_size: int = 128):
+        self.model_name = model_name
+        self.output_dir = output_dir
+        self.device = DEVICE
+        self.batch_size = batch_size
+        
+    def build(self, documents: List[Dict[str, Any]], domain: str):
+        logger.info(f"Initializing SPLADE Indexer with {self.model_name}")
+        
+        index_dir = os.path.join(self.output_dir, domain, "splade")
+        os.makedirs(index_dir, exist_ok=True)
+        
+        # Paths
+        index_path = os.path.join(index_dir, "index.npz") # Sparse matrix
+        ids_path = os.path.join(index_dir, "doc_ids.json")
+        
+        if os.path.exists(index_path) and os.path.exists(ids_path):
+            logger.info(f"SPLADE index already exists for {domain}. Skipping.")
+            return
+
+        from transformers import AutoModelForMaskedLM, AutoTokenizer
+        
+        tokenizer = AutoTokenizer.from_pretrained(self.model_name)
+        model = AutoModelForMaskedLM.from_pretrained(self.model_name)
+        model.to(self.device)
+        
+        # Enable DataParallel if multiple GPUs are available
+        if torch.cuda.device_count() > 1:
+            logger.info(f"🚀 Using {torch.cuda.device_count()} GPUs for SPLADE encoding!")
+            model = torch.nn.DataParallel(model)
+            
+        model.eval()
+        
+        # Function to encode
+        def encode_batch(texts):
+            with torch.no_grad():
+                # Tokenize needs to happen on CPU usually before moving to device, 
+                # but for simplicity we tokenize centrally then move tensors.
+                # For optimal multi-gpu, tokens should be moved to correct device by DataParallel, 
+                # but DataParallel expects tensor inputs.
+                inputs = tokenizer(texts, return_tensors="pt", padding=True, truncation=True, max_length=512)
+                
+                # Move inputs to device (if using DataParallel, it splits them)
+                # But inputs is a dict of tensors.
+                if torch.cuda.device_count() > 1:
+                   # For DataParallel we typically pass inputs directly but they need to be on cuda:0?
+                   # Actually simple DataParallel usually requires inputs on the main device.
+                   input_ids = inputs["input_ids"].to(self.device)
+                   attention_mask = inputs["attention_mask"].to(self.device)
+                   token_type_ids = inputs.get("token_type_ids")
+                   if token_type_ids is not None:
+                       token_type_ids = token_type_ids.to(self.device)
+                       outputs = model(input_ids=input_ids, attention_mask=attention_mask, token_type_ids=token_type_ids)
+                   else:
+                       outputs = model(input_ids=input_ids, attention_mask=attention_mask)
+                else:
+                    inputs = inputs.to(self.device)
+                    outputs = model(**inputs)
+
+                logits = outputs.logits
+                
+                # SPLADE logic: log(1 + relu(logits)) * mask
+                # If DataParallel used, logits are gathered back to self.device (cuda:0)
+                
+                # We need attention mask on the same device as logits for multiplication
+                if torch.cuda.device_count() > 1:
+                     mask = inputs["attention_mask"].to(logits.device).unsqueeze(-1)
+                else:
+                     mask = inputs["attention_mask"].unsqueeze(-1)
+                     
+                values = torch.log(1 + torch.relu(logits)) * mask
+                # Max pooling
+                sparse_vecs = torch.max(values, dim=1).values
+                return sparse_vecs.cpu()
+
+        logger.info(f"Encoding {len(documents)} documents with SPLADE...")
+        
+        # Batch processing
+        all_sparse_vecs = []
+        texts = [doc['text'] for doc in documents]
+        
+        for i in tqdm(range(0, len(texts), self.batch_size), desc="Encoding"):
+            batch_texts = texts[i : i + self.batch_size]
+            sparse_batch = encode_batch(batch_texts)
+            all_sparse_vecs.append(sparse_batch)
+            
+        if not all_sparse_vecs:
+             logger.warning("No documents encoded.")
+             return
+
+        full_tensor = torch.cat(all_sparse_vecs, dim=0)
+        
+        # Convert to scipy sparse matrix to save space
+        # Thresholding could be applied here (e.g. keep only > 0)
+        # SPLADE outputs are already Relu'd so they are >= 0.
+        # But we only want non-zero elements
+        
+        numpy_matrix = full_tensor.numpy()
+        sparse_matrix = scipy.sparse.csr_matrix(numpy_matrix)
+        
+        logger.info(f"Saving SPLADE index to {index_path}...")
+        scipy.sparse.save_npz(index_path, sparse_matrix)
+        
+        # Save IDs
+        doc_ids = [doc['id'] for doc in documents]
+        with open(ids_path, 'w') as f:
+            json.dump(doc_ids, f)
+            
+        logger.info("SPLADE Indexing complete.")
+
 def main():
     parser = argparse.ArgumentParser(description="Build Indices for Retrieval Task A")
     parser.add_argument("--domains", nargs="+", default=["clapnq", "cloud", "fiqa", "govt"], help="Domains to index")
-    parser.add_argument("--models", nargs="+", default=["bge", "bm25"], choices=["bge", "bm25", "elser", "bge-m3"], help="Models to use")
+    parser.add_argument("--models", nargs="+", default=["bge", "bm25"], choices=["bge", "bm25", "elser", "bge-m3", "splade"], help="Models to use")
     parser.add_argument("--data_dir", default="data/passage_level_processed", help="Path to processed data")
     parser.add_argument("--output_dir", default="indices", help="Path to save indices")
     parser.add_argument("--seed", type=int, default=RANDOM_SEED, help="Random seed for reproducibility")
@@ -360,6 +476,10 @@ def main():
                 
             if "elser" in args.models:
                 indexer = ELSERIndexer(output_dir=args.output_dir)
+                indexer.build(documents, domain)
+
+            if "splade" in args.models:
+                indexer = SpladeIndexer(output_dir=args.output_dir)
                 indexer.build(documents, domain)
                 
         except Exception as e:
