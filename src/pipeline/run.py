@@ -440,8 +440,8 @@ def run_pipeline(config: Dict[str, Any], output_dir: Path, domain: str, force: b
     
     # Bootstrap CI for NDCG@5
     ndcg_5_scores = df_results[primary_metric].tolist()
-    ci_lower, ci_upper = bootstrap_confidence_interval(ndcg_5_scores)
-    analysis_report[f"bootstrap_ci_{primary_metric}"] = {"lower": ci_lower, "upper": ci_upper}
+    bootstrap_result = bootstrap_confidence_interval(ndcg_5_scores)
+    analysis_report[f"bootstrap_ci_{primary_metric}"] = bootstrap_result
     
     # Significance Testing (Wilcoxon)
     if baseline_path and Path(baseline_path).exists():
