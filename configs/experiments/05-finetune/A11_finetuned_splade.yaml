@@ -1,3 +1,28 @@
 # A11: Fine-tuned SPLADE
 # Query rewrite + fine-tuned SPLADE sparse retrieval
 # Uses SPLADE model fine-tuned on domain-specific corpus
+
+experiment:
+  name: "A11_finetuned_splade"
+  description: "Query Condensation + Fine-tuned SPLADE"
+
+retrieval:
+  type: "sparse"
+  method: "splade"
+  top_k: 300
+  index_path: "indices/clapnq/splade_finetuned"  # Fine-tuned SPLADE index
+  model_path: "models/finetuned/splade/{domain}"  # Fine-tuned model path
+
+query_transform:
+  enabled: true
+  rewriter_type: "llm"
+  merge_strategy: "replace"
+  rewriter_config:
+    model_name: "gpt-4o-mini"
+    temperature: 0
+    max_rewrites: 1
+    top_p: 1
+    max_tokens: 128
+
+data:
+  query_mode: "last_turn"

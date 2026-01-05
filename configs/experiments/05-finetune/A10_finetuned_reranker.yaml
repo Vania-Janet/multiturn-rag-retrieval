@@ -1,3 +1,37 @@
 # A10: Fine-tuned reranker
 # Hybrid retrieval + domain fine-tuned cross-encoder reranker
 # Uses reranker model fine-tuned on domain-specific query-doc pairs
+
+experiment:
+  name: "A10_finetuned_reranker"
+  description: "Hybrid (SPLADE + BGE-M3) + Fine-tuned Reranker"
+
+retrieval:
+  type: "hybrid"
+  sparse:
+    method: "splade"
+    index_path: "indices/clapnq/splade"
+  dense:
+    model_name: "BAAI/bge-m3"
+    index_path: "indices/clapnq/bge-m3"
+  top_k: 300
+  alpha: 0.5
+
+query_transform:
+  enabled: true
+  rewriter_type: "llm"
+  merge_strategy: "replace"
+  rewriter_config:
+    model_name: "gpt-4o-mini"
+    temperature: 0
+    max_rewrites: 1
+    top_p: 1
+    max_tokens: 128
+
+reranking:
+  enabled: true
+  model_path: "models/finetuned/reranker/{domain}"  # Placeholder - will be resolved per domain
+  top_k: 100
+
+data:
+  query_mode: "last_turn"
