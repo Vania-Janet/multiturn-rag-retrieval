@@ -25,6 +25,7 @@ import sys
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 from utils.logger import setup_logger
+from utils.hf_manager import HFManager
 
 
 DOMAINS = ["clapnq", "fiqa", "govt", "cloud"]
@@ -199,6 +200,9 @@ def main():
     logger.info(f"Domains: {', '.join(domains)}")
     logger.info(f"Models: {', '.join(models)}")
     
+    # Initialize HF Manager
+    hf_manager = HFManager()
+    
     # Build indices
     total_indices = len(domains) * len(models)
     current_index = 0
@@ -221,7 +225,16 @@ def main():
                 logger=logger
             )
             
-            if not success:
+            if success:
+                # Upload to Hugging Face if enabled
+                if hf_manager.enabled:
+                    # Construct path: indices/domain/model
+                    # Note: Some models might have different internal structure, 
+                    # but usually they are under output_dir/domain/model
+                    index_path = args.output_dir / domain / model
+                    if index_path.exists():
+                        hf_manager.upload_directory(index_path)
+            else:
                 failed_indices.append(f"{domain}/{model}")
     
     # Summary

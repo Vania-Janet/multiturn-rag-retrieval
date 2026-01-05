@@ -4,7 +4,75 @@
 
 ---
 
-## 🔌 STEP 0: Connect to Remote Server (Vast.ai via VSCode)
+## ☁️ OPTION A: RunPod Deployment (Quick Start)
+
+**Critical path to get your environment up and running on RunPod.**
+
+### Step 1: Configure Instance
+1. Create account on **RunPod.io** and load $10-20 USD.
+2. Go to **Pods > Deploy**.
+3. **Select GPU**: Search for **RTX 4090**. Choose "2-GPU" (recommended) or "1-GPU".
+4. **Template (Docker Image)**: Select **RunPod Pytorch 2.1** (or newer). Includes CUDA, Python, Torch.
+5. **Customize Deployment**:
+   - **Container Disk**: 20 GB (for libraries).
+   - **Volume Disk**: 50 GB or 100 GB (Persistent storage for indices/datasets).
+   - *Note: Only `/workspace` persists if pod is turned off.*
+
+### Step 2: Connection
+Once Pod is "Running":
+1. Click **Connect**.
+2. **Option A (Easy)**: Click **Jupyter Lab** (web browser).
+3. **Option B (Pro)**: Copy SSH command (`ssh root@... -p ...`) and use in VS Code (Remote - SSH).
+
+### Step 3: Upload Data & Scripts
+Using Jupyter Lab upload or SFTP (FileZilla):
+1. Upload project folder to `/workspace/mt-rag`.
+2. Upload `data/` folder to `/workspace/mt-rag/data`.
+
+### Step 4: Install Dependencies
+Open terminal in Pod:
+```bash
+cd /workspace/mt-rag
+
+# Basic tools
+apt-get update && apt-get install -y git htop screen
+
+# Python libraries
+# (Torch is usually pre-installed in the template)
+pip install sentence-transformers faiss-gpu rank_bm25 elasticsearch python-dotenv openai pytrec_eval pandas numpy tqdm pyyaml huggingface_hub
+```
+
+**Elasticsearch (ELSER) Note:**
+- **Option A (Easy)**: Skip ELSER experiments for now (comment out in configs).
+- **Option B (Full)**: Install Java & Elasticsearch manually in the pod.
+  ```bash
+  wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-8.11.1-linux-x86_64.tar.gz
+  tar -xzf elasticsearch-8.11.1-linux-x86_64.tar.gz
+  # Configure and run in background...
+  ```
+
+### Step 5: Run Experiment
+Use `screen` or `tmux` to keep sessions alive.
+
+```bash
+screen -S experiment1
+
+# Inside screen session
+export OPENAI_API_KEY="sk-..."
+export HF_TOKEN="hf_..."
+
+# Validate
+python scripts/validate_code.py
+
+# Run
+python scripts/run_experiment.py -e replication_bm25 -d fiqa
+
+# Detach: Ctrl+A, then D
+```
+
+---
+
+## 🔌 OPTION B: Connect to Remote Server (Vast.ai via VSCode)
 
 ### Option A: Quick SSH Connection
 ```bash
@@ -69,17 +137,20 @@ pwd  # Verify you're in the project directory
 
 ---
 
-## ⚡ Quick Start (All Commands)
+## ⚡ Quick Start (All Commands - Bare Metal)
+
+**IMPORTANT**: RunPod/Vast.ai instances are already Docker containers. We run everything directly on the instance (no Docker-in-Docker).
 
 Copy this entire block and paste it into your RTX 4090 server terminal:
 
 ```bash
 # ============================================================================
-# STEP 1: INITIAL SETUP & HARDWARE VERIFICATION
+# STEP 0: INITIAL SETUP (BARE METAL)
 # ============================================================================
 
-# Navigate to project directory
-cd /path/to/mt-rag-benchmark/task_a_retrieval
+# Navigate to project directory (adjust path if needed)
+cd /workspace/mt-rag-benchmark/task_a_retrieval  # RunPod uses /workspace
+# OR: cd /root/mt-rag-benchmark/task_a_retrieval  # Vast.ai uses /root
 
 # Verify ALL GPUs are available (should show 2x RTX 4090)
 nvidia-smi
@@ -89,59 +160,76 @@ echo "Expected: 2x RTX 4090 GPUs"
 nproc
 echo "CPU cores detected"
 
+# Install system dependencies
+apt-get update && apt-get install -y git htop screen default-jdk curl
+
+# Install Python dependencies
+pip install sentence-transformers faiss-gpu rank_bm25 elasticsearch \
+    python-dotenv openai pytrec_eval pandas numpy tqdm pyyaml \
+    huggingface_hub cohere backoff
+
+# Download NLTK data
+python -c "import nltk; nltk.download('punkt'); nltk.download('punkt_tab')"
+
+# Set environment variables for 2x RTX 4090 optimization
+export OMP_NUM_THREADS=$(nproc)
+export MKL_NUM_THREADS=$(nproc)
+export CUDA_VISIBLE_DEVICES=0,1  # Use both GPUs
+export PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:512
+
+# Verify GPU setup
+python -c "import torch; print(f'PyTorch detects {torch.cuda.device_count()} GPUs')"
+python -c "import torch; print(f'CUDA available: {torch.cuda.is_available()}')"
+
 # Verify .env file exists with API keys
 cat .env | grep -E "OPENAI_API_KEY|VOYAGE_API_KEY|COHERE_API_KEY"
 
 # ============================================================================
-# STEP 2: START ELASTICSEARCH (Required for ELSER)
+# STEP 1: START ELASTICSEARCH (Required for ELSER)
 # ============================================================================
 
-docker-compose up -d elasticsearch
+# Elasticsearch cannot run as root. Create a dedicated user.
+useradd -m elasticsearch_user
+chown -R elasticsearch_user:elasticsearch_user /workspace
 
-# Wait for Elasticsearch to be healthy (30-60 seconds)
+# Download and extract Elasticsearch
+cd /workspace
+wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-8.11.1-linux-x86_64.tar.gz
+tar -xzf elasticsearch-8.11.1-linux-x86_64.tar.gz
+chown -R elasticsearch_user:elasticsearch_user elasticsearch-8.11.1
+
+# Start Elasticsearch in background as non-root user
+su - elasticsearch_user -c "/workspace/elasticsearch-8.11.1/bin/elasticsearch -d -p /workspace/elasticsearch.pid"
+
+# Wait for Elasticsearch to be healthy
 echo "Waiting for Elasticsearch to start..."
 sleep 60
 
 # Verify Elasticsearch is running
 curl http://localhost:9200
 
+# Return to project directory
+cd /workspace/mt-rag-benchmark/task_a_retrieval
+
 # ============================================================================
-# STEP 3: BUILD ALL INDICES (BM25, BGE-M3, ELSER)
+# STEP 2: BUILD ALL INDICES (BM25, BGE-M3, ELSER)
 # ============================================================================
 
-# Start the main application container with GPU support
-docker-compose up -d mt-rag-app
-
-# Enter the container
-docker exec -it mt-rag-app bash
-
-# Inside container, run:
-# ----------------------------
-
-# VERIFY MULTI-GPU SETUP INSIDE CONTAINER
-nvidia-smi
-python -c "import torch; print(f'PyTorch detects {torch.cuda.device_count()} GPUs')"
-python -c "import torch; print(f'CUDA available: {torch.cuda.is_available()}')"
-
-# Install dependencies (if not already in image)
-pip install nltk rank-bm25
-python -c "import nltk; nltk.download('punkt'); nltk.download('punkt_tab')"
-
-# OPTIMIZE FOR 2x RTX 4090: Set environment variables for maximum performance
-export OMP_NUM_THREADS=$(nproc)
-export MKL_NUM_THREADS=$(nproc)
-export CUDA_VISIBLE_DEVICES=0,1  # Use both GPUs
-export PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:512  # Optimize memory allocation
+# Use 'screen' to keep the process running if SSH disconnects
+screen -S indexing
 
 # Build BM25 indices for all domains (~5 minutes, CPU-bound, uses all cores)
-python scripts/build_indices.py --domain all --model bm25 --corpus-dir data/passage_level_processed
+python scripts/build_indices.py --domains clapnq cloud fiqa govt \
+    --models bm25 --data_dir data/passage_level_processed
 
-# Build BGE-M3 indices for all domains (~15-20 minutes on 2x RTX 4090 with multi-GPU)
-# Note: FAISS will automatically use both GPUs during index building
-python scripts/build_indices.py --domain all --model bge-m3 --corpus-dir data/passage_level_processed
+# Build BGE-M3 indices for all domains (~15-20 minutes on 2x RTX 4090)
+# Note: Will automatically use both GPUs via multi-process encoding
+python scripts/build_indices.py --domains clapnq cloud fiqa govt \
+    --models bge-m3 --data_dir data/passage_level_processed
 
 # Build ELSER indices for all domains (requires Elasticsearch, ~45 minutes)
-python scripts/build_indices.py --domain all --model elser --corpus-dir data/passage_level_processed
+python scripts/build_indices.py --domains clapnq cloud fiqa govt \
+    --models elser --data_dir data/passage_level_processed
 
 # Verify all indices were built successfully
 ls -lh indices/clapnq/
@@ -149,33 +237,24 @@ ls -lh indices/cloud/
 ls -lh indices/fiqa/
 ls -lh indices/govt/
 
-# Exit container
-exit
+# Detach from screen: Ctrl+A, then D
+# To reattach later: screen -r indexing
 
 # ============================================================================
-# RE-APPLY PERFORMANCE OPTIMIZATIONS (if you exited container)
-export OMP_NUM_THREADS=$(nproc)
-export MKL_NUM_THREADS=$(nproc)
-export CUDA_VISIBLE_DEVICES=0,1  # Use both RTX 4090 GPUs
-export PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:512
-
-# Verify multi-GPU is active
-python -c "import torch; print(f'Using {torch.cuda.device_count()} GPUs for experiments')"
-
-# STEP 4: RUN ALL EXPERIMENTS
+# STEP 3: RUN ALL EXPERIMENTS
 # ============================================================================
 
-# Re-enter container
-docker exec -it mt-rag-app bash
-
-# Inside container:
-# ----------------------------
+# Create new screen session for experiments
+screen -S experiments
 
 # Set PYTHONPATH
-export PYTHONPATH=/workspace/src:$PYTHONPATH
+export PYTHONPATH=/workspace/mt-rag-benchmark/task_a_retrieval/src:$PYTHONPATH
 
 # Create logs directory
 mkdir -p logs
+
+# Validate code before starting
+python scripts/validate_code.py
 
 # ============================================================================
 # RUN BASELINES (No query rewriting)
@@ -289,7 +368,32 @@ for domain in clapnq cloud fiqa govt; do
 done
 
 # ============================================================================
-# STEP 5: VERIFY RESULTS
+# RUN RERANKING EXPERIMENTS (Cohere v4.0-pro)
+# ============================================================================
+
+# Hybrid + Cohere Rerank (No Rewrite)
+for domain in clapnq cloud fiqa govt; do
+    echo "Running Hybrid + Cohere Rerank (no rewrite) on $domain"
+    python scripts/run_experiment.py \
+        --config configs/experiments/03-rerank/hybrid_cohere_norewrite.yaml \
+        --domain $domain \
+        --output experiments/hybrid_cohere_norewrite/$domain
+done
+
+# Hybrid + Cohere Rerank + R1 Coref
+for domain in clapnq cloud fiqa govt; do
+    echo "Running Hybrid + Cohere Rerank + Coref on $domain"
+    python scripts/run_experiment.py \
+        --config configs/experiments/03-rerank/hybrid_cohere_r1.yaml \
+        --domain $domain \
+        --output experiments/hybrid_cohere_r1/$domain
+done
+
+# Detach from screen: Ctrl+A, then D
+# To reattach later: screen -r experiments
+
+# ============================================================================
+# STEP 4: VERIFY RESULTS
 # ============================================================================
 
 # Check that all experiments produced results
@@ -303,35 +407,11 @@ echo "Sample results:"
 cat experiments/baseline_bgem3/clapnq/metrics.json | jq '.ndcg_at_10'
 
 # ============================================================================
-# STEP 6: COLLECT ALL RESULTS
-# ============================================================================
-
-# Create results summary
-python scripts/summarize_results.py --experiments experiments/ --output results_summary.csv
-
-# Exit container
-exit
-
-# ============================================================================
-# STEP 7: COPY RESULTS TO HOST (if needed)
-# ============================================================================
-
-# Copy results from container to host
-docker cp mt-rag-app:/workspace/experiments ./experiments_results
-docker cp mt-rag-app:/workspace/logs ./logs_backup
-
-# Stop containers (optional)
-docker-compose down
-
-echo "✅ All experiments completed! Results are in ./experiments/ directory"
-
-# ============================================================================
-# STEP 8: SYNC ARTIFACTS TO HUGGING FACE (Optional)
+# STEP 5: SYNC ARTIFACTS TO HUGGING FACE (Optional)
 # ============================================================================
 
 # If you need to upload indices, models, or results to Hugging Face Hub
 # This script handles large files (indices, artifacts) automatically.
-# It uses the configuration in scripts/hf_sync.py to identify large directories.
 
 # 1. Login to Hugging Face (if not already logged in)
 huggingface-cli login
@@ -343,11 +423,20 @@ huggingface-cli login
 # - experiments/ (Results and logs)
 python scripts/hf_sync.py
 
+# ============================================================================
+# STEP 6: CLEANUP (Optional)
+# ============================================================================
+
+# Stop Elasticsearch to free up resources
+pkill -F /workspace/elasticsearch.pid
+
+echo "✅ All experiments completed! Results are in ./experiments/ directory"
+
 ```
 
 ---
 
-## � Checkpointing & Crash Recovery
+## 🔄 Checkpointing & Crash Recovery
 
 **Your experiments are safe!** The pipeline has multiple checkpoint mechanisms:
 
@@ -378,10 +467,17 @@ python scripts/hf_sync.py
 
 If your SSH connection drops:
 
-1. **Reconnect to server**:
+1. **Reattach to screen session**:
    ```bash
-   ssh -p YOUR_PORT root@YOUR_HOST.vast.ai
-   cd /path/to/mt-rag-benchmark/task_a_retrieval
+   # Reconnect to server
+   ssh -p YOUR_PORT root@YOUR_HOST.vast.ai  # Or vast.ai hostname
+   cd /workspace/mt-rag-benchmark/task_a_retrieval
+
+   # List available screen sessions
+   screen -ls
+   
+   # Reattach to your session
+   screen -r indexing   # Or: screen -r experiments
    ```
 
 2. **Check what completed**:
@@ -398,9 +494,9 @@ If your SSH connection drops:
 
 3. **Resume from where you left off**:
    ```bash
-   # If indexing was interrupted (indices will skip completed ones)
-   docker exec -it mt-rag-app bash
-   python scripts/build_indices.py --domain all --model bge-m3 --corpus-dir data/passage_level_processed
+   # If indexing was interrupted (script will skip completed indices)
+   python scripts/build_indices.py --domains clapnq cloud fiqa govt \
+       --models bge-m3 --data_dir data/passage_level_processed
    
    # If experiments were interrupted (manually re-run failed domains)
    # Example: If clapnq completed but cloud failed
@@ -412,8 +508,23 @@ If your SSH connection drops:
 
 ### 🛡️ Best Practices for Long Runs
 
-1. **Use `tmux` or `screen`** (already in guide) - keeps processes alive after SSH disconnect
+1. **Use `screen`** (already in guide) - keeps processes alive after SSH disconnect:
+   ```bash
+   # Create session
+   screen -S my_experiment
+   
+   # Run your commands...
+   
+   # Detach: Ctrl+A, then D
+   # Reattach later: screen -r my_experiment
+   ```
+
 2. **Monitor progress**: Check log files periodically
+   ```bash
+   # Watch logs in real-time
+   tail -f logs/build_indices.log
+   ```
+
 3. **Verify after each phase**:
    ```bash
    # After indexing
@@ -423,45 +534,57 @@ If your SSH connection drops:
    find experiments/ -name "metrics.json" | wc -l
    ```
 
+4. **Save work to persistent storage**:
+   - **RunPod**: Only `/workspace` persists across restarts
+   - **Vast.ai**: `/root` persists, but verify with your provider
+   - Always keep backups on Hugging Face Hub (see Step 5 in Quick Start)
+
 ---
 
-## �📋 Pre-Flight Checklist
+## 📋 Pre-Flight Checklist
 
 Before running the above commands, verify:
 
-- [ ] **GPU Available**: `nvidia-smi` shows RTX 4090
-- [ ] **Docker GPU Runtime**: `docker run --rm --gpus all nvidia/cuda:11.8.0-base-ubuntu22.04 nvidia-smi` works
+- [ ] **GPU Available**: `nvidia-smi` shows 2x RTX 4090
+- [ ] **Python Environment**: `python --version` shows Python 3.8+
+- [ ] **PyTorch with CUDA**: `python -c "import torch; print(torch.cuda.is_available())"` returns `True`
 - [ ] **API Keys Set**: `.env` file contains:
-  - `OPENAI_API_KEY=sk-...`
-  - `VOYAGE_API_KEY=pa-...` (optional, only for Voyage experiments)
-  - `COHERE_API_KEY=...` (optional, only for reranking experiments)
-- [ ] **Disk Space**: At 2x RTX 4090 + Multi-Core CPU)
+  - `OPENAI_API_KEY=sk-...` (required for query rewriting)
+  - `COHERE_API_KEY=...` (required for reranking experiments)
+  - `HF_TOKEN=hf_...` (optional, for Hugging Face uploads)
+- [ ] **Disk Space**: At least 100 GB free
+  ```bash
+  df -h /workspace  # RunPod
+  # OR
+  df -h /root       # Vast.ai
+  ```
+- [ ] **Data Files Present**:
+  ```bash
+  ls data/passage_level_processed/
+  # Should show: clapnq/ cloud/ fiqa/ govt/
+  ```
+
+---
+
+## ⏱️ Expected Runtime (2x RTX 4090 + Multi-Core CPU)
 
 | Phase | Time | Details |
 |-------|------|---------|
-| **Index Building** | **60 min** | BM25 (5m, all CPU cores) + BGE-M3 (15-20m, 2 GPUs) + ELSER (35-40m, 2 GPUs) |
-| **Baseline Experiments** | **30 min** | 3 methods × 4 domains × ~2-3 min/run (GPU parallel) |
-| **Query Rewriting** | **60 min** | 6 configs × 4 domains × ~2-3 min/run (GPU parallel) |
-| **Hybrid Experiments** | **20 min** | 2 configs × 4 domains × ~2-3 min/run (GPU parallel) |
-| **TOTAL** | **~3 hours** | For all 60+ experiment runs |
+| **Index Building** | **60 min** | BM25 (5m, all CPU cores) + BGE-M3 (15-20m, 2 GPUs) + ELSER (35-40m) |
+| **Baseline Experiments** | **30 min** | 3 methods × 4 domains × ~2-3 min/run |
+| **Query Rewriting** | **60 min** | 6 configs × 4 domains × ~2-3 min/run |
+| **Hybrid Experiments** | **20 min** | 2 configs × 4 domains × ~2-3 min/run |
+| **Reranking Experiments** | **20 min** | 2 configs × 4 domains × ~2-3 min/run (Cohere API) |
+| **TOTAL** | **~3 hours** | For all 70+ experiment runs |
 
 **Performance Optimizations Applied:**
-- ✅ **2x RTX 4090 GPUs**: FAISS indices distributed across both GPUs during search
+- ✅ **2x RTX 4090 GPUs**: Multi-process encoding uses both GPUs simultaneously
 - ✅ **Multi-Core CPU**: BM25 indexing uses all available CPU threads
 - ✅ **FP16 Precision**: Embedding models run in half precision (2x speedup)
-- ✅ **Large Batch Sizes**: 1024 for indexing, 128 for retrieval
+- ✅ **Optimized Batch Sizes**: 256 for indexing, 128 for retrieval (from `configs/base.yaml`)
 - ✅ **Memory Optimization**: `PYTORCH_CUDA_ALLOC_CONF` prevents fragmentation
 
-*Note: Times assume warm cache, no API rate limits, and proper multi-GPU detection
-| Phase | Time | Details |
-|-------|------|---------|
-| **Index Building** | 80 min | BM25 (5m) + BGE-M3 (30m) + ELSER (45m) |
-| **Baseline Experiments** | 45 min | 3 methods × 4 domains × ~3-4 min/run |
-| **Query Rewriting** | 90 min | 6 configs × 4 domains × ~3-4 min/run |
-| **Hybrid Experiments** | 30 min | 2 configs × 4 domains × ~3-4 min/run |
-| **TOTAL** | **~4 hours** | For all 60+ experiment runs |
-
-*Note: Times assume warm cache and no API rate limits.*
+*Note: Times assume warm cache, no API rate limits, and proper multi-GPU detection.*
 
 ---
 
@@ -469,21 +592,37 @@ Before running the above commands, verify:
 
 ### If Elasticsearch fails to start:
 ```bash
-docker-compose logs elasticsearch
+# Check Elasticsearch logs
+tail -f /workspace/elasticsearch-8.11.1/logs/elasticsearch.log
+
 # Check if port 9200 is already in use
 sudo lsof -i :9200
+
+# Kill and restart Elasticsearch
+pkill -F /workspace/elasticsearch.pid
+su - elasticsearch_user -c "/workspace/elasticsearch-8.11.1/bin/elasticsearch -d -p /workspace/elasticsearch.pid"
 ```
 
-### If GPU is nBOTH GPUs during experiments:
+### If Elasticsearch permission errors:
 ```bash
-# In a separate terminal/tmux pane
-watch -n 1 nvidia-smi
+# Ensure the elasticsearch user owns the directory
+chown -R elasticsearch_user:elasticsearch_user /workspace/elasticsearch-8.11.1
 
-# Or check current GPU utilization
-nvidia-smi --query-gpu=index,name,utilization.gpu,memory.used,memory.total --format=csv
+# Restart Elasticsearch
+su - elasticsearch_user -c "/workspace/elasticsearch-8.11.1/bin/elasticsearch -d -p /workspace/elasticsearch.pid"
+```
 
-# Verify both GPUs are being used
-nvidia-smi dmon -s u
+### If GPU is not detected:
+```bash
+# Check GPU visibility
+nvidia-smi
+
+# Verify PyTorch can see GPUs
+python -c "import torch; print(f'CUDA available: {torch.cuda.is_available()}')"
+python -c "import torch; print(f'GPUs detected: {torch.cuda.device_count()}')"
+
+# Set CUDA_VISIBLE_DEVICES if needed
+export CUDA_VISIBLE_DEVICES=0,1
 ```
 
 ### If only 1 GPU is being used:
@@ -492,12 +631,14 @@ nvidia-smi dmon -s u
 echo $CUDA_VISIBLE_DEVICES
 # Should output: 0,1
 
-# Force PyTorch to see both GPUs
-export CUDA_VISIBLE_DEVICES=0,1
+# Check GPU utilization during indexing
+watch -n 1 nvidia-smi
 
-# Verify
-python -c "import torch; print(f'GPUs available: {torch.cuda.device_count()}')"iner Toolkit is installed
-docker run --rm --gpus all nvidia/cuda:11.8.0-base-ubuntu22.04 nvidia-smi
+# Verify multi-GPU encoding is enabled
+python -c "from sentence_transformers import SentenceTransformer; \
+    model = SentenceTransformer('BAAI/bge-m3'); \
+    pool = model.start_multi_process_pool(); \
+    print('Multi-GPU pool started successfully')"
 ```
 
 ### If indexing fails with NLTK errors:
@@ -507,22 +648,51 @@ python -c "import nltk; nltk.download('punkt'); nltk.download('punkt_tab')"
 
 ### If experiments fail with import errors:
 ```bash
-export PYTHONPATH=/workspace/src:$PYTHONPATH
+# Set PYTHONPATH to include src directory
+export PYTHONPATH=/workspace/mt-rag-benchmark/task_a_retrieval/src:$PYTHONPATH
+
+# Verify imports work
+python -c "from pipeline.retrieval import DenseRetriever; print('Import successful')"
+```
+
+### If API rate limits are hit:
+```bash
+# OpenAI rate limits (query rewriting experiments)
+# - Solution: The code already has exponential backoff. Just wait.
+# - Alternative: Use a higher tier API key with increased limits.
+
+# Cohere rate limits (reranking experiments)
+# - Solution: The code uses backoff retry logic (max 3 retries).
+# - Alternative: Contact Cohere for increased rate limits.
 ```
 
 ### To monitor GPU usage during experiments:
-```bash for Maximum Performance
+```bash
+# Option 1: Use watch command
+watch -n 1 nvidia-smi
 
-1. **Use `tmux` with split panes** to monitor GPUs while experiments run:
+# Option 2: Use nvidia-smi in monitoring mode
+nvidia-smi dmon -s u
+
+# Option 3: Check GPU memory and utilization
+nvidia-smi --query-gpu=index,name,utilization.gpu,memory.used,memory.total --format=csv
+```
+
+---
+
+## 💡 Tips for Maximum Performance
+
+1. **Use `screen` with split monitoring** to watch GPUs while experiments run:
    ```bash
-   tmux new -s rag-experiments
+   screen -S rag-experiments
    
-   # Split pane horizontally (Ctrl+B, then ")
-   # Top pane: Run experiments
-   # Bottom pane: watch -n 1 nvidia-smi
+   # In screen, you can create a monitoring pane
+   # Ctrl+A, then | (vertical split) or " (horizontal split)
+   # In one pane: run experiments
+   # In another pane: watch -n 1 nvidia-smi
    
-   # Detach: Ctrl+B, then D
-   # Reattach: tmux attach -t rag-experiments
+   # Detach: Ctrl+A, then D
+   # Reattach: screen -r rag-experiments
    ```
 
 2. **Verify BOTH GPUs are at >80% utilization**:
@@ -536,25 +706,84 @@ export PYTHONPATH=/workspace/src:$PYTHONPATH
    ```
 
 4. **Batch experiments efficiently**: 
-   - Run CPU-bound (BM25) and GPU-bound (BGE-M3) experiments in parallel
-   - Example: BM25 experiment in one terminal, BGE-M3 in another
+   - All experiments in the Quick Start guide run sequentially
+   - If you want to parallelize, run different domains in separate screen sessions
+   - Example:
+     ```bash
+     screen -S clapnq
+     python scripts/run_experiment.py --config ... --domain clapnq
+     # Ctrl+A, D (detach)
+     
+     screen -S cloud
+     python scripts/run_experiment.py --config ... --domain cloud
+     # Ctrl+A, D (detach)
+     ```
 
 5. **Save intermediate results**: The script saves results after each domain, so you can interrupt safely.
 
 6. **Cost optimization**: 
    - If GPU utilization is <50%, investigate bottlenecks (API rate limits, disk I/O)
    - Consider running experiments for 1 domain first to validate performance
-# Example: BGE-M3 baseline on CLAPNQ
-python scripts/run_experiment.py \
-    --config configs/experiments/0-baselines/replication_bgem3.yaml \
-    --domain clapnq \
-    --output experiments/baseline_bgem3/clapnq
-
-# Check the output
-cat experiments/baseline_bgem3/clapnq/metrics.json
-```
+   - Monitor costs: Check GPU usage with `nvidia-smi` and stop if utilization is low
 
 ---
+
+## 🚀 Production Tips
+
+1. **Persistent Sessions**: Use `screen` (already in guide) to keep experiments running if SSH disconnects.
+
+2. **Data Persistence**:
+   - **RunPod**: Only `/workspace` survives pod restarts. Keep everything there.
+   - **Vast.ai**: `/root` persists, but verify with your provider.
+   - **Best Practice**: Upload critical results to Hugging Face Hub immediately after completion.
+
+3. **Monitoring Dashboard**:
+   ```bash
+   # Create a monitoring script
+   cat > /workspace/monitor.sh << 'EOF'
+   #!/bin/bash
+   while true; do
+     clear
+     echo "=== GPU Status ==="
+     nvidia-smi --query-gpu=index,name,utilization.gpu,memory.used,memory.total --format=csv,noheader
+     echo ""
+     echo "=== Elasticsearch Status ==="
+     curl -s http://localhost:9200/_cluster/health | jq -r '.status'
+     echo ""
+     echo "=== Completed Experiments ==="
+     find experiments/ -name "metrics.json" | wc -l
+     echo ""
+     sleep 5
+   done
+   EOF
+   chmod +x /workspace/monitor.sh
+   
+   # Run in a separate screen session
+   screen -S monitor
+   /workspace/monitor.sh
+   ```
+
+4. **Backup Strategy**:
+   ```bash
+   # After each major phase, sync to HF Hub
+   python scripts/hf_sync.py
+   
+   # Or manually backup critical files
+   tar -czf results_backup_$(date +%Y%m%d_%H%M%S).tar.gz experiments/ indices/
+   ```
+
+---
+
+**Estimated Total Cost**: ~3 hours × your instance hourly rate
+
+**Hardware Utilization Summary:**
+- 🔥 **2x RTX 4090**: ~90%+ utilization during indexing and retrieval
+- 💻 **All CPU Cores**: 100% utilization during BM25 indexing
+- 🧠 **Memory**: ~20-24GB VRAM per GPU, ~32-48GB System RAM
+- 📊 **Expected Throughput**: ~1000 docs/sec encoding (multi-GPU), ~5000 queries/sec retrieval
+
+**Pro tip**: Run during off-peak hours if your provider has variable pricing.
+
 
 ## 🚀 Production Tips
 

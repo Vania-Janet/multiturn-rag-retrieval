@@ -63,43 +63,126 @@ class PRFExpander(QueryExpander):
     Pseudo-Relevance Feedback (PRF) expansion.
     
     Extracts important terms from top retrieved documents and adds them to query.
+    Uses TF-IDF scoring to identify the most discriminative terms.
     """
     
     def __init__(
         self,
         num_docs: int = 3,
         num_terms: int = 5,
-        min_term_freq: int = 2
+        min_term_freq: int = 2,
+        stopwords: Optional[Set[str]] = None
     ):
         self.num_docs = num_docs
         self.num_terms = num_terms
         self.min_term_freq = min_term_freq
         
+        # Default English stopwords
+        if stopwords is None:
+            self.stopwords = {
+                'a', 'an', 'and', 'are', 'as', 'at', 'be', 'by', 'for', 'from',
+                'has', 'he', 'in', 'is', 'it', 'its', 'of', 'on', 'that', 'the',
+                'to', 'was', 'will', 'with', 'this', 'but', 'they', 'have', 'had',
+                'what', 'when', 'where', 'who', 'which', 'why', 'how', 'can', 'could',
+                'would', 'should', 'may', 'might', 'must', 'shall', 'or', 'not', 'no',
+                'yes', 'do', 'does', 'did', 'been', 'being', 'am', 'were', 'you', 'your'
+            }
+        else:
+            self.stopwords = stopwords
+        
     def expand(self, query: str, top_docs: Optional[List[str]] = None) -> List[str]:
         """
-        Extract expansion terms from top documents.
+        Extract expansion terms from top documents using TF-IDF.
         
         Args:
             query: Original query
-            top_docs: Top retrieved documents
+            top_docs: Top retrieved documents (text content)
             
         Returns:
-            List of expansion terms
+            List of expansion terms ranked by TF-IDF score
         """
         
         if not top_docs or len(top_docs) == 0:
             logger.warning("No documents provided for PRF expansion")
             return []
         
-        # TODO: Implement term extraction and scoring (TF-IDF, BM25)
-        logger.warning("PRFExpander not fully implemented")
-        return []
+        # Use only top N documents
+        docs_to_analyze = top_docs[:self.num_docs]
+        
+        # Extract query terms (to avoid re-adding them)
+        query_terms = set(self._tokenize(query.lower()))
+        
+        # Score terms from documents
+        term_scores = self._extract_terms(docs_to_analyze)
+        
+        # Filter out query terms, stopwords, and rare terms
+        filtered_terms = [
+            (term, score) for term, score in term_scores.items()
+            if term not in query_terms 
+            and term not in self.stopwords
+            and len(term) > 2  # Skip very short terms
+        ]
+        
+        # Sort by score and take top N
+        top_terms = sorted(filtered_terms, key=lambda x: x[1], reverse=True)[:self.num_terms]
+        
+        # Return just the terms (not scores)
+        expansion_terms = [term for term, score in top_terms]
+        
+        logger.debug(f"PRF expansion: {len(expansion_terms)} terms from {len(docs_to_analyze)} docs")
+        return expansion_terms
+    
+    def _tokenize(self, text: str) -> List[str]:
+        """Simple tokenization by splitting on whitespace and punctuation."""
+        import re
+        # Split on non-alphanumeric characters
+        tokens = re.findall(r'\b\w+\b', text.lower())
+        return tokens
     
     def _extract_terms(self, docs: List[str]) -> Dict[str, float]:
-        """Extract and score terms from documents."""
+        """
+        Extract and score terms from documents using TF-IDF.
         
-        # TODO: Implement TF-IDF or similar scoring
-        return {}
+        TF-IDF = TF(term, doc) * IDF(term, all_docs)
+        TF = term_freq / max_term_freq in doc
+        IDF = log(num_docs / num_docs_with_term)
+        """
+        import math
+        from collections import Counter
+        
+        # Tokenize all documents
+        doc_tokens = [self._tokenize(doc) for doc in docs]
+        
+        # Calculate document frequency (DF) for each term
+        doc_frequency = Counter()
+        for tokens in doc_tokens:
+            unique_terms = set(tokens)
+            for term in unique_terms:
+                doc_frequency[term] += 1
+        
+        # Filter terms that appear too rarely
+        valid_terms = {
+            term for term, df in doc_frequency.items()
+            if df >= self.min_term_freq or df >= max(1, len(docs) * 0.3)
+        }
+        
+        # Calculate TF-IDF for each term across all documents
+        term_tfidf = Counter()
+        num_docs = len(docs)
+        
+        for tokens in doc_tokens:
+            # Calculate TF for this document
+            term_freq = Counter(tokens)
+            max_freq = max(term_freq.values()) if term_freq else 1
+            
+            # Add TF-IDF contribution from this document
+            for term, freq in term_freq.items():
+                if term in valid_terms:
+                    tf = freq / max_freq
+                    idf = math.log(num_docs / doc_frequency[term])
+                    term_tfidf[term] += tf * idf
+        
+        return dict(term_tfidf)
 
 
 class MultiQueryExpander(QueryExpander):

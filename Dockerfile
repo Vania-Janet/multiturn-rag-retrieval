@@ -36,7 +36,7 @@ RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 1
 WORKDIR /workspace
 
 # Copy requirements first for Docker layer caching
-COPY requirements-frozen.txt requirements.txt ./
+COPY requirements-frozen.txt ./
 
 # Install Python dependencies
 RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \

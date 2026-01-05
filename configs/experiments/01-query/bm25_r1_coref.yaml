@@ -6,6 +6,7 @@ retrieval:
   type: "sparse"
   method: "bm25"
   top_k: 300
+  index_path: "indices/clapnq/bm25"
 
 query_transform:
   enabled: true
