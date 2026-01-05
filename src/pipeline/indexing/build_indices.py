@@ -88,11 +88,12 @@ def load_corpus(domain: str, processed_dir: str) -> List[Dict[str, Any]]:
     return documents
 
 class BGEIndexer:
-    def __init__(self, model_name: str = "BAAI/bge-base-en-v1.5", output_dir: str = "indices", index_subdir: str = "bge"):
+    def __init__(self, model_name: str = "BAAI/bge-base-en-v1.5", output_dir: str = "indices", index_subdir: str = "bge", batch_size: int = None):
         self.model_name = model_name
         self.output_dir = output_dir
         self.index_subdir = index_subdir
         self.device = DEVICE
+        self.batch_size = batch_size if batch_size is not None else BATCH_SIZE
         
     def build(self, documents: List[Dict[str, Any]], domain: str):
         logger.info(f"Initializing BGE Indexer with {self.model_name} on {self.device}")
@@ -127,7 +128,7 @@ class BGEIndexer:
             pool = model.start_multi_process_pool()
             
             # Compute the embeddings using the multi-process pool
-            embeddings = model.encode_multi_process(texts, pool, batch_size=BATCH_SIZE)
+            embeddings = model.encode_multi_process(texts, pool, batch_size=self.batch_size)
             
             # Stop the multi-process pool
             model.stop_multi_process_pool(pool)
@@ -146,7 +147,7 @@ class BGEIndexer:
         else:
             embeddings = model.encode(
                 texts,
-                batch_size=BATCH_SIZE,
+                batch_size=self.batch_size,
                 show_progress_bar=True,
                 normalize_embeddings=True,
                 convert_to_numpy=True,
