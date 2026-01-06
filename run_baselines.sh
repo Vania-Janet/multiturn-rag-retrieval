@@ -2,16 +2,17 @@
 # Script para correr experimentos baseline con checkpoints
 
 set -e
+set -o pipefail
 
 DOMAINS=("clapnq" "cloud" "fiqa" "govt")
-EXPERIMENTS=("replication_bm25" "replication_bge15" "replication_bgem3")
+EXPERIMENTS=("replication_bm25" "replication_bge15" "replication_bgem3" "replication_splade")
 
 LOG_DIR="logs/experiments"
 CHECKPOINT_DIR="experiments/.checkpoints"
 mkdir -p "$LOG_DIR" "$CHECKPOINT_DIR"
 
 echo "════════════════════════════════════════════════════════════════"
-echo "  Iniciando experimentos baseline (sin SPLADE)"
+echo "  Iniciando experimentos baseline (con SPLADE)"
 echo "════════════════════════════════════════════════════════════════"
 echo ""
 
