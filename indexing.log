@@ -812,3 +812,135 @@ Failed indices:
 2026-01-05 22:29:47,631 - INFO - Initializing SPLADE Indexer with naver/splade-cocondenser-ensembledistil
 2026-01-05 22:29:48,506 - INFO - 🚀 Using 2 GPUs for SPLADE encoding!
 2026-01-05 22:29:48,507 - INFO - Encoding 183408 documents with SPLADE...
+2026-01-05 22:48:25,634 - INFO - Saving SPLADE index to indices/clapnq/splade/index.npz...
+2026-01-05 22:48:39,477 - INFO - SPLADE Indexing complete.
+2026-01-05 22:48:41,642 - INFO -   ✓ Index built successfully
+2026-01-05 22:48:41,643 - INFO - 
+================================================================================
+2026-01-05 22:48:41,643 - INFO - Index 6/20: fiqa/bm25
+2026-01-05 22:48:41,643 - INFO - ================================================================================
+
+2026-01-05 22:48:41,643 - INFO - Index already exists and is complete (use --force to rebuild): indices/fiqa/bm25
+2026-01-05 22:48:41,644 - INFO - 
+================================================================================
+2026-01-05 22:48:41,644 - INFO - Index 7/20: fiqa/elser
+2026-01-05 22:48:41,644 - INFO - ================================================================================
+
+2026-01-05 22:48:41,644 - INFO - Index already exists and is complete (use --force to rebuild): indices/fiqa/elser
+2026-01-05 22:48:41,644 - INFO - 
+================================================================================
+2026-01-05 22:48:41,644 - INFO - Index 8/20: fiqa/bge-m3
+2026-01-05 22:48:41,644 - INFO - ================================================================================
+
+2026-01-05 22:48:41,644 - INFO - Index already exists and is complete (use --force to rebuild): indices/fiqa/bge-m3
+2026-01-05 22:48:41,644 - INFO - 
+================================================================================
+2026-01-05 22:48:41,644 - INFO - Index 9/20: fiqa/bge-base-1.5
+2026-01-05 22:48:41,644 - INFO - ================================================================================
+
+2026-01-05 22:48:41,644 - INFO - Index already exists and is complete (use --force to rebuild): indices/fiqa/bge-base-1.5
+2026-01-05 22:48:41,644 - INFO - 
+================================================================================
+2026-01-05 22:48:41,644 - INFO - Index 10/20: fiqa/splade
+2026-01-05 22:48:41,644 - INFO - ================================================================================
+
+2026-01-05 22:48:41,645 - WARNING - Index directory exists but seems incomplete (missing _SUCCESS). Rebuilding: indices/fiqa/splade
+2026-01-05 22:48:41,645 - INFO - Building splade index for fiqa
+2026-01-05 22:48:41,645 - INFO -   Corpus: data/passage_level_processed/fiqa/corpus.jsonl
+2026-01-05 22:48:41,645 - INFO -   Output: indices/fiqa/splade
+2026-01-05 22:48:41,932 - INFO -   Building SPLADE index...
+2026-01-05 22:48:41,932 - INFO - Initializing SPLADE Indexer with naver/splade-cocondenser-ensembledistil
+2026-01-05 22:48:43,127 - INFO - 🚀 Using 2 GPUs for SPLADE encoding!
+2026-01-05 22:48:43,128 - INFO - Encoding 60984 documents with SPLADE...
+2026-01-05 22:55:19,200 - INFO - Saving SPLADE index to indices/fiqa/splade/index.npz...
+2026-01-05 22:55:24,369 - INFO - SPLADE Indexing complete.
+2026-01-05 22:55:25,100 - INFO -   ✓ Index built successfully
+2026-01-05 22:55:25,128 - INFO - 
+================================================================================
+2026-01-05 22:55:25,128 - INFO - Index 11/20: govt/bm25
+2026-01-05 22:55:25,128 - INFO - ================================================================================
+
+2026-01-05 22:55:25,129 - INFO - Index already exists and is complete (use --force to rebuild): indices/govt/bm25
+2026-01-05 22:55:25,129 - INFO - 
+================================================================================
+2026-01-05 22:55:25,129 - INFO - Index 12/20: govt/elser
+2026-01-05 22:55:25,129 - INFO - ================================================================================
+
+2026-01-05 22:55:25,129 - INFO - Index already exists and is complete (use --force to rebuild): indices/govt/elser
+2026-01-05 22:55:25,129 - INFO - 
+================================================================================
+2026-01-05 22:55:25,129 - INFO - Index 13/20: govt/bge-m3
+2026-01-05 22:55:25,129 - INFO - ================================================================================
+
+2026-01-05 22:55:25,129 - INFO - Index already exists and is complete (use --force to rebuild): indices/govt/bge-m3
+2026-01-05 22:55:25,129 - INFO - 
+================================================================================
+2026-01-05 22:55:25,129 - INFO - Index 14/20: govt/bge-base-1.5
+2026-01-05 22:55:25,129 - INFO - ================================================================================
+
+2026-01-05 22:55:25,129 - INFO - Index already exists and is complete (use --force to rebuild): indices/govt/bge-base-1.5
+2026-01-05 22:55:25,129 - INFO - 
+================================================================================
+2026-01-05 22:55:25,129 - INFO - Index 15/20: govt/splade
+2026-01-05 22:55:25,129 - INFO - ================================================================================
+
+2026-01-05 22:55:25,130 - WARNING - Index directory exists but seems incomplete (missing _SUCCESS). Rebuilding: indices/govt/splade
+2026-01-05 22:55:25,130 - INFO - Building splade index for govt
+2026-01-05 22:55:25,130 - INFO -   Corpus: data/passage_level_processed/govt/corpus.jsonl
+2026-01-05 22:55:25,130 - INFO -   Output: indices/govt/splade
+2026-01-05 22:55:25,657 - INFO -   Building SPLADE index...
+2026-01-05 22:55:25,657 - INFO - Initializing SPLADE Indexer with naver/splade-cocondenser-ensembledistil
+2026-01-05 22:55:26,767 - INFO - 🚀 Using 2 GPUs for SPLADE encoding!
+2026-01-05 22:55:26,768 - INFO - Encoding 49607 documents with SPLADE...
+2026-01-05 23:00:51,087 - INFO - Saving SPLADE index to indices/govt/splade/index.npz...
+2026-01-05 23:00:55,406 - INFO - SPLADE Indexing complete.
+2026-01-05 23:00:55,425 - INFO -   ✓ Index built successfully
+2026-01-05 23:00:55,455 - INFO - 
+================================================================================
+2026-01-05 23:00:55,455 - INFO - Index 16/20: cloud/bm25
+2026-01-05 23:00:55,455 - INFO - ================================================================================
+
+2026-01-05 23:00:55,456 - INFO - Index already exists and is complete (use --force to rebuild): indices/cloud/bm25
+2026-01-05 23:00:55,456 - INFO - 
+================================================================================
+2026-01-05 23:00:55,456 - INFO - Index 17/20: cloud/elser
+2026-01-05 23:00:55,456 - INFO - ================================================================================
+
+2026-01-05 23:00:55,456 - INFO - Index already exists and is complete (use --force to rebuild): indices/cloud/elser
+2026-01-05 23:00:55,456 - INFO - 
+================================================================================
+2026-01-05 23:00:55,456 - INFO - Index 18/20: cloud/bge-m3
+2026-01-05 23:00:55,456 - INFO - ================================================================================
+
+2026-01-05 23:00:55,456 - INFO - Index already exists and is complete (use --force to rebuild): indices/cloud/bge-m3
+2026-01-05 23:00:55,456 - INFO - 
+================================================================================
+2026-01-05 23:00:55,456 - INFO - Index 19/20: cloud/bge-base-1.5
+2026-01-05 23:00:55,456 - INFO - ================================================================================
+
+2026-01-05 23:00:55,456 - INFO - Index already exists and is complete (use --force to rebuild): indices/cloud/bge-base-1.5
+2026-01-05 23:00:55,456 - INFO - 
+================================================================================
+2026-01-05 23:00:55,456 - INFO - Index 20/20: cloud/splade
+2026-01-05 23:00:55,456 - INFO - ================================================================================
+
+2026-01-05 23:00:55,457 - WARNING - Index directory exists but seems incomplete (missing _SUCCESS). Rebuilding: indices/cloud/splade
+2026-01-05 23:00:55,457 - INFO - Building splade index for cloud
+2026-01-05 23:00:55,457 - INFO -   Corpus: data/passage_level_processed/cloud/corpus.jsonl
+2026-01-05 23:00:55,457 - INFO -   Output: indices/cloud/splade
+2026-01-05 23:00:56,035 - INFO -   Building SPLADE index...
+2026-01-05 23:00:56,035 - INFO - Initializing SPLADE Indexer with naver/splade-cocondenser-ensembledistil
+2026-01-05 23:00:57,147 - INFO - 🚀 Using 2 GPUs for SPLADE encoding!
+2026-01-05 23:00:57,149 - INFO - Encoding 72439 documents with SPLADE...
+2026-01-05 23:08:51,374 - INFO - Saving SPLADE index to indices/cloud/splade/index.npz...
+2026-01-05 23:08:55,931 - INFO - SPLADE Indexing complete.
+2026-01-05 23:08:56,804 - INFO -   ✓ Index built successfully
+2026-01-05 23:08:56,841 - INFO - 
+================================================================================
+2026-01-05 23:08:56,841 - INFO - SUMMARY
+2026-01-05 23:08:56,841 - INFO - ================================================================================
+2026-01-05 23:08:56,841 - INFO - Total indices: 20
+2026-01-05 23:08:56,841 - INFO - Successful: 20
+2026-01-05 23:08:56,841 - INFO - Failed: 0
+2026-01-05 23:08:56,841 - INFO - 
+✓ All indices built successfully!

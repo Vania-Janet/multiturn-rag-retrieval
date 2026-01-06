@@ -39,24 +39,24 @@ EXPERIMENTS = [
     "replication_bm25",
     "replication_bge15",
     "replication_bgem3",
-    "replication_elser",
+    "replication_splade",
     # Baselines - Full History
     "A0_baseline_bm25_fullhist",
-    "A0_baseline_elser_fullhist",
+    "A0_baseline_splade_fullhist",
     "A1_baseline_bgem3_fullhist",
     # Query processing
-    "bm25_r1_coref",
+    "bm25_r1_condensation",
     "bm25_r2_multi",
-    "elser_r1_coref",
-    "elser_r3_hyde",
-    "bgem3_r1_coref",
+    "splade_r1_condensation",
+    "splade_r3_hyde",
+    "bgem3_r1_condensation",
     "bgem3_r2_multi",
     # Hybrid
-    "hybrid_elser_bgem3_norewrite",
-    "hybrid_elser_bgem3_r1",
-    "hybrid_elser_voyage_norewrite",
-    "hybrid_elser_voyage_r1",
-    # "A7_domain_gated",  # Future Work
+    "hybrid_splade_bgem3_norewrite",
+    "hybrid_splade_bgem3_r1",
+    "hybrid_splade_voyage_norewrite",
+    "hybrid_splade_voyage_r1",
+    "A7_domain_gated",
     # Iterative
     # "A8_iterative_refinement",  # Future Work
     # Reranking
@@ -74,24 +74,24 @@ EXPERIMENT_DIRS = {
     "replication_bm25": "0-baselines",
     "replication_bge15": "0-baselines",
     "replication_bgem3": "0-baselines",
-    "replication_elser": "0-baselines",
+    "replication_splade": "0-baselines",
     # Baselines - Full History
     "A0_baseline_bm25_fullhist": "0-baselines",
-    "A0_baseline_elser_fullhist": "0-baselines",
+    "A0_baseline_splade_fullhist": "0-baselines",
     "A1_baseline_bgem3_fullhist": "0-baselines",
     # Query processing
-    "bm25_r1_coref": "01-query",
+    "bm25_r1_condensation": "01-query",
     "bm25_r2_multi": "01-query",
-    "elser_r1_coref": "01-query",
-    "elser_r3_hyde": "01-query",
-    "bgem3_r1_coref": "01-query",
+    "splade_r1_condensation": "01-query",
+    "splade_r3_hyde": "01-query",
+    "bgem3_r1_condensation": "01-query",
     "bgem3_r2_multi": "01-query",
     # Hybrid
-    "hybrid_elser_bgem3_norewrite": "02-hybrid",
-    "hybrid_elser_bgem3_r1": "02-hybrid",
-    "hybrid_elser_voyage_norewrite": "02-hybrid",
-    "hybrid_elser_voyage_r1": "02-hybrid",
-    # "A7_domain_gated": "02-hybrid",  # Future Work
+    "hybrid_splade_bgem3_norewrite": "02-hybrid",
+    "hybrid_splade_bgem3_r1": "02-hybrid",
+    "hybrid_splade_voyage_norewrite": "02-hybrid",
+    "hybrid_splade_voyage_r1": "02-hybrid",
+    "A7_domain_gated": "02-hybrid",
     # Iterative
     # "A8_iterative_refinement": "04-iterative",  # Future Work
     # Reranking
@@ -234,6 +234,14 @@ def main():
                     config["data"]["query_file"] = original_path.replace("questions", suffix)
                     logger.info(f"Using query file: {config['data']['query_file']}")
                 
+                # FIX: Dynamically adjust index_path if it's hardcoded to clapnq but domain is different
+                if "retrieval" in config and "index_path" in config["retrieval"]:
+                    index_path = config["retrieval"]["index_path"]
+                    if "clapnq" in index_path and domain != "clapnq":
+                         new_index_path = index_path.replace("clapnq", domain)
+                         config["retrieval"]["index_path"] = new_index_path
+                         logger.info(f"Fixed index_path for {domain}: {new_index_path}")
+
                 # Setup output directory
                 output_dir = args.output_dir / experiment / domain
                 output_dir.mkdir(parents=True, exist_ok=True)
