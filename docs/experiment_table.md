@@ -6,8 +6,15 @@ Comprehensive results across all experiments and domains.
 
 | Experiment | ClapNQ | FiQA | Govt | Cloud | **Macro Avg** |
 |-----------|--------|------|------|-------|--------------|
-| **A0: Sparse Baseline** | - | - | - | - | - |
-| **A1: Dense Baseline** | - | - | - | - | - |
+| **A0: Sparse Baseline (BM25 Last)** | 0.2353 | 0.1026 | 0.2767 | 0.2201 | 0.2087 |
+| **A0: BM25 FullHist** | 0.2041 | 0.0912 | 0.2696 | 0.1408 | 0.1764 |
+| **A1: Dense Baseline (BGE-M3 Last)** | 0.4768 | 0.3613 | 0.4197 | 0.3938 | 0.4129 |
+| **A1: BGE-M3 FullHist** | 0.3248 | 0.2223 | 0.3246 | 0.2291 | 0.2752 |
+| **A1: BGE-1.5 Last (Repl)** | 0.4762 | 0.3457 | 0.3952 | 0.3762 | 0.3983 |
+| **A1: Voyage Last (Repl)** | 0.5163 | 0.2912 | 0.4144 | 0.3621 | 0.3960 |
+| **A1: Voyage FullHist** | 0.3567 | 0.1790 | 0.3458 | 0.2333 | 0.2787 |
+| **SPLADE Baseline (Last)** | 0.5082 | 0.3715 | 0.4515 | 0.4512 | 0.4456 |
+| **SPLADE FullHist** | 0.3449 | 0.2025 | 0.3494 | 0.2236 | 0.2801 |
 | **A2: Rewrite + Sparse** | - | - | - | - | - |
 | **A3: Multi-Rewrite + RRF** | - | - | - | - | - |
 | **A4: Rewrite + SPLADE** | - | - | - | - | - |
@@ -21,16 +28,40 @@ Comprehensive results across all experiments and domains.
 
 *Metric: NDCG@10 (primary metric)*
 
+**Average Performance by Query Mode:**
+- **Last Turn (Avg across all models):** 0.3723
+- **Full History (Avg across all models):** 0.2526
+- **Difference:** Last Turn is +47% better on average.
+
+
 ## Detailed Metrics by Experiment
 
 ### A0: Sparse Baseline
 
 | Domain | Recall@10 | MRR | NDCG@10 | MAP | Latency (ms) |
 |--------|-----------|-----|---------|-----|--------------|
-| ClapNQ | - | - | - | - | - |
-| FiQA | - | - | - | - | - |
-| Govt | - | - | - | - | - |
-| Cloud | - | - | - | - | - |
+| ClapNQ | 0.3384 | - | 0.2353 | 0.1604 | 764 |
+| FiQA | 0.1712 | - | 0.1026 | 0.0589 | 263 |
+| Govt | 0.3794 | - | 0.2767 | 0.2087 | 196 |
+| Cloud | 0.3131 | - | 0.2201 | 0.1630 | 272 |
+
+### A1: Dense Baseline (BGE-M3)
+
+| Domain | Recall@10 | MRR | NDCG@10 | MAP | Latency (ms) |
+|--------|-----------|-----|---------|-----|--------------|
+| ClapNQ | 0.6237 | - | 0.4768 | 0.3721 | 19 |
+| FiQA | 0.4847 | - | 0.3613 | 0.2640 | 18 |
+| Govt | 0.5620 | - | 0.4197 | 0.3252 | 18 |
+| Cloud | 0.5145 | - | 0.3938 | 0.3030 | 18 |
+
+### SPLADE Baseline
+
+| Domain | Recall@10 | MRR | NDCG@10 | MAP | Latency (ms) |
+|--------|-----------|-----|---------|-----|--------------|
+| ClapNQ | 0.6760 | - | 0.5082 | 0.3993 | 89 |
+| FiQA | 0.5241 | - | 0.3715 | 0.2672 | 43 |
+| Govt | 0.6176 | - | 0.4515 | 0.3513 | 34 |
+| Cloud | 0.6143 | - | 0.4512 | 0.3487 | 45 |
 
 ### A6: Hybrid + Rerank (Best Overall)
 
@@ -88,10 +119,10 @@ Pairwise comparison (paired t-test, p < 0.05):
 
 | Domain | Best Method | NDCG@10 | Notes |
 |--------|-------------|---------|-------|
-| ClapNQ | A7 | - | Benefits from conversation context |
-| FiQA | A6 | - | Reranking helps with financial jargon |
-| Govt | A7 | - | Domain rules boost policy queries |
-| Cloud | A6 | - | Hybrid works well for tech docs |
+| ClapNQ | SPLADE | 0.5082 | Strongest baseline so far |
+| FiQA | SPLADE | 0.3715 | Outperforms dense models |
+| Govt | SPLADE | 0.4515 | Strongest baseline so far |
+| Cloud | SPLADE | 0.4512 | Strongest baseline so far |
 
 ## Latency Analysis
 

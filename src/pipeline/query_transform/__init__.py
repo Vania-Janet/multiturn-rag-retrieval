@@ -8,6 +8,7 @@ from .rewriters import (
     QueryRewriter,
     IdentityRewriter,
     LLMRewriter,
+    VLLMRewriter,
     QueryDecomposer,
     ContextualRewriter,
     TemplateRewriter,

@@ -40,10 +40,12 @@ EXPERIMENTS = [
     "replication_bge15",
     "replication_bgem3",
     "replication_splade",
+    "replication_voyage",
     # Baselines - Full History
     "A0_baseline_bm25_fullhist",
     "A0_baseline_splade_fullhist",
     "A1_baseline_bgem3_fullhist",
+    "A1_baseline_voyage_fullhist",
     # Query processing
     "bm25_r1_condensation",
     "bm25_r2_multi",
@@ -51,6 +53,8 @@ EXPERIMENTS = [
     "splade_r3_hyde",
     "bgem3_r1_condensation",
     "bgem3_r2_multi",
+    "voyage_r1_condensation",
+    "voyage_r2_multi",
     # Hybrid
     "hybrid_splade_bgem3_norewrite",
     "hybrid_splade_bgem3_r1",
@@ -75,10 +79,12 @@ EXPERIMENT_DIRS = {
     "replication_bge15": "0-baselines",
     "replication_bgem3": "0-baselines",
     "replication_splade": "0-baselines",
+    "replication_voyage": "0-baselines",
     # Baselines - Full History
     "A0_baseline_bm25_fullhist": "0-baselines",
     "A0_baseline_splade_fullhist": "0-baselines",
     "A1_baseline_bgem3_fullhist": "0-baselines",
+    "A1_baseline_voyage_fullhist": "0-baselines",
     # Query processing
     "bm25_r1_condensation": "01-query",
     "bm25_r2_multi": "01-query",
@@ -86,6 +92,8 @@ EXPERIMENT_DIRS = {
     "splade_r3_hyde": "01-query",
     "bgem3_r1_condensation": "01-query",
     "bgem3_r2_multi": "01-query",
+    "voyage_r1_condensation": "01-query",
+    "voyage_r2_multi": "01-query",
     # Hybrid
     "hybrid_splade_bgem3_norewrite": "02-hybrid",
     "hybrid_splade_bgem3_r1": "02-hybrid",

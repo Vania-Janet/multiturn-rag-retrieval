@@ -133,15 +133,16 @@ class FAISSVectorDBGenerator:
         
         return self.get_embeddings_voyage(texts, model, checkpoint_path=checkpoint_path)
     
-    def create_faiss_index(self, embeddings: np.ndarray, dimension: int) -> faiss.IndexFlatL2:
-        """Create FAISS IndexFlatL2 and add embeddings."""
-        logger.info(f"Creating FAISS IndexFlatL2 with dimension {dimension}")
+    def create_faiss_index(self, embeddings: np.ndarray, dimension: int) -> faiss.IndexFlatIP:
+        """Create FAISS IndexFlatIP (Inner Product) and add embeddings."""
+        logger.info(f"Creating FAISS IndexFlatIP with dimension {dimension}")
         
-        logger.info("Normalizing embeddings for L2 distance...")
+        logger.info("Normalizing embeddings for Inner Product (Cosine Similarity)...")
         faiss.normalize_L2(embeddings)
         
-        # Create L2 index
-        index = faiss.IndexFlatL2(dimension)
+        # Create Inner Product index (for normalized vectors, IP = Cosine Similarity)
+        # Higher scores are better
+        index = faiss.IndexFlatIP(dimension)
         
         # Add embeddings to index
         logger.info(f"Adding {len(embeddings)} vectors to index...")
@@ -150,7 +151,7 @@ class FAISSVectorDBGenerator:
         logger.info(f"Index created successfully with {index.ntotal} vectors")
         return index
     
-    def save_index_and_metadata(self, index: faiss.IndexFlatL2, documents: List[Dict], 
+    def save_index_and_metadata(self, index: faiss.IndexFlatIP, documents: List[Dict], 
                                output_dir: Path, corpus_name: str):
         """Save FAISS index and document metadata."""
         # Create output directory
@@ -176,7 +177,7 @@ class FAISSVectorDBGenerator:
             'provider': 'voyageai',
             'dimension': self.model_configs[corpus_name]['dimension'],
             'num_documents': len(documents),
-            'index_type': 'IndexFlatL2'
+            'index_type': 'IndexFlatIP'
         }
         with open(config_path, 'w') as f:
             json.dump(config, f, indent=2)

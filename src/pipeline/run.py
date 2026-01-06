@@ -139,8 +139,20 @@ def run_pipeline(config: Dict[str, Any], output_dir: Path, domain: str, force: b
     elif retrieval_type == "dense":
         model_name = config["retrieval"].get("model_name", "BAAI/bge-base-en-v1.5")
         
+        # Handle Voyage model selection logic for Dense retrieval
+        if "voyage" in model_name.lower():
+            if domain == "fiqa":
+                model_name = "voyage-finance-2"
+                logger.info(f"Domain is 'fiqa': Forcing Voyage model to '{model_name}'")
+            else:
+                # User confirmed indices are voyage-3-large
+                model_name = "voyage-3-large"
+                logger.info(f"Domain is '{domain}': Using Voyage model '{model_name}' to match index")
+            # Update config so retriever gets correct name
+            config["retrieval"]["model_name"] = model_name
+            default_index_path = f"indices/{domain}/voyage"
         # Determine default index path based on model
-        if "bge-m3" in model_name.lower():
+        elif "bge-m3" in model_name.lower():
             default_index_path = f"indices/{domain}/bge-m3"
         elif "bge" in model_name.lower():
             default_index_path = f"indices/{domain}/bge"
@@ -167,8 +179,8 @@ def run_pipeline(config: Dict[str, Any], output_dir: Path, domain: str, force: b
                 dense_model = "voyage-finance-2"
                 logger.info(f"Domain is 'fiqa': Forcing Voyage model to '{dense_model}'")
             else:
-                dense_model = "voyage-large-2"
-                logger.info(f"Domain is '{domain}': Using Voyage model '{dense_model}'")
+                dense_model = "voyage-3-large"
+                logger.info(f"Domain is '{domain}': Using Voyage model '{dense_model}' to match index")
             
             # Update config with selected model so retriever gets correct name
             config["retrieval"]["dense"]["model_name"] = dense_model
@@ -491,3 +503,39 @@ def run_pipeline(config: Dict[str, Any], output_dir: Path, domain: str, force: b
     logger.info(f"Analysis report saved to {analysis_file}")
     
     return scores_global
+
+if __name__ == "__main__":
+    import argparse
+    import yaml
+    
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+    
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--config", type=str, required=True, help="Path to experiment config file")
+    parser.add_argument("--domain", type=str, required=True, help="Domain name (e.g., clapnq, cloud, fiqa, govt)")
+    parser.add_argument("--output_dir", type=str, default=None, help="Custom output directory")
+    parser.add_argument("--baseline", type=str, default=None, help="Path to baseline evaluation results for comparison")
+    parser.add_argument("--force", action="store_true", help="Force rerun even if results exist")
+    
+    args = parser.parse_args()
+    
+    with open(args.config, "r") as f:
+        config = yaml.safe_load(f)
+        
+    # Determine output directory
+    if args.output_dir:
+        output_path = Path(args.output_dir)
+    else:
+        # Default: experiments/<experiment_name>/<domain>
+        exp_name = config.get("experiment", {}).get("name", "experiment")
+        output_path = Path("experiments") / exp_name / args.domain
+        
+    config["output_dir"] = str(output_path)
+    
+    run_pipeline(
+        config=config,
+        output_dir=output_path,
+        domain=args.domain,
+        force=args.force,
+        baseline_path=args.baseline
+    )
