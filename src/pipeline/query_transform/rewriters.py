@@ -24,6 +24,14 @@ except ImportError:
     OPENAI_AVAILABLE = False
     OpenAI = None
 
+try:
+    from vllm import LLM, SamplingParams
+    VLLM_AVAILABLE = True
+except ImportError:
+    VLLM_AVAILABLE = False
+    LLM = None
+    SamplingParams = None
+
 load_dotenv()
 logger = logging.getLogger(__name__)
 
@@ -199,6 +207,151 @@ Current user question:
 Generate {self.max_rewrites} different rewritten standalone queries that preserve the same intent
 but vary in phrasing or focus. Each query must be suitable for document retrieval.
 Return each query on a separate line. Do not number them."""
+
+
+class VLLMRewriter(QueryRewriter):
+    """
+    vLLM-based query rewriting (Query Condensation).
+    
+    Uses a local vLLM server to condense the conversation history and current query
+    into a single standalone search query.
+    """
+    
+    SYSTEM_PROMPT = LLMRewriter.SYSTEM_PROMPT
+    
+    def __init__(
+        self,
+        model_name: str = "meta-llama/Meta-Llama-3.1-8B-Instruct",
+        temperature: float = 0.0,
+        max_rewrites: int = 1,
+        max_tokens: int = 100,
+        gpu_memory_utilization: float = 0.9,
+        tensor_parallel_size: int = 1,
+        quantization: Optional[str] = None,
+        max_model_len: int = 8192
+    ):
+        self.model_name = model_name
+        self.temperature = temperature
+        self.max_rewrites = max_rewrites
+        self.max_tokens = max_tokens
+        
+        if not VLLM_AVAILABLE:
+            logger.warning("vLLM not installed. Install with: pip install vllm")
+            self.llm = None
+        else:
+            try:
+                # Initialize vLLM
+                self.llm = LLM(
+                    model=model_name,
+                    gpu_memory_utilization=gpu_memory_utilization,
+                    trust_remote_code=True,
+                    enforce_eager=True, # Often helps with memory
+                    tensor_parallel_size=tensor_parallel_size,
+                    quantization=quantization,
+                    max_model_len=max_model_len
+                )
+                self.tokenizer = self.llm.get_tokenizer()
+                self.sampling_params = SamplingParams(
+                    temperature=temperature,
+                    max_tokens=max_tokens,
+                    stop=["<|eot_id|>"]
+                )
+            except Exception as e:
+                logger.error(f"Failed to initialize vLLM: {e}")
+                self.llm = None
+    
+    def rewrite(self, query: str, context: Optional[List[str]] = None) -> List[str]:
+        """Generate query variations using LLM (single)."""
+        return self.batch_rewrite([(query, context)])[0]
+        
+    def batch_rewrite(self, queries: List[tuple[str, Optional[List[str]]]]) -> List[List[str]]:
+        """Batch rewrite multiple queries."""
+        if not self.llm:
+            return [[q] for q, c in queries]
+        
+        results = [None] * len(queries)
+        prompts = []
+        indices_to_process = []
+        
+        for idx, (query, context) in enumerate(queries):
+            # Check cache
+            cache_data = {
+                "type": "vllm_rewriter",
+                "model": self.model_name,
+                "temp": self.temperature,
+                "max_rewrites": self.max_rewrites,
+                "query": query,
+                "context": context,
+                "system_prompt": self.SYSTEM_PROMPT
+            }
+            cache_key = get_cache_key("vllm", cache_data)
+            cache_file = CACHE_DIR / f"{cache_key}.json"
+            
+            if cache_file.exists():
+                try:
+                    with open(cache_file, 'r') as f:
+                        results[idx] = json.load(f)
+                    continue
+                except Exception:
+                    pass
+            
+            # Prepare prompt
+            user_prompt = self._build_user_prompt(query, context)
+            messages = [
+                {"role": "system", "content": self.SYSTEM_PROMPT},
+                {"role": "user", "content": user_prompt}
+            ]
+            full_prompt = self.tokenizer.apply_chat_template(messages, tokenize=False, add_generation_prompt=True)
+            prompts.append(full_prompt)
+            indices_to_process.append((idx, cache_file))
+            
+        if prompts:
+            logger.info(f"Running vLLM batch generation for {len(prompts)} queries...")
+            outputs = self.llm.generate(prompts, self.sampling_params)
+            
+            for (idx, cache_file), output in zip(indices_to_process, outputs):
+                generated_text = output.outputs[0].text.strip()
+                result = []
+                if self.max_rewrites == 1:
+                    result = [generated_text]
+                else:
+                    lines = [line.strip() for line in generated_text.split('\n') if line.strip()]
+                    result = lines[:self.max_rewrites] if lines else [generated_text]
+                
+                results[idx] = result
+                try:
+                    with open(cache_file, 'w') as f:
+                        json.dump(result, f)
+                except Exception as e:
+                    logger.warning(f"Failed to write cache {cache_file}: {e}")
+                    
+        return results
+
+    def _build_user_prompt(self, query: str, context: Optional[List[str]] = None) -> str:
+        conversation_history = ""
+        if context and len(context) > 0:
+            conversation_history = "\\n".join(context[-6:])
+        else:
+            conversation_history = "(No prior conversation)"
+        
+        if self.max_rewrites == 1:
+            return f"""Conversation history:
+{conversation_history}
+
+Current user question:
+{query}
+
+Rewrite the current question into a standalone, context-complete query
+that can be used directly for document retrieval."""
+        else:
+            return f"""Conversation history:
+{conversation_history}
+
+Current user question:
+{query}
+
+Generate {self.max_rewrites} different rewritten standalone queries that preserve the same intent
+but vary in phrasing or focus. Each query must be suitable for document retrieval."""
 
 
 class QueryDecomposer(QueryRewriter):
@@ -534,6 +687,7 @@ def get_rewriter(rewriter_type: str, **kwargs) -> QueryRewriter:
     rewriters = {
         'identity': IdentityRewriter,
         'llm': LLMRewriter,
+        'vllm': VLLMRewriter,
         'decompose': QueryDecomposer,
         'contextual': ContextualRewriter,
         'template': TemplateRewriter,

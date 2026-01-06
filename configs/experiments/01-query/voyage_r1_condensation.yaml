@@ -1,10 +1,11 @@
 experiment:
-  name: "bgem3_r1_condensation"
-  description: "BGE-M3 + R1 Query Condensation (GPT-4o-mini)"
+  name: "voyage_r1_condensation"
+  description: "Voyage + R1 Query Condensation (GPT-4o-mini)"
 
 retrieval:
   type: "dense"
-  model_name: "BAAI/bge-m3"
+  model_name: "voyage-3-large"
+  index_path: "indices/clapnq/voyage"
   top_k: 300
 
 query_transform:
@@ -18,4 +19,5 @@ query_transform:
     top_p: 1
     max_tokens: 128
 
+data:
   query_mode: "last_turn"

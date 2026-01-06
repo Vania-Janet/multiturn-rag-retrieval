@@ -1,0 +1,13 @@
+experiment:
+  name: "replication_voyage"
+  description: "Paper Replication: Voyage Baseline (Last Turn)"
+
+data:
+  query_mode: "last_turn"
+  query_file_suffix: "lastturn"
+
+retrieval:
+  type: "dense"
+  model_name: "voyage-3-large"
+  index_path: "indices/clapnq/voyage"
+  top_k: 300

@@ -1,0 +1,12 @@
+experiment:
+  name: "A1_baseline_voyage_fullhist"
+  description: "Baseline Voyage with Full History"
+
+data:
+  query_mode: "full_history"
+
+retrieval:
+  type: "dense"
+  model_name: "voyage-3-large"
+  index_path: "indices/clapnq/voyage"
+  top_k: 300

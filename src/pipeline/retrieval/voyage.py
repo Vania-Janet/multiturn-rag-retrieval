@@ -158,6 +158,19 @@ class VoyageRetriever(DenseRetriever):
         # Search
         scores, indices = self.index.search(query_embedding, top_k)
         
+        # Check if index is L2 (lower is better) or IP (higher is better)
+        # For L2 indexes, we need to convert distances to similarity scores
+        # Check metric_type which works for both CPU and GPU indexes
+        try:
+            if hasattr(self.index, 'metric_type') and self.index.metric_type == faiss.METRIC_L2:
+                # Convert L2 distances to similarities (invert)
+                # For normalized vectors: similarity ≈ 1 - (distance²/2)
+                # Or simply negate for ranking purposes
+                scores = -scores
+                logger.info("Converted L2 distances to similarity scores (negated)")
+        except Exception as e:
+            logger.warning(f"Failed to check/convert index metric: {e}")
+        
         results = []
         for score, idx in zip(scores[0], indices[0]):
             if idx == -1:
