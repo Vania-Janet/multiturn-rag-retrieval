@@ -1,26 +1,23 @@
 experiment:
-  name: "voyage_r2_multi"
-  description: "Voyage + R2 Multi Diverse K=3 + RRF (GPT-4o-mini)"
-
+  name: voyage_r2_multi
+  description: Voyage + R2 Multi Diverse K=3 + RRF (Llama 3.1 8B)
 retrieval:
-  type: "dense"
-  model_name: "voyage-3-large"
-  index_path: "indices/clapnq/voyage"
+  type: dense
+  model_name: voyage-3-large
   top_k: 300
-
 query_transform:
   enabled: true
-  rewriter_type: "llm"
-  merge_strategy: "rrf"
+  rewriter_type: vllm
+  merge_strategy: rrf
   rewriter_config:
-    model_name: "gpt-4o-mini"
+    model_name: Qwen/Qwen2.5-7B-Instruct
+    tensor_parallel_size: 1
+    max_model_len: 8192
+    gpu_memory_utilization: 0.85
     temperature: 0
     max_rewrites: 3
-    top_p: 1
     max_tokens: 128
-
 fusion:
   k: 60
-
 data:
-  query_mode: "last_turn"
+  query_mode: last_turn

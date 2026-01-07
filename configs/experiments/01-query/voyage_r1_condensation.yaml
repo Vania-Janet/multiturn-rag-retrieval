@@ -1,23 +1,21 @@
 experiment:
-  name: "voyage_r1_condensation"
-  description: "Voyage + R1 Query Condensation (GPT-4o-mini)"
-
+  name: voyage_r1_condensation
+  description: Voyage + R1 Query Condensation (Llama 3.1 8B)
 retrieval:
-  type: "dense"
-  model_name: "voyage-3-large"
-  index_path: "indices/clapnq/voyage"
+  type: dense
+  model_name: voyage-3-large
   top_k: 300
-
 query_transform:
   enabled: true
-  rewriter_type: "llm"
-  merge_strategy: "replace"
+  rewriter_type: vllm
+  merge_strategy: replace
   rewriter_config:
-    model_name: "gpt-4o-mini"
+    model_name: Qwen/Qwen2.5-7B-Instruct
+    tensor_parallel_size: 1
+    max_model_len: 8192
+    gpu_memory_utilization: 0.85
     temperature: 0
     max_rewrites: 1
-    top_p: 1
     max_tokens: 128
-
 data:
-  query_mode: "last_turn"
+  query_mode: last_turn

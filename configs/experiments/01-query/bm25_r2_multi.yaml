@@ -1,26 +1,23 @@
 experiment:
-  name: "bm25_r2_multi"
-  description: "BM25 + R2 Multi Diverse K=3 + RRF (GPT-4o-mini)"
-
+  name: bm25_r2_multi
+  description: BM25 + R2 Multi Diverse K=3 + RRF (Llama 3.1 8B)
 retrieval:
-  type: "sparse"
-  method: "bm25"
+  type: sparse
+  method: bm25
   top_k: 300
-  index_path: "indices/clapnq/bm25"
-
 query_transform:
   enabled: true
-  rewriter_type: "llm"
-  merge_strategy: "rrf"
+  rewriter_type: vllm
+  merge_strategy: rrf
   rewriter_config:
-    model_name: "gpt-4o-mini"
+    model_name: Qwen/Qwen2.5-7B-Instruct
+    tensor_parallel_size: 1
+    max_model_len: 8192
+    gpu_memory_utilization: 0.85
     temperature: 0
     max_rewrites: 3
-    top_p: 1
     max_tokens: 128
-
 fusion:
   k: 60
-
 data:
-  query_mode: "last_turn"
+  query_mode: last_turn
