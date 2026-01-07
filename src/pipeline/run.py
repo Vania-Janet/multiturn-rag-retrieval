@@ -247,7 +247,63 @@ def run_pipeline(config: Dict[str, Any], output_dir: Path, domain: str, force: b
             )
             logger.info(f"Reranking enabled: {reranker_type} ({config['reranking'].get('model_name')})")
 
-    for query in queries:
+    # Track query rewrites for analysis
+    query_rewrite_log = []
+
+    # OPTIMIZATION: Batch query rewriting for vLLM
+    query_rewrites_map = {}
+    if query_rewriter and hasattr(query_rewriter, 'batch_rewrite'):
+        logger.info(f"Preparing batch query rewriting for {len(queries)} queries...")
+        batch_queries = []
+        batch_indices = []
+        
+        for idx, query in enumerate(queries):
+            query_text = ""
+            query_id = query.get("task_id") or query.get("_id")
+            
+            # Extract query text (same logic as below)
+            if "text" in query:
+                query_text = query["text"]
+                if query_text:
+                    query_text = query_text.replace("|user|:", "").replace("|agent|:", "").replace("|model|:", "").strip()
+            elif "input" in query:
+                conversation_history = query.get("input", [])
+                if conversation_history:
+                    if query_mode == "last_turn":
+                        if conversation_history[-1]["speaker"] == "user":
+                            query_text = conversation_history[-1]["text"]
+                        else:
+                            for turn in reversed(conversation_history):
+                                if turn["speaker"] == "user":
+                                    query_text = turn["text"]
+                                    break
+                    elif query_mode == "full_history":
+                        user_turns = [turn["text"] for turn in conversation_history if turn["speaker"] == "user"]
+                        query_text = " ".join(user_turns)
+                    elif query_mode == "full_context":
+                        all_turns = [turn["text"] for turn in conversation_history]
+                        query_text = " ".join(all_turns)
+            
+            if query_text:
+                # Prepare context for rewriters that support it
+                conversation_context = None
+                if "input" in query and query_rewriter.__class__.__name__ in ["ContextualRewriter", "LLMRewriter", "VLLMRewriter", "HyDERewriter"]:
+                    conversation_context = [turn["text"] for turn in query.get("input", [])[:-1]]
+                
+                batch_queries.append((query_text, conversation_context))
+                batch_indices.append((idx, query_id))
+        
+        if batch_queries:
+            logger.info(f"Running batch rewrite for {len(batch_queries)} queries...")
+            batch_results = query_rewriter.batch_rewrite(batch_queries)
+            
+            # Store results in map
+            for (idx, query_id), rewrites in zip(batch_indices, batch_results):
+                query_rewrites_map[idx] = rewrites
+            
+            logger.info(f"✓ Batch rewriting completed for {len(batch_results)} queries")
+
+    for idx, query in enumerate(queries):
         # Support both BEIR format (_id + text) and full history format (input list)
         query_text = ""
         query_id = query.get("task_id") or query.get("_id")
@@ -301,13 +357,30 @@ def run_pipeline(config: Dict[str, Any], output_dir: Path, domain: str, force: b
         # Apply query transformation if enabled
         queries_to_retrieve = [query_text]
         if query_rewriter:
-            conversation_context = None
-            # Pass context to rewriters that support it
-            if "input" in query and query_rewriter.__class__.__name__ in ["ContextualRewriter", "LLMRewriter", "HyDERewriter"]:
-                conversation_context = [turn["text"] for turn in query.get("input", [])[:-1]]
-            
-            queries_to_retrieve = query_rewriter.rewrite(query_text, context=conversation_context)
-            logger.debug(f"Rewrote query into {len(queries_to_retrieve)} variants")
+            # Use pre-computed batch results if available
+            if idx in query_rewrites_map:
+                queries_to_retrieve = query_rewrites_map[idx]
+                logger.debug(f"Using batch-rewritten query ({len(queries_to_retrieve)} variants)")
+                # Log the rewrite for analysis
+                query_rewrite_log.append({
+                    "task_id": query_id,
+                    "original": query_text,
+                    "rewritten": queries_to_retrieve
+                })
+            else:
+                # Fallback to single rewrite (for non-batch rewriters or cache misses)
+                conversation_context = None
+                if "input" in query and query_rewriter.__class__.__name__ in ["ContextualRewriter", "LLMRewriter", "VLLMRewriter", "HyDERewriter"]:
+                    conversation_context = [turn["text"] for turn in query.get("input", [])[:-1]]
+                
+                queries_to_retrieve = query_rewriter.rewrite(query_text, context=conversation_context)
+                logger.debug(f"Rewrote query into {len(queries_to_retrieve)} variants")
+                # Log the rewrite for analysis
+                query_rewrite_log.append({
+                    "task_id": query_id,
+                    "original": query_text,
+                    "rewritten": queries_to_retrieve
+                })
         
         # Handle multiple query variants
         all_retrieved_results = []
@@ -501,6 +574,14 @@ def run_pipeline(config: Dict[str, Any], output_dir: Path, domain: str, force: b
     with open(analysis_file, 'w') as f:
         json.dump(analysis_report, f, indent=2)
     logger.info(f"Analysis report saved to {analysis_file}")
+    
+    # Save query rewrite log if any rewrites were performed
+    if query_rewrite_log:
+        rewrite_log_file = output_dir / "query_rewrites.jsonl"
+        with open(rewrite_log_file, 'w') as f:
+            for entry in query_rewrite_log:
+                f.write(json.dumps(entry) + '\n')
+        logger.info(f"Query rewrite log saved to {rewrite_log_file} ({len(query_rewrite_log)} queries)")
     
     return scores_global
 

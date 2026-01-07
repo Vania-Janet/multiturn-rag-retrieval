@@ -6,4 +6,3 @@ data:
 
 retrieval:
   index_name: "fiqa_sparse"
-  index_path: "indices/fiqa/dense"

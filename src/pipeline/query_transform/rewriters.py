@@ -35,6 +35,11 @@ except ImportError:
 load_dotenv()
 logger = logging.getLogger(__name__)
 
+# Set HuggingFace cache to workspace volume (100 GB) instead of container disk (20 GB)
+os.environ['HF_HOME'] = '/workspace/cache'
+os.environ['TRANSFORMERS_CACHE'] = '/workspace/cache'
+os.environ['HF_HUB_CACHE'] = '/workspace/cache'
+
 CACHE_DIR = Path(".cache/rewrites")
 CACHE_DIR.mkdir(parents=True, exist_ok=True)
 
@@ -78,15 +83,25 @@ class LLMRewriter(QueryRewriter):
     into a single standalone search query.
     """
     
-    SYSTEM_PROMPT = """You are a helpful assistant that formulates standalone search queries.
-Your task is to condense the conversation history and the latest user question into a single, standalone question that can be understood without the chat history.
+    SYSTEM_PROMPT = """You are a helpful assistant that resolves coreferences in conversational search queries.
 
-Follow these rules strictly:
-- The standalone question must fully represent the user's intent.
-- Incorporate necessary context from previous turns to make the question self-contained.
-- Do NOT answer the question.
-- Do NOT explain your reasoning.
-- Output ONLY the condensed, standalone question as a single sentence."""
+Your task: Rewrite the LAST user turn into a standalone query by replacing pronouns and vague references with their explicit entities from the conversation history.
+
+CRITICAL RULES:
+1. START with the LAST user turn - preserve its complete content, wording, and structure
+2. ONLY replace pronouns (it, that, this, they) and vague references with explicit entities from prior turns
+3. DO NOT summarize, shorten, or paraphrase the last turn
+4. DO NOT omit any details from the last turn (error messages, codes, specific problems, technical terms)
+5. If the last turn mentions a specific error, problem, or technical detail, it MUST appear in the output
+6. Preserve ALL keywords exactly: technical terms, acronyms, product names, error messages, version numbers
+7. Add context from prior turns ONLY if needed to clarify pronouns - do not merge multiple questions
+
+Example:
+Turn 1: "How do I configure auto-scaling in AWS?"
+Turn 2: "What are the pricing options for it?"
+Output: "What are the pricing options for auto-scaling in AWS?"
+
+DO NOT answer the question. Output ONLY the standalone query."""
     
     def __init__(
         self,
@@ -192,11 +207,11 @@ Follow these rules strictly:
             return f"""Conversation history:
 {conversation_history}
 
-Current user question:
+Current user question (LAST TURN):
 {query}
 
-Rewrite the current question into a standalone, context-complete query
-that can be used directly for document retrieval."""
+Rewrite the LAST TURN into a standalone query by replacing pronouns with explicit entities from history.
+DO NOT summarize or omit any details from the last turn. Preserve all error messages, technical terms, and specific problems."""
         else:
             return f"""Conversation history:
 {conversation_history}
@@ -204,8 +219,13 @@ that can be used directly for document retrieval."""
 Current user question:
 {query}
 
-Generate {self.max_rewrites} different rewritten standalone queries that preserve the same intent
-but vary in phrasing or focus. Each query must be suitable for document retrieval.
+Generate {self.max_rewrites} different rewritten standalone queries that preserve the same intent but use these variation strategies:
+1. Use synonyms and semantically related terms (e.g., "machine learning" → "ML algorithms")
+2. Expand with specific aspects or dimensions (e.g., "performance" → "speed and accuracy")
+3. Reformulate with different linguistic structure (e.g., active/passive voice, questions/statements)
+
+IMPORTANT: While varying the linguistic style, preserve ALL technical terms, acronyms, product names, and specific keywords exactly as written.
+Each query must be standalone and suitable for document retrieval.
 Return each query on a separate line. Do not number them."""
 
 
@@ -350,8 +370,12 @@ that can be used directly for document retrieval."""
 Current user question:
 {query}
 
-Generate {self.max_rewrites} different rewritten standalone queries that preserve the same intent
-but vary in phrasing or focus. Each query must be suitable for document retrieval."""
+Generate {self.max_rewrites} different rewritten standalone queries that preserve the same intent but use these variation strategies:
+1. Use synonyms and semantically related terms (e.g., "machine learning" → "ML algorithms")
+2. Expand with specific aspects or dimensions (e.g., "performance" → "speed and accuracy")
+3. Reformulate with different linguistic structure (e.g., active/passive voice, questions/statements)
+
+Each query must be standalone and suitable for document retrieval."""
 
 
 class QueryDecomposer(QueryRewriter):

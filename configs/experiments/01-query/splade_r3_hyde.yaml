@@ -6,7 +6,6 @@ retrieval:
   type: "sparse"
   method: "splade"
   top_k: 300
-  index_path: "indices/clapnq/splade"
 
 query_transform:
   enabled: true
