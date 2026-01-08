@@ -17,5 +17,7 @@ query_transform:
     temperature: 0
     max_rewrites: 1
     max_tokens: 128
+    retrieval_type: dense
 data:
   query_mode: last_turn
+  query_file: "data/retrieval_tasks/{domain}/{domain}_questions.jsonl"

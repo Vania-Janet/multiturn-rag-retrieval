@@ -14,13 +14,38 @@ from pathlib import Path
 
 try:
     from rank_bm25 import BM25Okapi
+    BM25_AVAILABLE = True
+except ImportError:
+    BM25_AVAILABLE = False
+    BM25Okapi = None
+
+try:
     from nltk.tokenize import word_tokenize
+    NLTK_AVAILABLE = True
+except ImportError:
+    NLTK_AVAILABLE = False
+    # Fallback tokenizer
+    def word_tokenize(text):
+        """Simple fallback tokenizer if NLTK is not available."""
+        import re
+        return re.findall(r'\b\w+\b', text.lower())
+
+try:
     from elasticsearch import Elasticsearch
+    ELASTICSEARCH_AVAILABLE = True
+except ImportError:
+    ELASTICSEARCH_AVAILABLE = False
+    Elasticsearch = None
+
+try:
     import torch
     from transformers import AutoModelForMaskedLM, AutoTokenizer
     import scipy.sparse
+    SPLADE_AVAILABLE = True
 except ImportError:
-    pass
+    SPLADE_AVAILABLE = False
+    AutoModelForMaskedLM = None
+    AutoTokenizer = None
 
 logger = logging.getLogger(__name__)
 

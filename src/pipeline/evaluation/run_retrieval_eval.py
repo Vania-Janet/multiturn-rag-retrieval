@@ -91,7 +91,7 @@ def prepare_results_dict(input_file):
     with open(input_file, 'r') as f:
         for line in f:
             item = json.loads(line)
-            query_id = item["task_id"]
+            query_id = item.get("task_id") or item.get("_id")
             
             doc_scores = {}
             for ctx in item.get("contexts", []):

@@ -234,6 +234,20 @@ def main():
                     experiment_config=experiment_config_path
                 )
                 
+                # Substitute {domain} placeholder in all string values
+                def substitute_domain(obj, domain_name):
+                    """Recursively substitute {domain} in strings."""
+                    if isinstance(obj, dict):
+                        return {k: substitute_domain(v, domain_name) for k, v in obj.items()}
+                    elif isinstance(obj, list):
+                        return [substitute_domain(item, domain_name) for item in obj]
+                    elif isinstance(obj, str):
+                        return obj.replace("{domain}", domain_name)
+                    else:
+                        return obj
+                
+                config = substitute_domain(config, domain)
+                
                 # Handle query_file_suffix override for replication experiments
                 if "query_file_suffix" in config.get("data", {}):
                     suffix = config["data"]["query_file_suffix"]
