@@ -1,4 +1,11 @@
 import os
+
+# Set HuggingFace cache to workspace volume BEFORE any imports
+os.environ['HF_HOME'] = '/workspace/cache'
+os.environ['HUGGINGFACE_HUB_CACHE'] = '/workspace/cache/huggingface'
+os.environ['TRANSFORMERS_CACHE'] = '/workspace/cache/transformers'
+os.environ['HF_HUB_CACHE'] = '/workspace/cache/huggingface'
+
 import json
 import logging
 import time
