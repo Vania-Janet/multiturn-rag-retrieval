@@ -1,0 +1,13 @@
+experiment:
+  name: A2_baseline_bge15_rewrite
+  description: BGE-base-en-v1.5 with ground truth rewrites from dataset (oracle baseline)
+retrieval:
+  type: dense
+  method: bge
+  model_name: BAAI/bge-base-en-v1.5
+  top_k: 300
+query_transform:
+  enabled: false
+data:
+  query_mode: rewrite
+  query_file: "data/retrieval_tasks/{domain}/{domain}_rewrite.jsonl"

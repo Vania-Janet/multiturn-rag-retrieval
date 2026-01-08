@@ -1,0 +1,13 @@
+experiment:
+  name: A2_baseline_voyage_rewrite
+  description: Voyage-3-large with ground truth rewrites from dataset (oracle baseline)
+retrieval:
+  type: dense
+  method: voyage
+  model_name: voyage-3-large
+  top_k: 300
+query_transform:
+  enabled: false
+data:
+  query_mode: rewrite
+  query_file: "data/retrieval_tasks/{domain}/{domain}_rewrite.jsonl"

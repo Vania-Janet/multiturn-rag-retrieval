@@ -1,0 +1,12 @@
+experiment:
+  name: A2_baseline_splade_rewrite
+  description: SPLADE with ground truth rewrites from dataset (oracle baseline)
+retrieval:
+  type: sparse
+  method: splade
+  top_k: 300
+query_transform:
+  enabled: false
+data:
+  query_mode: rewrite
+  query_file: "data/retrieval_tasks/{domain}/{domain}_rewrite.jsonl"

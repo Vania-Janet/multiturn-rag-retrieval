@@ -1,6 +1,6 @@
 experiment:
-  name: "hybrid_splade_voyage_norewrite"
-  description: "Hybrid SPLADE + Voyage-3 with RRF (no rewriting) - for clapnq and govt"
+  name: "hybrid_splade_voyage_rewrite"
+  description: "Hybrid SPLADE + Voyage-3 with RRF and ground truth rewrites - for clapnq and govt"
 
 retrieval:
   type: "hybrid"
@@ -18,5 +18,5 @@ query_transform:
   enabled: false
 
 data:
-  query_mode: "last_turn"
-  query_file: "data/retrieval_tasks/{domain}/{domain}_lastturn.jsonl"
+  query_mode: "rewrite"
+  query_file: "data/retrieval_tasks/{domain}/{domain}_rewrite.jsonl"

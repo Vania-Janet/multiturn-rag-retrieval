@@ -46,6 +46,12 @@ EXPERIMENTS = [
     "A0_baseline_splade_fullhist",
     "A1_baseline_bgem3_fullhist",
     "A1_baseline_voyage_fullhist",
+    # Baselines - Ground Truth Rewrites (Oracle)
+    "A2_baseline_bm25_rewrite",
+    "A2_baseline_splade_rewrite",
+    "A2_baseline_bge15_rewrite",
+    "A2_baseline_bgem3_rewrite",
+    "A2_baseline_voyage_rewrite",
     # Query processing
     "bm25_r1_condensation",
     "bm25_r2_multi",
@@ -56,17 +62,15 @@ EXPERIMENTS = [
     "voyage_r1_condensation",
     "voyage_r2_multi",
     # Hybrid
-    "hybrid_splade_bgem3_norewrite",
-    "hybrid_splade_bgem3_r1",
     "hybrid_splade_voyage_norewrite",
-    "hybrid_splade_voyage_r1",
-    "A7_domain_gated",
+    "hybrid_splade_voyage_rewrite",
+    "hybrid_splade_bge15_norewrite",
+    "hybrid_splade_bge15_rewrite",
     # Iterative
     # "A8_iterative_refinement",  # Future Work
     # Reranking
-    "hybrid_cohere_norewrite",
-    "hybrid_cohere_r1",
-    "bgem3_cohere_norewrite",
+    "rerank_splade_voyage_rewrite",
+    "rerank_splade_bge15_rewrite",
     # Fine-tuned
     # "A10_finetuned_reranker",  # Future Work
     # "A11_finetuned_splade",  # Future Work
@@ -85,6 +89,12 @@ EXPERIMENT_DIRS = {
     "A0_baseline_splade_fullhist": "0-baselines",
     "A1_baseline_bgem3_fullhist": "0-baselines",
     "A1_baseline_voyage_fullhist": "0-baselines",
+    # Baselines - Ground Truth Rewrites
+    "A2_baseline_bm25_rewrite": "0-baselines",
+    "A2_baseline_splade_rewrite": "0-baselines",
+    "A2_baseline_bge15_rewrite": "0-baselines",
+    "A2_baseline_bgem3_rewrite": "0-baselines",
+    "A2_baseline_voyage_rewrite": "0-baselines",
     # Query processing
     "bm25_r1_condensation": "01-query",
     "bm25_r2_multi": "01-query",
@@ -95,17 +105,15 @@ EXPERIMENT_DIRS = {
     "voyage_r1_condensation": "01-query",
     "voyage_r2_multi": "01-query",
     # Hybrid
-    "hybrid_splade_bgem3_norewrite": "02-hybrid",
-    "hybrid_splade_bgem3_r1": "02-hybrid",
     "hybrid_splade_voyage_norewrite": "02-hybrid",
-    "hybrid_splade_voyage_r1": "02-hybrid",
-    "A7_domain_gated": "02-hybrid",
+    "hybrid_splade_voyage_rewrite": "02-hybrid",
+    "hybrid_splade_bge15_norewrite": "02-hybrid",
+    "hybrid_splade_bge15_rewrite": "02-hybrid",
     # Iterative
     # "A8_iterative_refinement": "04-iterative",  # Future Work
     # Reranking
-    "hybrid_cohere_norewrite": "03-rerank",
-    "hybrid_cohere_r1": "03-rerank",
-    "bgem3_cohere_norewrite": "03-rerank",
+    "rerank_splade_voyage_rewrite": "03-rerank",
+    "rerank_splade_bge15_rewrite": "03-rerank",
     # Fine-tuned
     # "A10_finetuned_reranker": "05-finetune",  # Future Work
     # "A11_finetuned_splade": "05-finetune",  # Future Work

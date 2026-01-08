@@ -28,7 +28,7 @@ from .retrieval import (
     apply_bonferroni_correction
 )
 from .query_transform import get_rewriter
-from .reranking import CohereReranker
+from .reranking import CohereReranker, BGEReranker
 from .evaluation.run_retrieval_eval import compute_results, load_qrels, prepare_results_dict
 from .retrieval.fusion import reciprocal_rank_fusion
 
@@ -253,6 +253,14 @@ def run_pipeline(config: Dict[str, Any], output_dir: Path, domain: str, force: b
                 config=config["reranking"]
             )
             logger.info(f"Reranking enabled: {reranker_type} ({config['reranking'].get('model_name')})")
+        elif reranker_type == "bge":
+            reranker = BGEReranker(
+                model_name=config["reranking"].get("model_name", "BAAI/bge-reranker-v2-m3"),
+                config=config["reranking"]
+            )
+            logger.info(f"Reranking enabled: {reranker_type} ({config['reranking'].get('model_name')})")
+        else:
+            logger.warning(f"Unknown reranker type: {reranker_type}, reranking disabled")
 
     # Track query rewrites for analysis
     query_rewrite_log = []
@@ -314,7 +322,19 @@ def run_pipeline(config: Dict[str, Any], output_dir: Path, domain: str, force: b
         # Support both BEIR format (_id + text) and full history format (input list)
         query_text = ""
         query_id = query.get("task_id") or query.get("_id")
-        turn_id = query.get("turn", 0)
+        
+        # Extract turn_id from query or from the ID format (conversation_id<::>turn or conversation_id::turn)
+        turn_id = query.get("turn")
+        if turn_id is None and query_id:
+            # Try to extract from ID format: hash<::>turn or hash::turn
+            if "<::>" in query_id:
+                turn_id = int(query_id.split("<::>")[-1])
+            elif "::" in query_id:
+                turn_id = int(query_id.split("::")[-1])
+            else:
+                turn_id = 0
+        elif turn_id is None:
+            turn_id = 0
         
         # Check if it's BEIR format (has 'text' field directly)
         if "text" in query:
@@ -425,10 +445,11 @@ def run_pipeline(config: Dict[str, Any], output_dir: Path, domain: str, force: b
             # Rerank the contexts
             # Convert contexts to format expected by reranker (list of dicts with 'text')
             # Note: contexts already has 'text' field
+            reranker_top_k = config["reranking"].get("top_k_candidates", config["reranking"].get("top_k", 100))
             reranked_contexts = reranker.rerank(
                 query=query_text,
                 documents=contexts,
-                top_k=config["reranking"].get("top_k", 100)
+                top_k=reranker_top_k
             )
             
             # Update contexts with reranked results
@@ -504,9 +525,18 @@ def run_pipeline(config: Dict[str, Any], output_dir: Path, domain: str, force: b
         # It contains keys like 'ndcg_cut_10', 'recall_10', etc.
         metrics = scores_per_query.get(qid, {})
         
+        # Extract turn from turn_id field or from task_id
+        turn = r.get("turn_id", 0)
+        if turn == 0 and qid:
+            # Try to extract from ID format: hash<::>turn or hash::turn
+            if "<::>" in qid:
+                turn = int(qid.split("<::>")[-1])
+            elif "::" in qid:
+                turn = int(qid.split("::")[-1])
+        
         row = {
             "task_id": qid,
-            "turn": r["turn_id"],
+            "turn": turn,
             "collection": r["Collection"],
             "ndcg_at_10": metrics.get("ndcg_cut_10", 0.0),
             "recall_at_10": metrics.get("recall_10", 0.0),

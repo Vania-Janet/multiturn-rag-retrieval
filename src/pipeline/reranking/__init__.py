@@ -15,6 +15,7 @@ from .colbert import (
     get_colbert_reranker
 )
 from .cohere_rerank import CohereReranker
+from .bge_reranker import BGEReranker
 
 __all__ = [
     # Cross-encoder
@@ -29,4 +30,7 @@ __all__ = [
 
     # Cohere
     "CohereReranker",
+    
+    # BGE
+    "BGEReranker",
 ]
