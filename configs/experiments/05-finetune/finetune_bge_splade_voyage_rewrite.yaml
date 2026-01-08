@@ -1,11 +1,11 @@
-# Fine-tuned Cohere Reranker: SPLADE + Voyage with Ground Truth Rewrites
-# Uses custom fine-tuned Cohere rerank model trained on 620 multi-turn examples
-# Expected: Significant improvement over base rerank-v4-pro
+# Fine-tuned BGE Reranker: SPLADE + Voyage with Ground Truth Rewrites
+# Uses custom fine-tuned BGE-reranker-v2-m3 trained on 2,964 triplets
+# Expected: Improvement over generic BGE reranker
 
 experiment:
-  name: "finetune_cohere_splade_voyage_rewrite"
+  name: "finetune_bge_splade_voyage_rewrite"
   type: "retrieval"
-  description: "Hybrid SPLADE + Voyage with fine-tuned Cohere reranker on ground truth data"
+  description: "Hybrid SPLADE + Voyage with fine-tuned BGE reranker on ground truth data"
 
 data:
   domains: ["clapnq", "govt"]
@@ -29,14 +29,10 @@ retrieval:
 query_transform:
   enabled: false
 
-reranking:
-  enabled: true
-  type: "cohere"
-  # TODO: Replace with your fine-tuned model ID after training
-  # Example: model_name: "abc123-ft-rerank-v4-pro"
-  model_name: "REPLACE_WITH_FINETUNED_MODEL_ID"
-  top_k_candidates: 100
-  max_chunks_per_doc: 10
+reranker:
+  type: bge
+  model_name: "models/bge-reranker-v2-m3-finetuned"
+  top_k: 10  # Rerank Top-10 from hybrid baseline
 
 output:
   save_results: true
