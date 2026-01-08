@@ -29,7 +29,7 @@ class CohereReranker:
     
     def __init__(
         self, 
-        model_name: str = "rerank-v4.0-pro",
+        model_name: str = "rerank-v4-pro",
         api_key: Optional[str] = None,
         config: Optional[Dict[str, Any]] = None
     ):
@@ -65,7 +65,8 @@ class CohereReranker:
         top_k: Optional[int] = None
     ) -> List[Dict[str, Any]]:
         """
-        Rerank documents using Cohere API with retry logic.
+        Rerank documents using Cohere API with retry logic and rate limiting.
+        Trial keys are limited to 40 API calls/minute.
         """
         if not self.client or not documents:
             return documents
@@ -81,8 +82,10 @@ class CohereReranker:
                     text = doc.get("content", "")
                 docs_to_rerank.append(text)
             
-            # Define the API call wrapper
+            # Define the API call wrapper with rate limiting
             def api_call():
+                # Production key: 10,000 req/min, so minimal delay needed
+                time.sleep(0.01)  # Just 10ms to avoid burst issues
                 return self.client.rerank(
                     model=self.model_name,
                     query=query,
@@ -90,13 +93,13 @@ class CohereReranker:
                     top_n=top_k or len(documents)
                 )
             
-            # Apply retry logic if available
+            # Apply retry logic if available (with exponential backoff for rate limits)
             if backoff and COHERE_AVAILABLE:
-                # We need to wrap the function call
                 @backoff.on_exception(
                     backoff.expo,
                     (cohere.errors.TooManyRequestsError, cohere.errors.ServiceUnavailableError),
-                    max_tries=5
+                    max_tries=5,
+                    max_time=300  # Max 5 minutes of retries
                 )
                 def call_with_retry():
                     return api_call()
@@ -113,6 +116,7 @@ class CohereReranker:
                 doc_copy = original_doc.copy()
                 doc_copy["score"] = result.relevance_score
                 doc_copy["original_score"] = original_doc.get("score", 0.0)
+                doc_copy["rerank_score"] = result.relevance_score  # Add rerank_score key
                 reranked_docs.append(doc_copy)
                 
             return reranked_docs

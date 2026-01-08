@@ -452,15 +452,22 @@ def run_pipeline(config: Dict[str, Any], output_dir: Path, domain: str, force: b
                 top_k=reranker_top_k
             )
             
-            # Update contexts with reranked results
-            # Map back to our format
+            # Update contexts with reranked results - preserve all fields
+            # Use rerank_score as the new score
             contexts = []
             for res in reranked_contexts:
-                contexts.append({
+                # Preserve all fields from reranker (includes rerank_score, original_score)
+                context_entry = {
                     "document_id": res["document_id"],
-                    "score": res["score"],
+                    "score": res.get("rerank_score", res["score"]),  # Use rerank_score if available
                     "text": res["text"]
-                })
+                }
+                # Add rerank_score and original_score if they exist
+                if "rerank_score" in res:
+                    context_entry["rerank_score"] = res["rerank_score"]
+                if "original_score" in res:
+                    context_entry["original_score"] = res["original_score"]
+                contexts.append(context_entry)
             logger.debug(f"Reranked {len(contexts)} documents")
 
         result_entry = {
@@ -639,6 +646,18 @@ if __name__ == "__main__":
     
     with open(args.config, "r") as f:
         config = yaml.safe_load(f)
+    
+    # Replace {domain} placeholders in config paths
+    def replace_domain_placeholders(obj, domain):
+        if isinstance(obj, dict):
+            return {k: replace_domain_placeholders(v, domain) for k, v in obj.items()}
+        elif isinstance(obj, list):
+            return [replace_domain_placeholders(item, domain) for item in obj]
+        elif isinstance(obj, str):
+            return obj.replace("{domain}", domain)
+        return obj
+    
+    config = replace_domain_placeholders(config, args.domain)
         
     # Determine output directory
     if args.output_dir:

@@ -1,16 +1,18 @@
-# Reranking: SPLADE + BGE-1.5 with Ground Truth Rewrites + BGE-Reranker-v2-m3
-# For: CLOUD, FIQA (cost-effective domains)
-# Expected: 0.40-0.44 nDCG@10
+# Reranking: SPLADE + BGE-base with Ground Truth Rewrites + Cohere Rerank-3.5
+# For: CLOUD, FIQA (remaining domains)
+# Expected: 0.42-0.44 nDCG@10 → Potential +2-5% with Cohere
 
 experiment:
-  name: "rerank_splade_bge15_rewrite"
+  name: "rerank_cohere_splade_bge15_rewrite"
   type: "retrieval"
-  description: "Hybrid SPLADE + BGE-1.5 with RRF fusion, ground truth rewrites, and BGE reranking"
+  description: "Hybrid SPLADE + BGE-base with RRF fusion, ground truth rewrites, and Cohere reranking"
 
 data:
   domains: ["cloud", "fiqa"]
   query_mode: "rewrite"
   query_file: "data/retrieval_tasks/{domain}/{domain}_rewrite.jsonl"
+  qrels_file: "data/retrieval_tasks/{domain}/qrels/dev.tsv"
+  corpus_path: "data/passage_level_processed/{domain}"
 
 retrieval:
   type: "hybrid"
@@ -29,11 +31,10 @@ query_transform:
 
 reranking:
   enabled: true
-  type: "bge"
-  model_name: "BAAI/bge-reranker-v2-m3"
+  type: "cohere"
+  model_name: "rerank-v4-pro"  # Cohere Rerank 4 Pro (latest, best performance)
   top_k_candidates: 100  # Rerank top 100 from fusion
-  batch_size: 32
-  use_fp16: true
+  max_chunks_per_doc: 10
 
 output:
   save_results: true

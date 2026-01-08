@@ -1,0 +1,46 @@
+# Fine-tuned Cohere Reranker: SPLADE + BGE with Ground Truth Rewrites
+# Uses custom fine-tuned Cohere rerank model trained on 620 multi-turn examples
+# Expected: Significant improvement over base rerank-v4-pro
+
+experiment:
+  name: "finetune_cohere_splade_bge15_rewrite"
+  type: "retrieval"
+  description: "Hybrid SPLADE + BGE-base with fine-tuned Cohere reranker on ground truth data"
+
+data:
+  domains: ["cloud", "fiqa"]
+  query_mode: "rewrite"
+  query_file: "data/retrieval_tasks/{domain}/{domain}_rewrite.jsonl"
+  qrels_file: "data/retrieval_tasks/{domain}/qrels/dev.tsv"
+  corpus_path: "data/passage_level_processed/{domain}"
+
+retrieval:
+  type: "hybrid"
+  fusion_method: "rrf"
+  rrf_k: 60
+  sparse:
+    method: "splade"
+    top_k: 300
+  dense:
+    method: "bge"
+    model_name: "BAAI/bge-base-en-v1.5"
+    top_k: 300
+
+query_transform:
+  enabled: false
+
+reranking:
+  enabled: true
+  type: "cohere"
+  # TODO: Replace with your fine-tuned model ID after training
+  # Example: model_name: "abc123-ft-rerank-v4-pro"
+  model_name: "REPLACE_WITH_FINETUNED_MODEL_ID"
+  top_k_candidates: 100
+  max_chunks_per_doc: 10
+
+output:
+  save_results: true
+  results_dir: "experiments/{experiment_name}/{domain}"
+  
+metrics:
+  compute: ["ndcg@5", "ndcg@10", "ndcg@20", "recall@5", "recall@10", "recall@20", "map@10", "precision@5"]
