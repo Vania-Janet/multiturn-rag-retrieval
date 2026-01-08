@@ -377,7 +377,7 @@ DO NOT answer the question. Output ONLY {num_queries} queries, one per line, wit
                 # Initialize vLLM
                 self.llm = LLM(
                     model=model_name,
-                    gpu_memory_utilization=gpu_memory_utilization,
+                    gpu_memory_utilization=0.85,
                     trust_remote_code=True,
                     enforce_eager=True, # Often helps with memory
                     tensor_parallel_size=tensor_parallel_size,

@@ -14,9 +14,17 @@ from pathlib import Path
 
 try:
     import faiss
-    from sentence_transformers import SentenceTransformer
+    FAISS_AVAILABLE = True
 except ImportError:
-    pass
+    FAISS_AVAILABLE = False
+    faiss = None
+    
+try:
+    from sentence_transformers import SentenceTransformer
+    SENTENCE_TRANSFORMERS_AVAILABLE = True
+except ImportError:
+    SENTENCE_TRANSFORMERS_AVAILABLE = False
+    SentenceTransformer = None
 
 logger = logging.getLogger(__name__)
 
@@ -52,6 +60,12 @@ class BGERetriever(DenseRetriever):
         super().__init__(index_path, config)
         self.model_name = config.get("model_name", "BAAI/bge-base-en-v1.5")
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
+        
+        if not SENTENCE_TRANSFORMERS_AVAILABLE:
+            raise ImportError(
+                "sentence-transformers is required for BGE retrieval. "
+                "Install with: pip install sentence-transformers"
+            )
         
         logger.info(f"Loading BGE model: {self.model_name} on {self.device}")
         # Use DataParallel if multiple GPUs are available and we are on CUDA

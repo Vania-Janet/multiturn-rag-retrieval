@@ -1,0 +1,22 @@
+experiment:
+  name: "hybrid_splade_bge15_norewrite"
+  description: "Hybrid SPLADE + BGE-1.5 with RRF (no rewriting) - for cloud and fiqa"
+
+retrieval:
+  type: "hybrid"
+  fusion_method: "rrf"  # Reciprocal Rank Fusion
+  rrf_k: 60
+  sparse:
+    method: "splade"
+    top_k: 300
+  dense:
+    method: "bge"
+    model_name: "BAAI/bge-base-en-v1.5"
+    top_k: 300
+
+query_transform:
+  enabled: false
+
+data:
+  query_mode: "last_turn"
+  query_file: "data/retrieval_tasks/{domain}/{domain}_lastturn.jsonl"
