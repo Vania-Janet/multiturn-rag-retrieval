@@ -1,52 +1,125 @@
-# Cohere Fine-tuning Experiments
+# Fine-tuning Experiments
 
-This directory contains configurations and training data for fine-tuning Cohere's rerank model on the multi-turn RAG dataset.
+This directory contains configurations for experiments using the fine-tuned BGE reranker model.
 
-## Training Data
+## Model Details
 
-**Location**: `experiments/05-finetune/cohere_rerank_data/`
+**Model**: `pedrovo9/bge-reranker-v2-m3-multirag-finetuned`
 
-- `train.jsonl`: 620 training examples (80% split, stratified by domain)
-- `validation.jsonl`: 157 validation examples (20% split, stratified by domain)
+Fine-tuned version of BAAI/bge-reranker-v2-m3 for multi-domain conversational RAG.
 
-**Data Statistics**:
-- Total queries: 777 (from 842 tasks with ground truth)
-- Avg relevant passages per query: 2.73
-- Avg hard negatives per query: 4.99
-- Domains: CLAPNQ (208), GOVT (201), CLOUD (188), FIQA (180)
+### Training Details
 
-**Triplet Structure**:
-```json
-{
-  "query": "Rewritten multi-turn query",
-  "relevant_passages": ["Ground truth relevant passage 1", "..."],
-  "hard_negatives": ["Top-10 doc that looks relevant but isn't", "..."]
-}
-```
+- **Base model**: BAAI/bge-reranker-v2-m3
+- **Training strategy**: Pairwise learning (1:2 ratio positive:negative)
+- **Hard negatives**: BM25-retrieved documents
+- **Epochs**: 3
+- **Domains**: ClapNQ, Cloud, FiQA, Govt
 
-**Hard Negatives Strategy**:
-- Extracted from hybrid baseline (SPLADE + Voyage/BGE with RRF)
-- Top-10 retrieved documents that are NOT ground truth
-- Teaches model to distinguish between "seems relevant" vs "actually relevant"
+### Data Splits
 
-## How to Fine-tune
+The model repository includes proper train/test/val splits to prevent data leakage:
+- `data/train.jsonl` - Training data
+- `data/test.jsonl` - Test data
+- `data/val.jsonl` - Validation data
 
-### Step 1: Upload Training Data to Cohere
+These splits are conversation-level splits ensuring no information leakage across splits.
+
+## Experiments
+
+### A10_finetuned_reranker
+
+Hybrid retrieval (SPLADE + BGE-M3) with fine-tuned reranker:
+- Query rewriting with vLLM (Qwen2.5-7B)
+- Hybrid retrieval (RRF fusion)
+- Fine-tuned BGE reranking
 
 ```bash
-# Install Cohere SDK
-pip install cohere
-
-# Upload training data
-python scripts/upload_cohere_finetune.py
+python scripts/run_experiment.py -e A10_finetuned_reranker -d all
 ```
 
-Or manually via Cohere Dashboard:
-1. Go to https://dashboard.cohere.com/fine-tuning
-2. Click "Create Fine-tuned Model"
-3. Upload `train.jsonl` and `validation.jsonl`
-4. Select base model: `rerank-v4-pro`
-5. Start training (takes ~2-4 hours)
+### finetune_bge_splade_bge15_rewrite
+
+Hybrid retrieval (SPLADE + BGE-1.5) with fine-tuned reranker:
+- Query rewriting with vLLM
+- SPLADE (sparse) + BGE-base-en-v1.5 (dense)
+- Fine-tuned BGE reranking
+
+```bash
+python scripts/run_experiment.py -e finetune_bge_splade_bge15_rewrite -d all
+```
+
+### finetune_bge_splade_voyage_rewrite
+
+Hybrid retrieval (SPLADE + Voyage-3) with fine-tuned reranker:
+- Query rewriting with vLLM
+- SPLADE (sparse) + Voyage-3-large (dense)
+- Fine-tuned BGE reranking
+
+```bash
+python scripts/run_experiment.py -e finetune_bge_splade_voyage_rewrite -d all
+```
+
+## Usage
+
+### Load Model Directly
+
+```python
+from transformers import AutoTokenizer, AutoModelForSequenceClassification
+
+tokenizer = AutoTokenizer.from_pretrained("pedrovo9/bge-reranker-v2-m3-multirag-finetuned")
+model = AutoModelForSequenceClassification.from_pretrained("pedrovo9/bge-reranker-v2-m3-multirag-finetuned")
+```
+
+### Use in Pipeline
+
+The model is automatically loaded when you run experiments with `reranker_type: finetuned_bge`:
+
+```yaml
+reranking:
+  enabled: true
+  reranker_type: "finetuned_bge"
+  model_name: "pedrovo9/bge-reranker-v2-m3-multirag-finetuned"
+  top_k: 100
+  batch_size: 32
+  use_fp16: true
+```
+
+## Expected Results
+
+The fine-tuned model should show improvements over the base BGE reranker, especially on:
+- Multi-turn conversational queries
+- Domain-specific terminology
+- Hard negative examples that appear relevant but aren't
+
+Baseline comparisons:
+- **SPLADE baseline**: nDCG@10 ~0.44
+- **Hybrid (SPLADE + Voyage)**: nDCG@10 ~0.48-0.52
+- **+ Fine-tuned reranking**: Expected nDCG@10 ~0.50-0.55
+
+## Run All Fine-tuning Experiments
+
+```bash
+# Run all fine-tuning experiments across all domains
+./run_finetuned_experiments.sh
+```
+
+Or run individually:
+
+```bash
+# A10 (Hybrid + Fine-tuned Reranker)
+python scripts/run_experiment.py -e A10_finetuned_reranker -d clapnq
+python scripts/run_experiment.py -e A10_finetuned_reranker -d cloud
+python scripts/run_experiment.py -e A10_finetuned_reranker -d fiqa
+python scripts/run_experiment.py -e A10_finetuned_reranker -d govt
+```
+
+## Notes
+
+- The model was trained on the same domains as the test set, but with proper train/test splits
+- Data leakage prevention: conversation-level splits ensure no dialogue from training appears in test
+- The model repository on Hugging Face contains the complete training data splits for transparency
+- All training was done with hard negatives from BM25 to improve discrimination capability
 
 ### Step 2: Update Experiment Configs
 

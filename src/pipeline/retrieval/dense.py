@@ -184,4 +184,8 @@ def get_dense_retriever(
         from .voyage import VoyageRetriever
         return VoyageRetriever(index_path, config)
     
+    if "cohere" in model_name.lower() or "embed" in model_name.lower():
+        from .cohere_embeddings import CohereRetriever
+        return CohereRetriever(index_path, config)
+    
     raise ValueError(f"Unknown dense retriever: {model_name}")

@@ -1,1 +1,3 @@
-from .build_indices import BGEIndexer, BM25Indexer, ELSERIndexer
+from .indexer import BGEIndexer, BM25Indexer, ELSERIndexer
+
+

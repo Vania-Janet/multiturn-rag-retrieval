@@ -1,0 +1,57 @@
+# Config for evaluating on the HF finetune splits (mixed domains)
+# Uses the fine-tuned model and the HF test set
+
+experiment:
+  name: "A10_HF_EVAL"
+  description: "Evaluation on HF pedrovo9 splits"
+
+retrieval:
+  type: "hybrid"
+  sparse:
+    method: "splade"
+    # We need an index. The HF data is mixed.
+    # We can't easily switch indices per query in this pipeline structure.
+    # However, the user wants to use "the data of splits".
+    # And "run all domains".
+    # If the HF 'test.jsonl' is mixed, we might need a combined index, or run separately.
+    # BUT, the user said "que ya se corra para todos los dominios".
+    # And "dentro de... data. ESOS SON LOS SPLITS".
+    
+    # Assumption: The HF 'test.jsonl' contains queries from ALL domains mixed.
+    # If we retrieve against ONE index (e.g. clapnq), we'll miss hits for other domains.
+    # BUT, constructing a merged index takes time.
+    
+    # Alternative: The 'test.jsonl' might be ONE domain?
+    # Let's check the content of test.jsonl to see if it looks homogeneous.
+    
+    index_path: "indices/{domain}/splade"
+    
+  dense:
+    model_name: "BAAI/bge-m3"
+    index_path: "indices/{domain}/bge-m3"
+  top_k: 200
+  alpha: 0.5
+
+query_transform:
+  enabled: true
+  rewriter_type: "vllm"
+  merge_strategy: "replace"
+  rewriter_config:
+    model_name: "Qwen/Qwen2.5-7B-Instruct" 
+    temperature: 0
+    max_rewrites: 1
+    max_tokens: 128
+
+reranking:
+  enabled: true
+  reranker_type: "finetuned_bge"
+  model_name: "pedrovo9/bge-reranker-v2-m3-multirag-finetuned"
+  top_k: 100
+  batch_size: 64 
+  use_fp16: true
+
+data:
+  query_mode: "last_turn"
+  # Valid path to the converted tasks
+  query_file: "data/finetune_splits/test_tasks.jsonl" 
+

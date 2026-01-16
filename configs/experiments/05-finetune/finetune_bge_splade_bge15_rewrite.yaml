@@ -1,15 +1,15 @@
-# Fine-tuned BGE Reranker: SPLADE + BGE with Ground Truth Rewrites
-# Uses custom fine-tuned BGE-reranker-v2-m3 trained on 2,964 triplets
-# Expected: Improvement over generic BGE reranker
+# Fine-tuned BGE Reranker: SPLADE + BGE with Query Rewriting
+# Uses pedrovo9/bge-reranker-v2-m3-multirag-finetuned trained on multi-domain RAG data
+# Expected: Improvement over generic BGE reranker on multi-turn queries
 
 experiment:
   name: "finetune_bge_splade_bge15_rewrite"
   type: "retrieval"
-  description: "Hybrid SPLADE + BGE-base-en-v1.5 with fine-tuned BGE reranker on ground truth data"
+  description: "Hybrid SPLADE + BGE-base-en-v1.5 with fine-tuned BGE reranker (pedrovo9)"
 
 data:
-  domains: ["cloud", "fiqa"]
-  query_mode: "rewrite"
+  domains: ["clapnq", "cloud", "fiqa", "govt"]
+  query_mode: "last_turn"
   query_file: "data/retrieval_tasks/{domain}/{domain}_rewrite.jsonl"
   qrels_file: "data/retrieval_tasks/{domain}/qrels/dev.tsv"
   corpus_path: "data/passage_level_processed/{domain}"
@@ -28,11 +28,22 @@ retrieval:
 
 query_transform:
   enabled: false
+  rewriter_type: "vllm"
+  merge_strategy: "replace"
+  rewriter_config:
+    model_name: "Qwen/Qwen2.5-7B-Instruct"
+    temperature: 0
+    max_rewrites: 1
+    max_tokens: 128
+    retrieval_type: "dense"
 
-reranker:
-  type: bge
-  model_name: "models/bge-reranker-v2-m3-finetuned"
-  top_k: 10  # Rerank Top-10 from hybrid baseline
+reranking:
+  enabled: true
+  reranker_type: "finetuned_bge"
+  model_name: "pedrovo9/bge-reranker-v2-m3-multirag-finetuned"
+  top_k: 100
+  batch_size: 32
+  use_fp16: true
 
 output:
   save_results: true

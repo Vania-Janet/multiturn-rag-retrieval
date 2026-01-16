@@ -34,6 +34,7 @@ reranking:
   top_k_candidates: 100  # Rerank top 100 from fusion
   batch_size: 32
   use_fp16: true
+  use_parent_context: true # Enable Parent Document Retrieval (Context Expansion)
 
 output:
   save_results: true

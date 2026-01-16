@@ -13,6 +13,7 @@ from pathlib import Path
 from typing import Dict, Any, List, Optional, Union
 import numpy as np
 import pandas as pd
+import re
 
 from .retrieval import (
     get_sparse_retriever,
@@ -28,11 +29,36 @@ from .retrieval import (
     apply_bonferroni_correction
 )
 from .query_transform import get_rewriter
-from .reranking import CohereReranker, BGEReranker
+from .reranking import CohereReranker, BGEReranker, FineTunedBGEReranker
 from .evaluation.run_retrieval_eval import compute_results, load_qrels, prepare_results_dict
 from .retrieval.fusion import reciprocal_rank_fusion
+from .utils.parent_context import build_parent_store, get_parent_id
 
 logger = logging.getLogger(__name__)
+
+def parse_conversation_from_text(text: str) -> List[Dict[str, str]]:
+    """
+    Parses flat text with |speaker|: tags into a structured conversation history.
+    """
+    if not text or ("|user|:" not in text and "|agent|:" not in text and "|model|:" not in text):
+        return []
+    
+    turns = []
+    # Split while keeping delimiters
+    parts = re.split(r'(\|user\|:|\|agent\|:|\|model\|:)', text)
+    
+    current_speaker = None
+    for part in parts:
+        part = part.strip()
+        if not part: continue
+        
+        if part in ["|user|:", "|agent|:", "|model|:"]:
+            current_speaker = part.replace("|", "").replace(":", "")
+            if current_speaker == "model": current_speaker = "agent"
+        elif current_speaker:
+            turns.append({"speaker": current_speaker, "text": part})
+            
+    return turns
 
 def apply_rrf(result_lists: List[List[Dict[str, Any]]], k: int = 60, top_k: int = 100) -> List[Dict[str, Any]]:
     """
@@ -207,14 +233,19 @@ def run_pipeline(config: Dict[str, Any], output_dir: Path, domain: str, force: b
             index_path=dense_index,
             config=config["retrieval"].get("dense", {})
         )
-        # FIXED: Use sparse_weight/dense_weight instead of alpha
-        alpha = config["retrieval"].get("alpha", 0.5)
+        
+        fusion_method = config["retrieval"].get("fusion_method", "rrf")
+        kwargs = {}
+        if fusion_method == "linear" or fusion_method == "weighted_sum":
+             alpha = config["retrieval"].get("alpha", 0.5)
+             kwargs["sparse_weight"] = alpha
+             kwargs["dense_weight"] = 1 - alpha
+
         retriever = HybridRetriever(
             sparse, 
             dense, 
-            fusion_method="rrf",  # Can be "rrf" or "linear"
-            sparse_weight=alpha,
-            dense_weight=1-alpha
+            fusion_method=fusion_method,
+            **kwargs
         )
     else:
         raise ValueError(f"Unknown retrieval type: {retrieval_type}")
@@ -231,6 +262,12 @@ def run_pipeline(config: Dict[str, Any], output_dir: Path, domain: str, force: b
     else:
         logger.warning("No corpus path provided. Results will not contain text.")
     
+    # Initialize Parent Store if needed
+    parent_store = {}
+    use_parent_context = config.get("reranking", {}).get("use_parent_context", False)
+    if use_parent_context and corpus:
+        parent_store = build_parent_store(corpus)
+
     logger.info(f"Loading queries from {query_file}")
     queries = load_queries(query_file)
     
@@ -246,7 +283,7 @@ def run_pipeline(config: Dict[str, Any], output_dir: Path, domain: str, force: b
     # Initialize Reranker if enabled
     reranker = None
     if config.get("reranking", {}).get("enabled", False):
-        reranker_type = config["reranking"].get("type", "cohere")
+        reranker_type = config["reranking"].get("reranker_type") or config["reranking"].get("type", "cohere")
         if reranker_type == "cohere":
             reranker = CohereReranker(
                 model_name=config["reranking"].get("model_name", "rerank-v4.0-pro"),
@@ -256,6 +293,12 @@ def run_pipeline(config: Dict[str, Any], output_dir: Path, domain: str, force: b
         elif reranker_type == "bge":
             reranker = BGEReranker(
                 model_name=config["reranking"].get("model_name", "BAAI/bge-reranker-v2-m3"),
+                config=config["reranking"]
+            )
+            logger.info(f"Reranking enabled: {reranker_type} ({config['reranking'].get('model_name')})")
+        elif reranker_type == "finetuned_bge":
+            reranker = FineTunedBGEReranker(
+                model_name=config["reranking"].get("model_name", "pedrovo9/bge-reranker-v2-m3-multirag-finetuned"),
                 config=config["reranking"]
             )
             logger.info(f"Reranking enabled: {reranker_type} ({config['reranking'].get('model_name')})")
@@ -276,13 +319,17 @@ def run_pipeline(config: Dict[str, Any], output_dir: Path, domain: str, force: b
             query_text = ""
             query_id = query.get("task_id") or query.get("_id")
             
-            # Extract query text (same logic as below)
-            if "text" in query:
-                query_text = query["text"]
-                if query_text:
-                    query_text = query_text.replace("|user|:", "").replace("|agent|:", "").replace("|model|:", "").strip()
-            elif "input" in query:
-                conversation_history = query.get("input", [])
+            # Helper to consolidate input sources
+            query_input = query.get("input", [])
+            query_text_raw = query.get("text", "")
+            
+            # If input is missing but text has history tags, parse it
+            if not query_input and query_text_raw and ("|user|:" in query_text_raw or "|agent|:" in query_text_raw):
+                query_input = parse_conversation_from_text(query_text_raw)
+
+            # Extract query based on mode
+            if query_input:
+                conversation_history = query_input
                 if conversation_history:
                     if query_mode == "last_turn":
                         if conversation_history[-1]["speaker"] == "user":
@@ -298,12 +345,16 @@ def run_pipeline(config: Dict[str, Any], output_dir: Path, domain: str, force: b
                     elif query_mode == "full_context":
                         all_turns = [turn["text"] for turn in conversation_history]
                         query_text = " ".join(all_turns)
+            elif query_text_raw:
+                query_text = query_text_raw
+                if query_text:
+                    query_text = query_text.replace("|user|:", "").replace("|agent|:", "").replace("|model|:", "").strip()
             
             if query_text:
                 # Prepare context for rewriters that support it
                 conversation_context = None
-                if "input" in query and query_rewriter.__class__.__name__ in ["ContextualRewriter", "LLMRewriter", "VLLMRewriter", "HyDERewriter"]:
-                    conversation_context = [turn["text"] for turn in query.get("input", [])[:-1]]
+                if query_input and query_rewriter.__class__.__name__ in ["ContextualRewriter", "LLMRewriter", "VLLMRewriter", "HyDERewriter"]:
+                    conversation_context = [turn["text"] for turn in query_input[:-1]]
                 
                 batch_queries.append((query_text, conversation_context))
                 batch_indices.append((idx, query_id))
@@ -336,17 +387,17 @@ def run_pipeline(config: Dict[str, Any], output_dir: Path, domain: str, force: b
         elif turn_id is None:
             turn_id = 0
         
-        # Check if it's BEIR format (has 'text' field directly)
-        if "text" in query:
-            # BEIR format - text is already prepared
-            query_text = query["text"]
-            # Clean artifacts like |user|: if present
-            if query_text:
-                query_text = query_text.replace("|user|:", "").replace("|agent|:", "").replace("|model|:", "").strip()
-            # Note: query_mode is ignored for BEIR format since text is pre-processed
-        elif "input" in query:
+        # Helper to consolidate input sources
+        query_input = query.get("input", [])
+        query_text_raw = query.get("text", "")
+        
+        # If input is missing but text has history tags, parse it
+        if not query_input and query_text_raw and ("|user|:" in query_text_raw or "|agent|:" in query_text_raw):
+            query_input = parse_conversation_from_text(query_text_raw)
+            
+        if query_input:
             # Full history format - need to process based on query_mode
-            conversation_history = query.get("input", [])
+            conversation_history = query_input
             
             if not conversation_history:
                 logger.warning(f"Empty history for task {query_id}")
@@ -369,10 +420,26 @@ def run_pipeline(config: Dict[str, Any], output_dir: Path, domain: str, force: b
                 # Concatenate all turns (User + Agent)
                 all_turns = [turn["text"] for turn in conversation_history]
                 query_text = " ".join(all_turns)
+            elif query_mode == "rewrite":
+                # Use rewrite if available, fallback to input handling or text
+                if "rewrite" in query and query["rewrite"]:
+                    query_text = query["rewrite"]
+                else:
+                    # Fallback to last_turn behavior if rewrite field missing
+                    if conversation_history[-1]["speaker"] == "user":
+                        query_text = conversation_history[-1]["text"]
             else:
                 logger.warning(f"Unknown query_mode {query_mode}, defaulting to last_turn")
                 if conversation_history[-1]["speaker"] == "user":
                     query_text = conversation_history[-1]["text"]
+        
+        elif "text" in query:
+            # BEIR format - text is already prepared
+            query_text = query["text"]
+            # Clean artifacts like |user|: if present
+            if query_text:
+                query_text = query_text.replace("|user|:", "").replace("|agent|:", "").replace("|model|:", "").strip()
+            # Note: query_mode is ignored for BEIR format since text is pre-processed
         else:
             logger.warning(f"Unknown query format for {query_id}")
             continue
@@ -434,20 +501,35 @@ def run_pipeline(config: Dict[str, Any], output_dir: Path, domain: str, force: b
         
         # Format result
         contexts = []
+        logger.info(f"DEBUG: Fusion Results Count: {len(retrieved_results)}")
         for res in retrieved_results:
             doc_id = res["id"]
             score = res["score"]
-            text = corpus.get(doc_id, "")
+            
+            # CRITICAL FIX: Swap for parent text if expansion is enabled
+            if use_parent_context:
+                parent_id = get_parent_id(doc_id)
+                # Use parent text if available, fallback to chunk text
+                # We specifically check parent_store first
+                if parent_id in parent_store:
+                    text = parent_store[parent_id]
+                else:
+                    text = corpus.get(doc_id, "")
+            else:
+                text = corpus.get(doc_id, "")
+                
             contexts.append({"document_id": doc_id, "score": score, "text": text})
 
         # Apply Reranking if enabled
         if reranker:
+            # Use the rewritten query for reranking if available (critical fix)
+            rerank_query = queries_to_retrieve[0] if queries_to_retrieve else query_text
+            
             # Rerank the contexts
-            # Convert contexts to format expected by reranker (list of dicts with 'text')
-            # Note: contexts already has 'text' field
+            # contexts already contain the correct text (including optional parent context) for reranking
             reranker_top_k = config["reranking"].get("top_k_candidates", config["reranking"].get("top_k", 100))
             reranked_contexts = reranker.rerank(
-                query=query_text,
+                query=rerank_query,
                 documents=contexts,
                 top_k=reranker_top_k
             )
@@ -469,6 +551,9 @@ def run_pipeline(config: Dict[str, Any], output_dir: Path, domain: str, force: b
                     context_entry["original_score"] = res["original_score"]
                 contexts.append(context_entry)
             logger.debug(f"Reranked {len(contexts)} documents")
+
+        # Truncate to top-10 for final output conformity
+        contexts = contexts[:10]
 
         result_entry = {
             "task_id": query_id,
@@ -564,7 +649,7 @@ def run_pipeline(config: Dict[str, Any], output_dir: Path, domain: str, force: b
     analysis_report = {
         "latency": latency_monitor.report(),
         "hard_failures": analyze_hard_failures(df_results, metric_col=primary_metric).to_dict(orient="records"),
-        "performance_by_turn": analyze_performance_by_turn(df_results, metric_col=primary_metric, turn_col="turn").to_dict()
+        "performance_by_turn": analyze_performance_by_turn(df_results, metric_col=primary_metric, turn_col="turn").reset_index().to_dict(orient="records")
     }
     
     # Bootstrap CI for NDCG@5
@@ -609,14 +694,29 @@ def run_pipeline(config: Dict[str, Any], output_dir: Path, domain: str, force: b
     # Query Variance Analysis (Turn-based)
     try:
         variance_by_turn = analyze_query_variance(df_results, group_by_col="turn", metric_col=primary_metric)
-        analysis_report["variance_by_turn"] = variance_by_turn.to_dict()
+        # Convert numpy types to Python native types for JSON serialization
+        variance_dict = variance_by_turn.to_dict()
+        # Convert all numpy types to Python types
+        for key in variance_dict:
+            for subkey in variance_dict[key]:
+                if hasattr(variance_dict[key][subkey], 'item'):
+                    variance_dict[key][subkey] = variance_dict[key][subkey].item()
+        analysis_report["variance_by_turn"] = variance_dict
     except Exception as e:
         logger.warning(f"Could not calculate variance by turn: {e}")
 
     # Save analysis report
     analysis_file = output_dir / "analysis_report.json"
+    # Use default handler for numpy types
+    def convert_numpy(obj):
+        if hasattr(obj, 'item'):
+            return obj.item()
+        elif hasattr(obj, 'tolist'):
+            return obj.tolist()
+        raise TypeError(f"Object of type {type(obj)} is not JSON serializable")
+    
     with open(analysis_file, 'w') as f:
-        json.dump(analysis_report, f, indent=2)
+        json.dump(analysis_report, f, indent=2, default=convert_numpy)
     logger.info(f"Analysis report saved to {analysis_file}")
     
     # Save query rewrite log if any rewrites were performed

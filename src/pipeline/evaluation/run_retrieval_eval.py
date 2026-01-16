@@ -136,13 +136,13 @@ def main():
         print("\ncollection_name:", collection_name)
 
         if "clapnq" in collection_name:
-            qrels_file = os.path.join(script_dir, "../../human/retrieval_tasks_convid/clapnq/qrels/dev.tsv")
+            qrels_file = os.path.join(script_dir, "../../../data/retrieval_tasks/clapnq/qrels/dev.tsv")
         elif "govt" in collection_name:
-            qrels_file = os.path.join(script_dir, "../../human/retrieval_tasks_convid/govt/qrels/dev.tsv")
+            qrels_file = os.path.join(script_dir, "../../../data/retrieval_tasks/govt/qrels/dev.tsv")
         elif "fiqa" in collection_name:
-            qrels_file = os.path.join(script_dir, "../../human/retrieval_tasks_convid/fiqa/qrels/dev.tsv")
+            qrels_file = os.path.join(script_dir, "../../../data/retrieval_tasks/fiqa/qrels/dev.tsv")
         elif "cloud" in collection_name or "ibmcloud" in collection_name:
-            qrels_file = os.path.join(script_dir, "../../human/retrieval_tasks_convid/cloud/qrels/dev.tsv")
+            qrels_file = os.path.join(script_dir, "../../../data/retrieval_tasks/cloud/qrels/dev.tsv")
         else:
             print(f"Warning: Could not determine qrels for {collection_name}")
             continue

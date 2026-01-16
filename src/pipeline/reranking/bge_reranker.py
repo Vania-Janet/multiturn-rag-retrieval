@@ -93,6 +93,10 @@ class BGEReranker:
             normalize=True  # Normalize scores to [0, 1]
         )
         
+        # Handle numpy array output
+        if hasattr(scores, 'tolist'):
+            scores = scores.tolist()
+        
         # Handle single document case (returns float instead of list)
         if not isinstance(scores, list):
             scores = [scores]

@@ -29,7 +29,7 @@ from utils.hf_manager import HFManager
 
 
 DOMAINS = ["clapnq", "fiqa", "govt", "cloud"]
-MODELS = ["bm25", "elser", "bge-m3", "bge-base-1.5", "splade"]
+MODELS = ["bm25", "elser", "bge-m3", "bge-base-1.5", "splade", "bgem3_dense", "bgem3_sparse", "bgem3_colbert", "bgem3_all"]
 
 
 def parse_args():
@@ -143,7 +143,7 @@ def build_index(domain, model, corpus_dir, output_dir, force, batch_size, logger
     
     try:
         # Import indexing classes
-        from pipeline.indexing.build_indices import BGEIndexer, BM25Indexer, ELSERIndexer, SpladeIndexer, load_corpus
+        from pipeline.indexing.indexer import BGEIndexer, BM25Indexer, ELSERIndexer, SpladeIndexer, BGEM3Indexer, load_corpus
         
         # Load documents
         documents = load_corpus(domain, str(corpus_dir))
@@ -166,6 +166,30 @@ def build_index(domain, model, corpus_dir, output_dir, force, batch_size, logger
         elif model == "bge-m3":
             logger.info("  Building BGE-M3 index...")
             indexer = BGEIndexer(model_name="BAAI/bge-m3", output_dir=str(output_dir), index_subdir="bge-m3", batch_size=batch_size)
+            indexer.build(documents, domain)
+
+        elif model == "bgem3_dense":
+            logger.info("  Building BGEM3 Dense index...")
+            indexer = BGEM3Indexer(output_dir=str(output_dir), index_subdir="bgem3_dense", mode="dense", batch_size=batch_size)
+            indexer.build(documents, domain)
+
+        elif model == "bgem3_sparse":
+            logger.info("  Building BGEM3 Sparse index...")
+            indexer = BGEM3Indexer(output_dir=str(output_dir), index_subdir="bgem3_sparse", mode="sparse", batch_size=batch_size)
+            indexer.build(documents, domain)
+
+        elif model == "bgem3_colbert":
+            logger.info("  Building BGEM3 ColBERT index...")
+            # Reduce batch size for ColBERT
+            colbert_batch = max(1, batch_size // 4)
+            indexer = BGEM3Indexer(output_dir=str(output_dir), index_subdir="bgem3_colbert", mode="colbert", batch_size=colbert_batch)
+            indexer.build(documents, domain)
+
+        elif model == "bgem3_all":
+            logger.info("  Building ALL BGEM3 indices (Dense, Sparse, ColBERT) in one pass...")
+            # Reduce batch size as we are storing 3x tensors in memory/VRAM
+            combined_batch = max(1, batch_size // 4) # Conservative for 24GB VRAM
+            indexer = BGEM3Indexer(output_dir=str(output_dir), index_subdir="bgem3", mode="all", batch_size=combined_batch)
             indexer.build(documents, domain)
             
         elif model == "bge-base-1.5":

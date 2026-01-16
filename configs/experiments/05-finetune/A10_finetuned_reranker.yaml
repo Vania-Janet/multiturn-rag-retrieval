@@ -1,37 +1,43 @@
 # A10: Fine-tuned reranker
-# Hybrid retrieval + domain fine-tuned cross-encoder reranker
-# Uses reranker model fine-tuned on domain-specific query-doc pairs
+# Hybrid retrieval + domain fine-tuned BGE reranker
+# Uses pedrovo9/bge-reranker-v2-m3-multirag-finetuned
+# Model trained on multi-turn RAG data with proper train/test/val splits
 
 experiment:
   name: "A10_finetuned_reranker"
-  description: "Hybrid (SPLADE + BGE-M3) + Fine-tuned Reranker"
+  description: "Hybrid (SPLADE + BGE-M3) + Fine-tuned BGE Reranker (pedrovo9)"
 
 retrieval:
   type: "hybrid"
   sparse:
     method: "splade"
-    index_path: "indices/clapnq/splade"
+    index_path: "indices/{domain}/splade"
   dense:
     model_name: "BAAI/bge-m3"
-    index_path: "indices/clapnq/bge-m3"
+    index_path: "indices/{domain}/bge-m3"
   top_k: 300
   alpha: 0.5
 
 query_transform:
   enabled: true
-  rewriter_type: "llm"
+  rewriter_type: "vllm"
   merge_strategy: "replace"
   rewriter_config:
-    model_name: "gpt-4o-mini"
+    model_name: "Qwen/Qwen2.5-7B-Instruct"
     temperature: 0
     max_rewrites: 1
-    top_p: 1
     max_tokens: 128
+    retrieval_type: "dense"
 
 reranking:
   enabled: true
-  model_path: "models/finetuned/reranker/{domain}"  # Placeholder - will be resolved per domain
+  reranker_type: "finetuned_bge"  # Use fine-tuned BGE reranker
+  model_name: "pedrovo9/bge-reranker-v2-m3-multirag-finetuned"
   top_k: 100
+  batch_size: 32
+  use_fp16: true
 
 data:
   query_mode: "last_turn"
+  query_file: "data/retrieval_tasks/{domain}/{domain}_tasks.jsonl"
+
