@@ -1,60 +1,55 @@
 version: '3.8'
 
 services:
-  # Elasticsearch service for ELSER retrieval
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.11.0
-    container_name: mt-rag-elasticsearch
-    environment:
-      - discovery.type=single-node
-      - xpack.security.enabled=false
-      - xpack.ml.enabled=true
-      - ES_JAVA_OPTS=-Xms4g -Xmx4g
-    ports:
-      - "9200:9200"
-      - "9300:9300"
-    volumes:
-      - elasticsearch_data:/usr/share/elasticsearch/data
-    networks:
-      - mt-rag-network
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
-    restart: unless-stopped
-
-  # Main application service
-  mt-rag-app:
+  mtrag-retrieval:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: mt-rag-app
-    runtime: nvidia
+    image: mtrag-retrieval:latest
+    container_name: mtrag-retrieval
+    
+    # GPU support
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    
+    # Environment variables
     environment:
-      - NVIDIA_VISIBLE_DEVICES=all
-      - ELASTICSEARCH_URL=http://elasticsearch:9200
-      - ELASTICSEARCH_USER=
-      - ELASTICSEARCH_PASSWORD=
-      - PYTHONPATH=/workspace/src
+      - PYTHONUNBUFFERED=1
+      - HF_HOME=/workspace/cache
+      - HUGGINGFACE_HUB_CACHE=/workspace/cache/huggingface
+      - TRANSFORMERS_CACHE=/workspace/cache/transformers
+      - COHERE_API_KEY=${COHERE_API_KEY}
+      - VOYAGE_API_KEY=${VOYAGE_API_KEY}
+      - HUGGINGFACE_TOKEN=${HUGGINGFACE_TOKEN}
+    
+    # Volume mounts
     volumes:
-      - .:/workspace
-      - ./data:/workspace/data
-      - ./indices:/workspace/indices
-      - ./experiments:/workspace/experiments
-    networks:
-      - mt-rag-network
-    depends_on:
-      elasticsearch:
-        condition: service_healthy
-    stdin_open: true
+      - ./data:/workspace/mt-rag-benchmark/task_a_retrieval/data
+      - ./experiments:/workspace/mt-rag-benchmark/task_a_retrieval/experiments
+      - ./indices:/workspace/mt-rag-benchmark/task_a_retrieval/indices
+      - ./logs:/workspace/mt-rag-benchmark/task_a_retrieval/logs
+      - ./cache:/workspace/cache
+      - ./.env:/workspace/mt-rag-benchmark/task_a_retrieval/.env:ro
+    
+    # Working directory
+    working_dir: /workspace/mt-rag-benchmark/task_a_retrieval
+    
+    # Keep container running
     tty: true
-    command: bash
-
-volumes:
-  elasticsearch_data:
-    driver: local
+    stdin_open: true
+    
+    # Shared memory size (important for PyTorch DataLoader)
+    shm_size: '16gb'
+    
+    # Network
+    networks:
+      - mtrag-network
 
 networks:
-  mt-rag-network:
+  mtrag-network:
     driver: bridge

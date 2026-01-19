@@ -33,22 +33,64 @@ We evaluate:
 
 ### Option 1: Docker (Recommended for Reproducibility)
 
+Docker setup provides complete environment reproducibility with GPU support.
+
+#### Prerequisites
+- Docker 20.10+ and Docker Compose 2.0+
+- NVIDIA Docker runtime (`nvidia-docker2` package)
+- NVIDIA GPU with CUDA 12.1+ support
+
 ```bash
 # Clone repository
-git clone <your-repo-url>
-cd task_a_retrieval
+git clone https://github.com/Vania-Janet/multiturn-rag-retrieval.git
+cd mt-rag-benchmark/task_a_retrieval
 
-# Build and run with Docker Compose (includes Elasticsearch for ELSER)
+# Create .env file with API keys (optional, for ELSER/Cohere/Voyage)
+cat > .env << EOF
+COHERE_API_KEY=your_key_here
+VOYAGE_API_KEY=your_key_here
+HUGGINGFACE_TOKEN=your_token_here
+EOF
+
+# Build Docker image
+docker-compose build
+
+# Start container with GPU support
 docker-compose up -d
 
 # Enter container
-docker-compose exec mt-rag-app bash
+docker-compose exec mtrag-retrieval bash
 
 # Inside container: Build indices
 python src/pipeline/indexing/build_indices.py --models bge bge-m3 bm25 --domains all
 
 # Run experiments
-python scripts/run_experiment.py --experiment replication_bm25 --domain all
+python scripts/run_experiment.py --config configs/experiments/0-baselines/replication_bm25.yaml
+```
+
+#### Docker Volumes
+Persistent data is mounted from host:
+- `./data` → Container data directory
+- `./experiments` → Experiment results
+- `./indices` → Built indices (FAISS, BM25)
+- `./cache` → Model cache (HuggingFace, Transformers)
+
+#### Useful Docker Commands
+```bash
+# View logs
+docker-compose logs -f
+
+# Stop container
+docker-compose down
+
+# Rebuild after code changes
+docker-compose build --no-cache
+
+# Run single command without entering container
+docker-compose run --rm mtrag-retrieval python scripts/run_experiment.py --help
+
+# Check GPU availability in container
+docker-compose exec mtrag-retrieval nvidia-smi
 ```
 
 ### Option 2: Local Setup (Linux/Ubuntu 22.04)
@@ -64,21 +106,21 @@ source .venv/bin/activate
 python src/pipeline/indexing/build_indices.py --models bge bge-m3 bm25 --domains clapnq cloud fiqa govt
 
 # Run experiments
-python scripts/run_experiment.py --experiment replication_bm25 --domain all
+python scripts/run_experiment.py --config configs/experiments/0-baselines/replication_bm25.yaml
 ```
 
 ### Option 3: Manual Setup
 
 ```bash
 # Create virtual environment
-python3.11 -m venv .venv
+python3.10 -m venv .venv
 source .venv/bin/activate
 
 # Install PyTorch with CUDA
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
+pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121
 
 # Install dependencies (pinned versions for reproducibility)
-pip install -r requirements-frozen.txt
+pip install -r requirements.txt
 
 # Install FAISS GPU
 pip install faiss-gpu
@@ -89,14 +131,24 @@ python -c "import nltk; nltk.download('punkt')"
 
 ## 🔬 Reproducibility
 
-This repository follows ACL reproducibility guidelines:
+This repository follows ACL 2024 reproducibility guidelines with full Docker support.
 
-### Environment
-- **Python**: 3.11
-- **CUDA**: 11.8
-- **PyTorch**: 2.0+ (see `requirements-frozen.txt` for exact versions)
+### Docker Environment (Recommended)
+- **Base Image**: `nvidia/cuda:12.1.0-cudnn8-runtime-ubuntu22.04`
+- **Python**: 3.10
+- **PyTorch**: 2.0+ with CUDA 12.1
+- **GPU Support**: NVIDIA Docker runtime with all GPUs accessible
+- **Deterministic**: All random seeds fixed at 42
+- **Cached Models**: HuggingFace/Transformers cache persisted in volumes
+
+All experiment configurations in `configs/experiments/` use deterministic settings.
+
+### Local Environment
+- **Python**: 3.10+
+- **CUDA**: 12.1
+- **PyTorch**: 2.0+ (see `requirements.txt` for exact versions)
 - **Random Seeds**: Fixed at 42 across all experiments
-- **Hardware**: Tested on NVIDIA A100 (40GB)
+- **Hardware**: Tested on NVIDIA A100 (40GB) and RTX 4090
 
 ### Data
 Download the MT-RAG benchmark data:
@@ -189,25 +241,39 @@ Results are saved in `experiments/{experiment_name}/{domain}/`:
 
 ```
 task_a_retrieval/
-├── configs/                    # Experiment configurations
-│   ├── base.yaml              # Global settings
-│   ├── domains/               # Domain-specific configs
-│   └── experiments/           # Experiment-specific configs
-├── data/                      # Data files (not in repo)
+├── configs/                       # Experiment configurations
+│   ├── base.yaml                 # Global settings
+│   ├── domains/                  # Domain-specific configs
+│   └── experiments/              # Experiment-specific configs
+├── data/                         # Data files
+│   ├── passage_level_processed/  # Corpus documents
+│   ├── retrieval_tasks/          # Queries and qrels
+│   └── submissions/              # Test submissions (gitignored)
 ├── src/
 │   ├── pipeline/
-│   │   ├── indexing/         # Index building
-│   │   ├── retrieval/        # Retrieval models
-│   │   └── evaluation/       # Evaluation metrics
-│   └── utils/                # Utilities
-├── scripts/
-│   ├── run_experiment.py     # Main experiment runner
-│   └── build_indices.py      # Index builder
-├── Dockerfile                # Container definition
-├── docker-compose.yml        # Multi-service orchestration
-├── setup.sh                  # Automated setup script
-├── requirements.txt          # Python dependencies
-└── requirements-frozen.txt   # Pinned versions (reproducibility)
+│   │   ├── indexing/            # Index building (FAISS, BM25)
+│   │   ├── retrieval/           # Retrieval models
+│   │   └── evaluation/          # Evaluation metrics
+│   └── utils/                   # Utilities
+├── scripts/                      # Organized utility scripts
+│   ├── run_experiment.py        # Main experiment runner
+│   ├── make_submission.py       # Generate test submissions
+│   ├── extract_test_queries.py  # Test query extraction
+│   ├── run_test_submission.py   # Run test retrieval
+│   └── ...                      # Other utilities
+├── experiments/                  # Experiment results (gitignored)
+├── indices/                      # Built indices (gitignored)
+├── cache/                        # Model cache (gitignored)
+├── logs/                         # Execution logs
+├── docs/                         # Documentation
+│   ├── VALIDACION_ESTADISTICA_COMPLETA.md
+│   ├── RESUMEN_PARA_PROFESORA.md
+│   └── ...
+├── Dockerfile                    # Production container
+├── docker-compose.yml            # Multi-service orchestration  
+├── .dockerignore                 # Docker build exclusions
+├── setup.sh                      # Automated setup script
+└── requirements.txt              # Python dependencies
 ```
 
 ## 🛠️ Troubleshooting

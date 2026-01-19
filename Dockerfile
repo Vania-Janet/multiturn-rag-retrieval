@@ -1,63 +1,68 @@
-# Dockerfile for MT-RAG Benchmark (Task A: Retrieval)
-# Reproducible environment for ACL paper experiments
+# Multi-Turn RAG Retrieval - Production Docker Image
+# Optimized for reproducibility and GPU acceleration
 
-FROM nvidia/cuda:11.8.0-cudnn8-runtime-ubuntu22.04
+FROM nvidia/cuda:12.1.0-cudnn8-runtime-ubuntu22.04
 
-# Metadata
-LABEL maintainer="MT-RAG Research Team"
-LABEL description="Multi-Turn RAG Benchmark - Retrieval Task A"
-LABEL version="1.0"
-
-# Set environment variables for reproducibility
-ENV DEBIAN_FRONTEND=noninteractive
-ENV PYTHONUNBUFFERED=1
-ENV PYTHONHASHSEED=0
-ENV CUBLAS_WORKSPACE_CONFIG=:4096:8
-ENV OMP_NUM_THREADS=4
-ENV MKL_NUM_THREADS=4
+# Set environment variables
+ENV DEBIAN_FRONTEND=noninteractive \
+    PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PIP_NO_CACHE_DIR=1 \
+    HF_HOME=/workspace/cache \
+    HUGGINGFACE_HUB_CACHE=/workspace/cache/huggingface \
+    TRANSFORMERS_CACHE=/workspace/cache/transformers
 
 # Install system dependencies
-RUN apt-get update && apt-get install -y \
-    python3.11 \
-    python3.11-venv \
-    python3.11-dev \
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3.10 \
+    python3.10-dev \
     python3-pip \
     git \
     wget \
     curl \
     build-essential \
+    libgomp1 \
     && rm -rf /var/lib/apt/lists/*
 
-# Set Python 3.11 as default
-RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.11 1
-RUN update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.11 1
+# Create symbolic link for python
+RUN ln -sf /usr/bin/python3.10 /usr/bin/python
 
-# Create working directory
-WORKDIR /workspace
+# Set working directory
+WORKDIR /workspace/mt-rag-benchmark/task_a_retrieval
 
-# Copy requirements first for Docker layer caching
-COPY requirements-frozen.txt ./
+# Copy requirements first (for better caching)
+COPY requirements.txt .
 
 # Install Python dependencies
-RUN pip install --no-cache-dir --upgrade pip setuptools wheel && \
-    pip install --no-cache-dir torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118 && \
-    pip install --no-cache-dir -r requirements-frozen.txt && \
-    pip install --no-cache-dir faiss-gpu
-
-# Download NLTK data
-RUN python -c "import nltk; nltk.download('punkt', quiet=True)"
+RUN pip install --upgrade pip setuptools wheel && \
+    pip install -r requirements.txt
 
 # Copy project files
 COPY . .
 
-# Set PYTHONPATH
-ENV PYTHONPATH=/workspace/src:$PYTHONPATH
-
 # Create necessary directories
-RUN mkdir -p indices logs experiments data
+RUN mkdir -p \
+    /workspace/cache/huggingface \
+    /workspace/cache/transformers \
+    data/retrieval_tasks \
+    data/submissions \
+    experiments \
+    indices \
+    logs
 
-# Verify GPU setup
-RUN python -c "import torch; print(f'PyTorch version: {torch.__version__}'); print(f'CUDA available: {torch.cuda.is_available()}')" || true
+# Set permissions
+RUN chmod +x *.sh 2>/dev/null || true && \
+    chmod +x scripts/*.sh 2>/dev/null || true
 
 # Default command
-CMD ["bash"]
+CMD ["/bin/bash"]
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD python --version || exit 1
+
+# Labels
+LABEL maintainer="vania-janet" \
+      description="Multi-Turn RAG Retrieval System" \
+      version="1.0" \
+      repository="https://github.com/Vania-Janet/multiturn-rag-retrieval"
