@@ -49,7 +49,7 @@ indexing.log
 # Data and indices (large files)
 data/raw/
 data/processed/
-data/submissions/test/  # Never commit test submissions!
+data/submissions/  # All submissions (large files, stored in HF)
 indices/*/
 *.index
 *.faiss
