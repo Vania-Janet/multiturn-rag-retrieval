@@ -20,3 +20,5 @@ query_transform:
 data:
   query_mode: "last_turn"
   query_file: "data/retrieval_tasks/{domain}/{domain}_lastturn.jsonl"
+  qrels_file: "data/retrieval_tasks/{domain}/qrels/dev.tsv"
+  corpus_path: "data/passage_level_processed/{domain}"

@@ -1,0 +1,180 @@
+{"_id": "e9dd465e8dd63a80dda8f3ce9cba6848<::>1", "text": "What is the difference between Market Capitalization and Net Asset Value (NAV) in finance?"}
+{"_id": "e9dd465e8dd63a80dda8f3ce9cba6848<::>2", "text": "Which is more important, market capitalization or net asset value (NAV), in terms of evaluating a company's worth?"}
+{"_id": "e9dd465e8dd63a80dda8f3ce9cba6848<::>3", "text": "What is the enterprise value of a company?"}
+{"_id": "e9dd465e8dd63a80dda8f3ce9cba6848<::>4", "text": "What is the formula for calculating enterprise value?"}
+{"_id": "e9dd465e8dd63a80dda8f3ce9cba6848<::>5", "text": "What does WACC stand for and what is its significance in financial analysis?"}
+{"_id": "e9dd465e8dd63a80dda8f3ce9cba6848<::>6", "text": "How reliable is the Weighted Average Cost of Capital (WACC) formula in determining a company's cost of capital?"}
+{"_id": "e9dd465e8dd63a80dda8f3ce9cba6848<::>7", "text": "What is the most reliable formula for assessing a company's financial health and performance?"}
+{"_id": "c5518952b78b171de2d5b9317103ba62<::>1", "text": "What are the advantages and disadvantages of having a second bank account for a freelancer?"}
+{"_id": "c5518952b78b171de2d5b9317103ba62<::>2", "text": "What are the fees and costs associated with opening a second bank account for a freelancer?"}
+{"_id": "c5518952b78b171de2d5b9317103ba62<::>3", "text": "What are the steps to open a free business bank account?"}
+{"_id": "c5518952b78b171de2d5b9317103ba62<::>4", "text": "Why is there a minimum deposit and balance requirement to open a free bank account?"}
+{"_id": "c5518952b78b171de2d5b9317103ba62<::>5", "text": "What are the advantages and disadvantages of opening a second bank account with a different bank compared to using the same bank as my existing account?"}
+{"_id": "c5518952b78b171de2d5b9317103ba62<::>6", "text": "What are the advantages and disadvantages of using two bank accounts for personal and business finances?"}
+{"_id": "c5518952b78b171de2d5b9317103ba62<::>7", "text": "What are the advantages of using two separate bank accounts for personal and business finances?"}
+{"_id": "c5518952b78b171de2d5b9317103ba62<::>8", "text": "Which banks offer free checking accounts with no minimum balance requirements for freelancers?"}
+{"_id": "535ebd306304982e4e49cc989ce5b10b<::>1", "text": "What is the process for making a cash payment when purchasing a car?"}
+{"_id": "535ebd306304982e4e49cc989ce5b10b<::>3", "text": "What are the benefits of paying for a car with 0% interest compared to paying with cash or installments?"}
+{"_id": "535ebd306304982e4e49cc989ce5b10b<::>4", "text": "What are the consequences of using a friend's bank check to pay for a car?"}
+{"_id": "535ebd306304982e4e49cc989ce5b10b<::>5", "text": "What are the benefits and drawbacks of purchasing an extended warranty for a new car?"}
+{"_id": "535ebd306304982e4e49cc989ce5b10b<::>7", "text": "What are the challenges and opportunities of the used electric vehicle market regarding battery performance and longevity?"}
+{"_id": "535ebd306304982e4e49cc989ce5b10b<::>9", "text": "What are the implications of limited resale value for electric vehicles (EVs)?"}
+{"_id": "f1121a39d8a9e36eaef4c2367bd43532<::>1", "text": "What are the different pricing strategies for small businesses?"}
+{"_id": "f1121a39d8a9e36eaef4c2367bd43532<::>2", "text": "What are the common reasons for small business failures?"}
+{"_id": "f1121a39d8a9e36eaef4c2367bd43532<::>3", "text": "What are the key factors that drive business growth and sustainability?"}
+{"_id": "f1121a39d8a9e36eaef4c2367bd43532<::>4", "text": "What are the key qualities and characteristics of a good manager in a business context?"}
+{"_id": "f1121a39d8a9e36eaef4c2367bd43532<::>5", "text": "What are the common recruitment strategies and hiring processes used by companies to select and onboard new employees?"}
+{"_id": "f1121a39d8a9e36eaef4c2367bd43532<::>6", "text": "What are the essential employee benefits companies offer beyond salary?"}
+{"_id": "f1121a39d8a9e36eaef4c2367bd43532<::>7", "text": "What are the additional expenses a company incurs when employing staff beyond their remuneration?"}
+{"_id": "dcc0215a118ac833dfe054350df2afaa<::>1", "text": "What do the time, coupon, price, and yield components mean in a bond yield quote?"}
+{"_id": "dcc0215a118ac833dfe054350df2afaa<::>2", "text": "What is the safest bond investment option?"}
+{"_id": "dcc0215a118ac833dfe054350df2afaa<::>3", "text": "What are the risks and benefits of investing in foreign bonds?"}
+{"_id": "dcc0215a118ac833dfe054350df2afaa<::>4", "text": "What are the reasons for municipalities issuing bonds?"}
+{"_id": "dcc0215a118ac833dfe054350df2afaa<::>5", "text": "What are the key differences between investing in bonds and stocks?"}
+{"_id": "f0d30863222ebd30fc68c43ac3ae94bb<::>1", "text": "What are the advantages and disadvantages of purchasing discounted shares in a company?"}
+{"_id": "f0d30863222ebd30fc68c43ac3ae94bb<::>2", "text": "What is the biggest risk associated with investing a large portion of savings in a single company's stock?"}
+{"_id": "f0d30863222ebd30fc68c43ac3ae94bb<::>4", "text": "What are the tax implications of making a profit from stock market investments?"}
+{"_id": "f0d30863222ebd30fc68c43ac3ae94bb<::>5", "text": "What are the best resources for learning about investing and financial markets?"}
+{"_id": "f0d30863222ebd30fc68c43ac3ae94bb<::>6", "text": "What are the risks and benefits of investing in bonds compared to stocks?"}
+{"_id": "f0d30863222ebd30fc68c43ac3ae94bb<::>7", "text": "What does it mean to be a financial fiduciary?"}
+{"_id": "258193fc88e0e73322e288aa03719260<::>1", "text": "Are capital expenses for volunteer work tax-deductible?"}
+{"_id": "258193fc88e0e73322e288aa03719260<::>2", "text": "What expenses can be deducted from income for tax purposes when doing volunteer work for a charity?"}
+{"_id": "258193fc88e0e73322e288aa03719260<::>3", "text": "What types of organizations offer tax-deductible donations for individuals seeking to reduce their tax liability?"}
+{"_id": "258193fc88e0e73322e288aa03719260<::>4", "text": "What assets can be donated to charitable organizations for tax deductions?"}
+{"_id": "258193fc88e0e73322e288aa03719260<::>5", "text": "Can a cash donation to a foreign organization be used as a tax deduction?"}
+{"_id": "258193fc88e0e73322e288aa03719260<::>6", "text": "What is the maximum amount of charitable contributions that can be deducted from taxable income in the United States?"}
+{"_id": "258193fc88e0e73322e288aa03719260<::>7", "text": "Can I include charitable donations in my will for tax purposes?"}
+{"_id": "258193fc88e0e73322e288aa03719260<::>8", "text": "What are the legal requirements for creating a will?"}
+{"_id": "258193fc88e0e73322e288aa03719260<::>9", "text": "What are the best practices for finding a lawyer to assist with estate planning and drafting a will?"}
+{"_id": "4a8369b7403e54df94d7fa495a4eff27<::>1", "text": "What are the mechanics and rules of pre-market trading?"}
+{"_id": "4a8369b7403e54df94d7fa495a4eff27<::>2", "text": "Explain the differences between limit orders and market orders in stock trading."}
+{"_id": "4a8369b7403e54df94d7fa495a4eff27<::>3", "text": "What are the options for US investors to buy and sell securities on international stock markets?"}
+{"_id": "4a8369b7403e54df94d7fa495a4eff27<::>4", "text": "What are the main challenges and obstacles preventing the establishment of a single global market for trading securities?"}
+{"_id": "4a8369b7403e54df94d7fa495a4eff27<::>5", "text": "Why do retail investors often struggle in the stock market due to the complexity of global markets and currency denominations?"}
+{"_id": "dc1aaac0b33553d8c897d4150955d803<::>1", "text": "What are the most effective strategies for generating $250,000 in 5 years through trading, investing, or business ventures?"}
+{"_id": "dc1aaac0b33553d8c897d4150955d803<::>2", "text": "What are the key characteristics and strategies of day trading to turn $300,000 into over $10 million in a few years?"}
+{"_id": "dc1aaac0b33553d8c897d4150955d803<::>3", "text": "What are the tax advantages of using an IRA for day trading?"}
+{"_id": "dc1aaac0b33553d8c897d4150955d803<::>4", "text": "What are the requirements and potential outcomes of starting day trading with a $50,000 deposit in an IRA account?"}
+{"_id": "dc1aaac0b33553d8c897d4150955d803<::>6", "text": "What are the advantages and disadvantages of day trading in an IRA account with a $5500 deposit?"}
+{"_id": "dc1aaac0b33553d8c897d4150955d803<::>7", "text": "Do the SEC rules on pattern day trading apply to IRAs?"}
+{"_id": "a6eab3f851684c4ba01ae141ce590342<::>1", "text": "What are the legal considerations for an F-1 student investing in foreign financial markets?"}
+{"_id": "a6eab3f851684c4ba01ae141ce590342<::>2", "text": "What are the requirements for using Form 1040NR-EZ for F-1 students investing in foreign markets?"}
+{"_id": "a6eab3f851684c4ba01ae141ce590342<::>4", "text": "What are the potential risks and disadvantages of investing in foreign markets for an F-1 student?"}
+{"_id": "9c52934a9aea1c3647d4b558d8afdf1c<::>1", "text": "When is it inappropriate for an employee to request access to a young startup company's financial statements?"}
+{"_id": "9c52934a9aea1c3647d4b558d8afdf1c<::>2", "text": "What are the potential risks and challenges associated with employment at a startup company?"}
+{"_id": "9c52934a9aea1c3647d4b558d8afdf1c<::>3", "text": "What are the essential tips for starting a successful business or startup?"}
+{"_id": "9c52934a9aea1c3647d4b558d8afdf1c<::>4", "text": "What are the advantages and disadvantages of investing in existing startups compared to starting a new business?"}
+{"_id": "9c52934a9aea1c3647d4b558d8afdf1c<::>5", "text": "What are the options for investing a small amount in startups?"}
+{"_id": "9c52934a9aea1c3647d4b558d8afdf1c<::>6", "text": "What are the advantages and disadvantages of working for a FAANG company compared to a startup?"}
+{"_id": "9c52934a9aea1c3647d4b558d8afdf1c<::>8", "text": "What are the salaries and benefits offered by Goldman Sachs and other finance companies compared to FAANG companies?"}
+{"_id": "9c52934a9aea1c3647d4b558d8afdf1c<::>9", "text": "How do the starting salaries of Goldman Sachs and other top finance companies compare to those of tech companies?"}
+{"_id": "ca6f0197d2c0c4d6e3be090c3f8bf30f<::>1", "text": "What are the financial implications of paying off a car loan in full versus leaving a small balance until the end of the loan period?"}
+{"_id": "ca6f0197d2c0c4d6e3be090c3f8bf30f<::>2", "text": "What are the key factors that significantly impact an individual's credit score?"}
+{"_id": "ca6f0197d2c0c4d6e3be090c3f8bf30f<::>3", "text": "Is the FICO score the same as the credit score provided by Credit Karma?"}
+{"_id": "ca6f0197d2c0c4d6e3be090c3f8bf30f<::>4", "text": "How is the FICO credit score calculated?"}
+{"_id": "ca6f0197d2c0c4d6e3be090c3f8bf30f<::>5", "text": "What is the process for obtaining a FICO credit score?"}
+{"_id": "94d04f2cd47fee9a0aaa13fa3ae1de53<::>1", "text": "What is the difference between Market Capitalization and Net Asset Value (NAV)?"}
+{"_id": "94d04f2cd47fee9a0aaa13fa3ae1de53<::>2", "text": "What are the critical aspects to evaluate when acquiring a business?"}
+{"_id": "94d04f2cd47fee9a0aaa13fa3ae1de53<::>3", "text": "Does purchasing stocks grant control over the company or entity?"}
+{"_id": "94d04f2cd47fee9a0aaa13fa3ae1de53<::>4", "text": "What is the value of a company's stock or shares?"}
+{"_id": "94d04f2cd47fee9a0aaa13fa3ae1de53<::>5", "text": "What factors contribute to making good decisions when investing in stocks or businesses?"}
+{"_id": "94d04f2cd47fee9a0aaa13fa3ae1de53<::>6", "text": "How do employees factor into business decisions and the overall success of a company?"}
+{"_id": "94d04f2cd47fee9a0aaa13fa3ae1de53<::>7", "text": "What are the reasons for selling a company?"}
+{"_id": "94d04f2cd47fee9a0aaa13fa3ae1de53<::>8", "text": "What are the key considerations and strategies for selling a business successfully?"}
+{"_id": "7cb06b3f8068674fce61a11e9777f708<::>1", "text": "Does having a cosigner on a loan in the US impact an individual's credit rating?"}
+{"_id": "7cb06b3f8068674fce61a11e9777f708<::>2", "text": "How does a cosigner become responsible for loan payments if the borrower defaults?"}
+{"_id": "7cb06b3f8068674fce61a11e9777f708<::>3", "text": "What are the risks and disadvantages of being a co-signer for a loan?"}
+{"_id": "7cb06b3f8068674fce61a11e9777f708<::>4", "text": "How does co-signing a loan affect credit rating and credit score?"}
+{"_id": "7cb06b3f8068674fce61a11e9777f708<::>5", "text": "What is the FICO credit score system?"}
+{"_id": "7cb06b3f8068674fce61a11e9777f708<::>6", "text": "How can I improve my credit card score?"}
+{"_id": "7cb06b3f8068674fce61a11e9777f708<::>7", "text": "What are the benefits and drawbacks of having a good credit score?"}
+{"_id": "4fb9958d3e2694c9076e696f5ac9628e<::>1", "text": "Can credit card rewards be used to cover tax-deductible business expenses?"}
+{"_id": "4fb9958d3e2694c9076e696f5ac9628e<::>2", "text": "What are the tax implications for small businesses when using credit card points for business expenses?"}
+{"_id": "4fb9958d3e2694c9076e696f5ac9628e<::>3", "text": "What are the steps to open a small business?"}
+{"_id": "4fb9958d3e2694c9076e696f5ac9628e<::>4", "text": "What are the legal requirements for registering a small business?"}
+{"_id": "4fb9958d3e2694c9076e696f5ac9628e<::>5", "text": "What are the advantages and disadvantages of using a small business credit card for business expenses?"}
+{"_id": "4fb9958d3e2694c9076e696f5ac9628e<::>6", "text": "What are the options for financing a business startup through loans?"}
+{"_id": "4fb9958d3e2694c9076e696f5ac9628e<::>7", "text": "What are the common reasons for business bankruptcy?"}
+{"_id": "d4d8edb3e0c456d11033b14b28e99470<::>1", "text": "What are the financial implications of renting to pay off debt versus buying a house and rolling debt into a mortgage when the housing market is rising?"}
+{"_id": "d4d8edb3e0c456d11033b14b28e99470<::>2", "text": "What are the most effective strategies for rapidly eliminating debt?"}
+{"_id": "d4d8edb3e0c456d11033b14b28e99470<::>3", "text": "What are the advantages and disadvantages of debt consolidation as a strategy for managing debt?"}
+{"_id": "d4d8edb3e0c456d11033b14b28e99470<::>4", "text": "What are the advantages and disadvantages of a balance transfer for debt consolidation?"}
+{"_id": "d4d8edb3e0c456d11033b14b28e99470<::>5", "text": "Are there any special programs or initiatives to help individuals manage and reduce medical debt?"}
+{"_id": "d4d8edb3e0c456d11033b14b28e99470<::>6", "text": "Are there any special programs for medical debt for a deceased relative?"}
+{"_id": "d4d8edb3e0c456d11033b14b28e99470<::>7", "text": "What are the legal implications of accessing assets of a deceased relative with outstanding debts?"}
+{"_id": "1c74814752c3f9d4ed0b99c16e1ed192<::>1", "text": "What are the alternative compensation methods for employees besides traditional salary payments?"}
+{"_id": "1c74814752c3f9d4ed0b99c16e1ed192<::>2", "text": "Are employers required to report employee salaries and withhold income tax?"}
+{"_id": "1c74814752c3f9d4ed0b99c16e1ed192<::>3", "text": "Why do individuals need to pay income tax?"}
+{"_id": "1c74814752c3f9d4ed0b99c16e1ed192<::>4", "text": "What are the common deductions from gross salary in the U.S.?"}
+{"_id": "1c74814752c3f9d4ed0b99c16e1ed192<::>5", "text": "What is FICA and how does it relate to income tax deductions and credits?"}
+{"_id": "1c74814752c3f9d4ed0b99c16e1ed192<::>6", "text": "What is the difference between personal income tax and corporate tax?"}
+{"_id": "1c74814752c3f9d4ed0b99c16e1ed192<::>7", "text": "How are investments taxed in the U.S.?"}
+{"_id": "1c74814752c3f9d4ed0b99c16e1ed192<::>8", "text": "Are tax laws and regulations consistent across all states in the USA?"}
+{"_id": "1c74814752c3f9d4ed0b99c16e1ed192<::>9", "text": "What are the tax implications if I lose my job?"}
+{"_id": "6af5334fbd010b919d7fa174823abd12<::>2", "text": "What is the difference between refinancing and getting a mortgage?"}
+{"_id": "6af5334fbd010b919d7fa174823abd12<::>3", "text": "What is the standard down payment percentage for a residential mortgage loan?"}
+{"_id": "6af5334fbd010b919d7fa174823abd12<::>4", "text": "Is house insurance mandatory for mortgage borrowers?"}
+{"_id": "6af5334fbd010b919d7fa174823abd12<::>5", "text": "What are the advantages and disadvantages of renting versus buying a home?"}
+{"_id": "6af5334fbd010b919d7fa174823abd12<::>6", "text": "What is the value of buying a house compared to renting?"}
+{"_id": "6af5334fbd010b919d7fa174823abd12<::>7", "text": "Can a house be gifted to another person?"}
+{"_id": "6af5334fbd010b919d7fa174823abd12<::>8", "text": "What are the alternatives to paying a mortgage?"}
+{"_id": "6af5334fbd010b919d7fa174823abd12<::>9", "text": "What is the minimum age requirement to apply for a mortgage?"}
+{"_id": "6af5334fbd010b919d7fa174823abd12<::>10", "text": "What are the advantages and disadvantages of a 15-year mortgage compared to a 30-year mortgage?"}
+{"_id": "f05ba9633e1b377f9c4d64afd3da3c45<::>1", "text": "What are the risks of being a co-owner on a house-purchase with a friend?"}
+{"_id": "f05ba9633e1b377f9c4d64afd3da3c45<::>2", "text": "What benefits do veterans have when applying for a mortgage?"}
+{"_id": "f05ba9633e1b377f9c4d64afd3da3c45<::>3", "text": "What are the benefits of an FHA loan compared to other mortgage options?"}
+{"_id": "f05ba9633e1b377f9c4d64afd3da3c45<::>4", "text": "What are the advantages and disadvantages of using a real estate agent when buying a house?"}
+{"_id": "f05ba9633e1b377f9c4d64afd3da3c45<::>5", "text": "What are the requirements and potential earnings for becoming a real estate agent?"}
+{"_id": "f05ba9633e1b377f9c4d64afd3da3c45<::>6", "text": "What are the advantages and disadvantages of buying a home compared to renting?"}
+{"_id": "f05ba9633e1b377f9c4d64afd3da3c45<::>7", "text": "What are the financial benefits and drawbacks of owning a home as an investment?"}
+{"_id": "f05ba9633e1b377f9c4d64afd3da3c45<::>8", "text": "What is a better investment: a home or other financial assets?"}
+{"_id": "2f94b6fb4c6f941decd0609eb126610b<::>1", "text": "What is the optimal asset allocation strategy for a 401k retirement plan to achieve a balanced portfolio?"}
+{"_id": "2f94b6fb4c6f941decd0609eb126610b<::>2", "text": "What are the tax implications and treatment of 401k accounts?"}
+{"_id": "2f94b6fb4c6f941decd0609eb126610b<::>3", "text": "Define IRA in the context of retirement savings and tax implications."}
+{"_id": "4751cd8210b4adb8bce5cbc3fe913096<::>1", "text": "What is the difference in the percentage of company ownership represented by a single unit of common stock versus preferred stock?"}
+{"_id": "4751cd8210b4adb8bce5cbc3fe913096<::>2", "text": "Where can I purchase common and preferred stocks?"}
+{"_id": "4751cd8210b4adb8bce5cbc3fe913096<::>3", "text": "How are the tax implications of common and preferred stocks different?"}
+{"_id": "4751cd8210b4adb8bce5cbc3fe913096<::>4", "text": "How can stocks be designated into a trust?"}
+{"_id": "4751cd8210b4adb8bce5cbc3fe913096<::>5", "text": "What is the tax rate for dividends in the US?"}
+{"_id": "4751cd8210b4adb8bce5cbc3fe913096<::>6", "text": "What are the tax implications of selling stocks at a loss in the US?"}
+{"_id": "4751cd8210b4adb8bce5cbc3fe913096<::>7", "text": "What is the tax treatment of stock losses using FIFO or LIFO methods?"}
+{"_id": "4751cd8210b4adb8bce5cbc3fe913096<::>8", "text": "What are the challenges and considerations for tax and accounting when dealing with stock trading and investment?"}
+{"_id": "8040ccdfc0a0ffb8e3f82d94f92ddb5c<::>2", "text": "What are the key differences between debit and credit cards?"}
+{"_id": "8040ccdfc0a0ffb8e3f82d94f92ddb5c<::>3", "text": "What are the key factors to consider when choosing a credit card from a wide range of options?"}
+{"_id": "2b34f5e7861ca9b1b3eab65ad6d6b4b0<::>1", "text": "How do the financial troubles of certain EU member states threaten the Euro's existence?"}
+{"_id": "2b34f5e7861ca9b1b3eab65ad6d6b4b0<::>3", "text": "What evidence supports the claim that France has a large and growing budget deficit and public debt, leading to an unsustainable economic situation?"}
+{"_id": "2b34f5e7861ca9b1b3eab65ad6d6b4b0<::>4", "text": "What is the current economic strength of Germany?"}
+{"_id": "2b34f5e7861ca9b1b3eab65ad6d6b4b0<::>7", "text": "What are the advantages for Germany to bailout other EU countries?"}
+{"_id": "2b34f5e7861ca9b1b3eab65ad6d6b4b0<::>8", "text": "What are the potential consequences for the Eurozone if Germany stops bailing out other member states?"}
+{"_id": "61374b240d5742f957706d00f9ed0dd6<::>1", "text": "Can individuals realistically turn a small initial investment of a few thousand dollars into millions through stock trading?"}
+{"_id": "61374b240d5742f957706d00f9ed0dd6<::>2", "text": "What are the advantages and disadvantages of investing solely in mutual funds compared to other investment options?"}
+{"_id": "61374b240d5742f957706d00f9ed0dd6<::>3", "text": "Explain Exchange Traded Funds (ETFs) and their role in investment diversification."}
+{"_id": "61374b240d5742f957706d00f9ed0dd6<::>4", "text": "What is the minimum investment amount for mutual funds and ETFs?"}
+{"_id": "61374b240d5742f957706d00f9ed0dd6<::>5", "text": "What is the definition of \"long term investing\" in the context of stock market investments?"}
+{"_id": "61374b240d5742f957706d00f9ed0dd6<::>6", "text": "What is the recommended age to start saving for retirement?"}
+{"_id": "61374b240d5742f957706d00f9ed0dd6<::>7", "text": "How are retirement income and taxes related?"}
+{"_id": "e0f8a53d3ab93e7900633fc8fa40631e<::>1", "text": "Is it advisable to follow the investment strategies and recommendations of a renowned financial expert?"}
+{"_id": "e0f8a53d3ab93e7900633fc8fa40631e<::>2", "text": "Name some renowned investment gurus or experts who provide insights and guidance to investors."}
+{"_id": "e0f8a53d3ab93e7900633fc8fa40631e<::>3", "text": "What is the average return on investment for Benjamin Graham and Warren Buffett?"}
+{"_id": "e0f8a53d3ab93e7900633fc8fa40631e<::>4", "text": "What online resources are available for self-help in investing and financial management?"}
+{"_id": "e0f8a53d3ab93e7900633fc8fa40631e<::>5", "text": "What are some recommended resources for investment training and education, excluding online trading platforms?"}
+{"_id": "e0f8a53d3ab93e7900633fc8fa40631e<::>6", "text": "What is the minimum amount required to start investing or participate in investment training programs?"}
+{"_id": "e0f8a53d3ab93e7900633fc8fa40631e<::>7", "text": "What are the key differences between IRA and 401K investment accounts?"}
+{"_id": "e0f8a53d3ab93e7900633fc8fa40631e<::>8", "text": "What is the maximum amount that can be accumulated in a 401K retirement account?"}
+{"_id": "e0f8a53d3ab93e7900633fc8fa40631e<::>9", "text": "What is the maximum amount that can be accumulated in a 401(k) account without exceeding contribution limits?"}
+{"_id": "e0f8a53d3ab93e7900633fc8fa40631e<::>10", "text": "What are the implications of divorce on a 401(k) account and the potential for early withdrawal?"}
+{"_id": "4da5a7f42f3b2dc4d875dcfa2fcdefef<::>1", "text": "How can French citizens obtain an international credit report?"}
+{"_id": "4da5a7f42f3b2dc4d875dcfa2fcdefef<::>2", "text": "Can I obtain a credit report in the United States for a French national?"}
+{"_id": "4da5a7f42f3b2dc4d875dcfa2fcdefef<::>3", "text": "What factors negatively impact an individual's credit score?"}
+{"_id": "4da5a7f42f3b2dc4d875dcfa2fcdefef<::>5", "text": "Do I need to have credit activities in the US to obtain a credit report as a French national?"}
+{"_id": "4da5a7f42f3b2dc4d875dcfa2fcdefef<::>6", "text": "What steps should I take if I am wrongfully reported on my credit report?"}
+{"_id": "4da5a7f42f3b2dc4d875dcfa2fcdefef<::>7", "text": "What is the clearing period for disputes on credit reports?"}
+{"_id": "4da5a7f42f3b2dc4d875dcfa2fcdefef<::>8", "text": "Explain the Fair Credit Reporting Act and its dispute process in simple terms."}
+{"_id": "af5e45e59e1254e0b7869cb477674d02<::>2", "text": "Are US-based companies required to adhere to SEC regulations?"}
+{"_id": "af5e45e59e1254e0b7869cb477674d02<::>3", "text": "What are the requirements for US-based companies to comply with SEC regulations and submit financial statements to the EDGAR system?"}
+{"_id": "af5e45e59e1254e0b7869cb477674d02<::>4", "text": "What are the SEC filing requirements for companies with more than 500 shareholders?"}
+{"_id": "af5e45e59e1254e0b7869cb477674d02<::>5", "text": "Which SEC filing is considered the most important?"}
+{"_id": "af5e45e59e1254e0b7869cb477674d02<::>6", "text": "What is the significance of Form 13F in SEC filings?"}
+{"_id": "af5e45e59e1254e0b7869cb477674d02<::>7", "text": "What constitutes a violation of SEC regulations for companies preparing financial statements?"}
+{"_id": "af5e45e59e1254e0b7869cb477674d02<::>8", "text": "What are the requirements for international equity to be considered an accredited investor and file SEC reports?"}
+{"_id": "af5e45e59e1254e0b7869cb477674d02<::>9", "text": "How are securities treated in international equity?"}

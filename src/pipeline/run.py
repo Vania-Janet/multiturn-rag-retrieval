@@ -6,6 +6,9 @@ os.environ['HUGGINGFACE_HUB_CACHE'] = '/workspace/cache/huggingface'
 os.environ['TRANSFORMERS_CACHE'] = '/workspace/cache/transformers'
 os.environ['HF_HUB_CACHE'] = '/workspace/cache/huggingface'
 
+# Enable tokenizer parallelism for faster processing
+os.environ['TOKENIZERS_PARALLELISM'] = 'true'
+
 import json
 import logging
 import time
@@ -15,24 +18,53 @@ import numpy as np
 import pandas as pd
 import re
 
-from .retrieval import (
-    get_sparse_retriever,
-    get_dense_retriever,
-    HybridRetriever,
-    set_seed,
-    LatencyMonitor,
-    analyze_hard_failures,
-    analyze_performance_by_turn,
-    analyze_query_variance,
-    calculate_wilcoxon_significance,
-    bootstrap_confidence_interval,
-    apply_bonferroni_correction
-)
-from .query_transform import get_rewriter
-from .reranking import CohereReranker, BGEReranker, FineTunedBGEReranker
-from .evaluation.run_retrieval_eval import compute_results, load_qrels, prepare_results_dict
-from .retrieval.fusion import reciprocal_rank_fusion
-from .utils.parent_context import build_parent_store, get_parent_id
+try:
+    # Try relative imports first (when used as module)
+    from .retrieval import (
+        get_sparse_retriever,
+        get_dense_retriever,
+        HybridRetriever,
+        set_seed,
+        LatencyMonitor,
+        analyze_hard_failures,
+        analyze_performance_by_turn,
+        analyze_query_variance,
+        calculate_wilcoxon_significance,
+    )
+    from .query_transform import QueryRewriter, get_rewriter
+    from .reranking import CohereReranker, BGEReranker, FineTunedBGEReranker
+    from .retrieval.analysis import (
+        bootstrap_confidence_interval,
+        apply_bonferroni_correction
+    )
+except ImportError:
+    # Fall back to absolute imports (when run as script)
+    from src.pipeline.retrieval import (
+        get_sparse_retriever,
+        get_dense_retriever,
+        HybridRetriever,
+        set_seed,
+        LatencyMonitor,
+        analyze_hard_failures,
+        analyze_performance_by_turn,
+        analyze_query_variance,
+        calculate_wilcoxon_significance,
+    )
+    from src.pipeline.query_transform import QueryRewriter, get_rewriter
+    from src.pipeline.reranking import CohereReranker, BGEReranker, FineTunedBGEReranker
+    from src.pipeline.retrieval.analysis import (
+        bootstrap_confidence_interval,
+        apply_bonferroni_correction
+    )
+
+try:
+    from .retrieval.fusion import reciprocal_rank_fusion
+    from .utils.parent_context import build_parent_store, get_parent_id
+    from .evaluation.run_retrieval_eval import compute_results, load_qrels, prepare_results_dict
+except ImportError:
+    from src.pipeline.retrieval.fusion import reciprocal_rank_fusion
+    from src.pipeline.utils.parent_context import build_parent_store, get_parent_id
+    from src.pipeline.evaluation.run_retrieval_eval import compute_results, load_qrels, prepare_results_dict
 
 logger = logging.getLogger(__name__)
 
@@ -552,8 +584,11 @@ def run_pipeline(config: Dict[str, Any], output_dir: Path, domain: str, force: b
                 contexts.append(context_entry)
             logger.debug(f"Reranked {len(contexts)} documents")
 
-        # Truncate to top-10 for final output conformity
-        contexts = contexts[:10]
+        # Truncate contexts if specified (for final submission, use top-10)
+        # For evaluation, keep all retrieved documents (default: 100)
+        final_top_k = config.get("output", {}).get("top_k", None)
+        if final_top_k:
+            contexts = contexts[:final_top_k]
 
         result_entry = {
             "task_id": query_id,

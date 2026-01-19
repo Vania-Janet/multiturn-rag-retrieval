@@ -76,8 +76,10 @@ def analyze_hard_failures(
     Returns:
         DataFrame of top failures.
     """
-    if metric_col not in results_df.columns:
-        raise ValueError(f"Metric column '{metric_col}' not found in DataFrame.")
+    # Handle empty DataFrame
+    if results_df.empty or metric_col not in results_df.columns:
+        logger.warning(f"Empty results or metric column '{metric_col}' not found. Returning empty DataFrame.")
+        return pd.DataFrame()
         
     failures = results_df[results_df[metric_col] <= threshold].copy()
     
@@ -134,3 +136,59 @@ def analyze_query_variance(
         raise ValueError(f"Group column '{group_by_col}' not found.")
         
     return results_df.groupby(group_by_col)[metric_col].agg(['mean', 'std', 'min', 'max'])
+
+def bootstrap_confidence_interval(
+    scores: List[float],
+    n_bootstrap: int = 1000,
+    confidence_level: float = 0.95
+) -> Dict[str, float]:
+    """
+    Calculate bootstrap confidence interval for a set of scores.
+    
+    Args:
+        scores: List of metric scores.
+        n_bootstrap: Number of bootstrap samples.
+        confidence_level: Confidence level (default 0.95 for 95% CI).
+        
+    Returns:
+        Dictionary with mean, lower, and upper bounds.
+    """
+    if not scores:
+        return {"mean": 0.0, "lower": 0.0, "upper": 0.0}
+    
+    scores_array = np.array(scores)
+    bootstrap_means = []
+    
+    for _ in range(n_bootstrap):
+        sample = np.random.choice(scores_array, size=len(scores_array), replace=True)
+        bootstrap_means.append(np.mean(sample))
+    
+    alpha = 1 - confidence_level
+    lower_percentile = (alpha / 2) * 100
+    upper_percentile = (1 - alpha / 2) * 100
+    
+    return {
+        "mean": float(np.mean(scores_array)),
+        "lower": float(np.percentile(bootstrap_means, lower_percentile)),
+        "upper": float(np.percentile(bootstrap_means, upper_percentile))
+    }
+
+def apply_bonferroni_correction(p_value: float, num_tests: int) -> Dict[str, Any]:
+    """
+    Apply Bonferroni correction for multiple hypothesis testing.
+    
+    Args:
+        p_value: Original p-value.
+        num_tests: Number of tests performed.
+        
+    Returns:
+        Dictionary with corrected p-value and significance.
+    """
+    corrected_p = min(p_value * num_tests, 1.0)
+    
+    return {
+        "original_p_value": p_value,
+        "corrected_p_value": corrected_p,
+        "num_tests": num_tests,
+        "significant_at_0.05": corrected_p < 0.05
+    }

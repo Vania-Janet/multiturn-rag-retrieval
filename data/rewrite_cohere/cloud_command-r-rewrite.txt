@@ -1,0 +1,188 @@
+{"_id": "d5b1e735a040853ed361a3dfde1b8ef0<::>1", "text": "What document databases does IBM offer?"}
+{"_id": "d5b1e735a040853ed361a3dfde1b8ef0<::>2", "text": "Can IBM Cloudant store JSON objects without predefined fields?"}
+{"_id": "d5b1e735a040853ed361a3dfde1b8ef0<::>3", "text": "Can IBM Cloudant store images or PDFs along with JSON documents?"}
+{"_id": "d5b1e735a040853ed361a3dfde1b8ef0<::>4", "text": "What is the maximum file size for attachments in IBM Cloudant?"}
+{"_id": "d5b1e735a040853ed361a3dfde1b8ef0<::>5", "text": "What is the maximum file size for attachments in IBM Cloudant?"}
+{"_id": "d5b1e735a040853ed361a3dfde1b8ef0<::>6", "text": "How do I get started with IBM Cloudant?"}
+{"_id": "d5b1e735a040853ed361a3dfde1b8ef0<::>7", "text": "What are the differences between the IBM Cloudant Lite and Standard plans?"}
+{"_id": "d5b1e735a040853ed361a3dfde1b8ef0<::>8", "text": "Should I use the Lite plan for initial exploration and testing of IBM Cloudant?"}
+{"_id": "d5b1e735a040853ed361a3dfde1b8ef0<::>9", "text": "Where can I find the Python SDK for pushing and fetching data to and from IBM Cloudant?"}
+{"_id": "fdee20f7fd677e420742b09989623d68<::>1", "text": "What are the benefits and drawbacks of implementing a web chat widget on a business website?"}
+{"_id": "fdee20f7fd677e420742b09989623d68<::>2", "text": "What is the process for integrating a web chat widget into a website?"}
+{"_id": "fdee20f7fd677e420742b09989623d68<::>3", "text": "How can I extend the functionality of the web chat widget on my website?"}
+{"_id": "fdee20f7fd677e420742b09989623d68<::>4", "text": "What security measures are in place for the web chat widget to protect sensitive data?"}
+{"_id": "fdee20f7fd677e420742b09989623d68<::>5", "text": "How can I customize the visual appearance and behavior of the web chat widget?"}
+{"_id": "fdee20f7fd677e420742b09989623d68<::>6", "text": "How do I find the web chat widget on my website?"}
+{"_id": "fdee20f7fd677e420742b09989623d68<::>7", "text": "How can I add user identity information to the web chat widget?"}
+{"_id": "fdee20f7fd677e420742b09989623d68<::>8", "text": "What is the technical process and functionality of the web chat widget?"}
+{"_id": "be461bfeda2d4826cdb663dcaa7d1ced<::>1", "text": "What are the specific procedures for collecting worker node data in a distributed computing environment?"}
+{"_id": "be461bfeda2d4826cdb663dcaa7d1ced<::>2", "text": "What is the process for updating a classic worker node?"}
+{"_id": "be461bfeda2d4826cdb663dcaa7d1ced<::>3", "text": "How do I perform a major.minor update on a classic worker node?"}
+{"_id": "be461bfeda2d4826cdb663dcaa7d1ced<::>4", "text": "What are the different parts of a tag in the context of worker node updates and data gathering?"}
+{"_id": "be461bfeda2d4826cdb663dcaa7d1ced<::>5", "text": "What is the command to gather worker node data for Kubernetes and OpenShift clusters?"}
+{"_id": "be461bfeda2d4826cdb663dcaa7d1ced<::>6", "text": "What is NodeSync in the context of blockchain network nodes?"}
+{"_id": "be461bfeda2d4826cdb663dcaa7d1ced<::>7", "text": "What is the purpose and function of a worker node in a Kubernetes cluster?"}
+{"_id": "be461bfeda2d4826cdb663dcaa7d1ced<::>8", "text": "What is Red Hat OpenShift?"}
+{"_id": "be461bfeda2d4826cdb663dcaa7d1ced<::>9", "text": "What are the services provided by Virtual Network Functions?"}
+{"_id": "1c041ce47a81941c26899fdf08bde961<::>1", "text": "How to troubleshoot a non-working SELECT query in SQL?"}
+{"_id": "1c041ce47a81941c26899fdf08bde961<::>2", "text": "What is the definition of a query in the context of database management and SQL?"}
+{"_id": "1c041ce47a81941c26899fdf08bde961<::>3", "text": "What are the best practices and optimization techniques for improving the performance and efficiency of a select query in a database system?"}
+{"_id": "1c041ce47a81941c26899fdf08bde961<::>4", "text": "What are the details and features of the query API for improving query performance and relevance?"}
+{"_id": "1c041ce47a81941c26899fdf08bde961<::>5", "text": "How can I manage storage space limits and add or delete storage in my database system?"}
+{"_id": "1c041ce47a81941c26899fdf08bde961<::>6", "text": "Define data lakes and their purpose in data storage and analytics."}
+{"_id": "1c041ce47a81941c26899fdf08bde961<::>7", "text": "How do I create a schema or tables in a data lake using Object Storage?"}
+{"_id": "1c041ce47a81941c26899fdf08bde961<::>8", "text": "How to use IBM Cloudant Query?"}
+{"_id": "1dcbbeb35d4d25ba1ffb787a9f2080e2<::>1", "text": "What is the best way to search for and locate specific conversations within a messaging platform or communication tool?"}
+{"_id": "1dcbbeb35d4d25ba1ffb787a9f2080e2<::>2", "text": "Is a user ID required to locate a specific conversation within a given time period?"}
+{"_id": "1dcbbeb35d4d25ba1ffb787a9f2080e2<::>3", "text": "What is the process for generating a unique user ID in the v2 API?"}
+{"_id": "1dcbbeb35d4d25ba1ffb787a9f2080e2<::>4", "text": "What are the characteristics of a strong password?"}
+{"_id": "1dcbbeb35d4d25ba1ffb787a9f2080e2<::>5", "text": "What is the retention period for conversation logs in the IBM Watson Assistant?"}
+{"_id": "ddbbbe7ea13560c5768639207e1ca604<::>1", "text": "What is the Score Agreement level when the score is negative?"}
+{"_id": "ddbbbe7ea13560c5768639207e1ca604<::>2", "text": "What is the recommended number of annotators for a reliable agreement score?"}
+{"_id": "ddbbbe7ea13560c5768639207e1ca604<::>3", "text": "What is the recommended data volume for inter-annotator agreement scoring?"}
+{"_id": "ddbbbe7ea13560c5768639207e1ca604<::>5", "text": "How do pre-annotations improve the annotation process?"}
+{"_id": "ddbbbe7ea13560c5768639207e1ca604<::>6", "text": "What are the options for using pre-annotations and tools for conversational and technical documents?"}
+{"_id": "ddbbbe7ea13560c5768639207e1ca604<::>7", "text": "What are the three metrics used to measure correlation?"}
+{"_id": "81afaf82a0d9a5fad6eaa196f8d9641c<::>1", "text": "What is the process for deleting a cryptographic key?"}
+{"_id": "81afaf82a0d9a5fad6eaa196f8d9641c<::>2", "text": "What is the process of authorizing and deleting a key in IBM Key Protect?"}
+{"_id": "81afaf82a0d9a5fad6eaa196f8d9641c<::>3", "text": "What is the consequence of inaction by the second user when the 7-day period for key deletion authorization expires?"}
+{"_id": "81afaf82a0d9a5fad6eaa196f8d9641c<::>4", "text": "How can I remove an entry from the resource list when the server has expired?"}
+{"_id": "81afaf82a0d9a5fad6eaa196f8d9641c<::>5", "text": "What are the reasons for not being able to delete keys in the Key Protect service?"}
+{"_id": "81afaf82a0d9a5fad6eaa196f8d9641c<::>6", "text": "What are the consequences of forcing a deletion on a key in Key Protect?"}
+{"_id": "81afaf82a0d9a5fad6eaa196f8d9641c<::>7", "text": "What is Cryptoshredding?"}
+{"_id": "81afaf82a0d9a5fad6eaa196f8d9641c<::>8", "text": "What is the backup policy for data associated with deleted keys in Key Protect?"}
+{"_id": "81afaf82a0d9a5fad6eaa196f8d9641c<::>9", "text": "What is the disaster recovery strategy for IBM Cloud services and resources?"}
+{"_id": "34ac6bedd4b35167cc59e289893e206a<::>2", "text": "Provide a concise definition of Red Hat OpenShift."}
+{"_id": "34ac6bedd4b35167cc59e289893e206a<::>3", "text": "What are the benefits of Red Hat OpenShift?"}
+{"_id": "34ac6bedd4b35167cc59e289893e206a<::>4", "text": "What is virtualization in the context of Red Hat OpenShift?"}
+{"_id": "34ac6bedd4b35167cc59e289893e206a<::>5", "text": "What solutions does IBM Cloud\u00ae Virtualization offer for running virtual machines in a dedicated environment?"}
+{"_id": "34ac6bedd4b35167cc59e289893e206a<::>6", "text": "What are the benefits and use cases of Red Hat OpenShift for enterprise workloads?"}
+{"_id": "34ac6bedd4b35167cc59e289893e206a<::>7", "text": "Are scripts required for containerization and deployment on Red Hat OpenShift on IBM Cloud?"}
+{"_id": "34ac6bedd4b35167cc59e289893e206a<::>8", "text": "How is the installation of the SAP solution and its dedicated DB SAP HANA box handled in the IBM Cloud for VMware Solutions?"}
+{"_id": "34ac6bedd4b35167cc59e289893e206a<::>9", "text": "What are the different types of clusters supported by Red Hat OpenShift on IBM Cloud?"}
+{"_id": "f3a917e029970190be5ee508ba770d7f<::>1", "text": "What is the process to delete a CIS instance?"}
+{"_id": "f3a917e029970190be5ee508ba770d7f<::>2", "text": "Do I need to import or recreate DNS records in IBM Cloud Internet Services (CIS) when deleting an instance?"}
+{"_id": "f3a917e029970190be5ee508ba770d7f<::>3", "text": "How do I add a custom domain to IBM Cloud Internet Services?"}
+{"_id": "f3a917e029970190be5ee508ba770d7f<::>4", "text": "Define the transportation layer in the context of computer networking and its role in data transmission."}
+{"_id": "f3a917e029970190be5ee508ba770d7f<::>5", "text": "How does IBM Cloud Internet Services protect user privacy?"}
+{"_id": "f3a917e029970190be5ee508ba770d7f<::>6", "text": "What security measures does IBM Cloud Internet Services implement to protect data privacy and governance?"}
+{"_id": "f3a917e029970190be5ee508ba770d7f<::>7", "text": "What are the limitations and considerations when using firewall rules exclusively?"}
+{"_id": "c01c8cf11437e6bb3bc93efac26528c2<::>1", "text": "Are there alternative methods for mobile SDK installation that address the limitations of the current approach?"}
+{"_id": "c01c8cf11437e6bb3bc93efac26528c2<::>2", "text": "What are the potential issues with installing the mobile SDK using CocoaPods?"}
+{"_id": "c01c8cf11437e6bb3bc93efac26528c2<::>3", "text": "What are the potential issues or warnings associated with installing the mobile SDK using CocoaPods?"}
+{"_id": "c01c8cf11437e6bb3bc93efac26528c2<::>4", "text": "Is it possible to install the mobile SDK without using CocoaPods?"}
+{"_id": "c01c8cf11437e6bb3bc93efac26528c2<::>5", "text": "Provide detailed instructions for installing the mobile SDK using Carthage."}
+{"_id": "1be66272113492407e814eaf21a761d4<::>1", "text": "What is the process for comparing metrics across distinct time frames?"}
+{"_id": "1be66272113492407e814eaf21a761d4<::>2", "text": "Provide examples of alerts and notifications in the software."}
+{"_id": "1be66272113492407e814eaf21a761d4<::>3", "text": "What are the metrics used to measure understanding in AI systems?"}
+{"_id": "1be66272113492407e814eaf21a761d4<::>4", "text": "Are user conversations monitored in the cloud monitoring system?"}
+{"_id": "1be66272113492407e814eaf21a761d4<::>5", "text": "What is the billing structure for Watson Assistant conversations, based on turns or complete conversations?"}
+{"_id": "1be66272113492407e814eaf21a761d4<::>6", "text": "How do I filter messages in Watson Assistant?"}
+{"_id": "e1b602e47ded79a35d8df4eefe194e39<::>1", "text": "Can dialog skills be developed in non-English languages?"}
+{"_id": "e1b602e47ded79a35d8df4eefe194e39<::>2", "text": "What are the additional dialog skills available and which languages are they supported in?"}
+{"_id": "e1b602e47ded79a35d8df4eefe194e39<::>3", "text": "What is the maximum number of skills that can be created in Watson Assistant?"}
+{"_id": "e1b602e47ded79a35d8df4eefe194e39<::>4", "text": "Is Hebrew supported for Watson Assistant skills?"}
+{"_id": "e1b602e47ded79a35d8df4eefe194e39<::>5", "text": "Does the universal language model in Watson Assistant handle reverse text order?"}
+{"_id": "e1b602e47ded79a35d8df4eefe194e39<::>7", "text": "How do I configure bidirectional capabilities for a skill in Watson Assistant?"}
+{"_id": "4175fcce99c56af0e02be5b8990fc16a<::>1", "text": "What are the evolving cloud computing security protocols and their implications for restoring volumes from backup snapshots in IBM Cloud VPC?"}
+{"_id": "4175fcce99c56af0e02be5b8990fc16a<::>2", "text": "Define data encryption and its purpose in secure data storage and transmission."}
+{"_id": "4175fcce99c56af0e02be5b8990fc16a<::>3", "text": "What is the relationship between data encryption and data backup and disaster recovery?"}
+{"_id": "4175fcce99c56af0e02be5b8990fc16a<::>4", "text": "What is the role of VPC (Virtual Private Cloud) in cloud computing security and data restoration processes?"}
+{"_id": "4175fcce99c56af0e02be5b8990fc16a<::>5", "text": "What are the different types of cloud computing environments or cloud service models?"}
+{"_id": "4175fcce99c56af0e02be5b8990fc16a<::>6", "text": "What are the pricing plans for IBM Cloud VPC?"}
+{"_id": "4175fcce99c56af0e02be5b8990fc16a<::>7", "text": "How is the IBM Cloud Virtual Private Cloud (VPC) used and what are its applications?"}
+{"_id": "4175fcce99c56af0e02be5b8990fc16a<::>8", "text": "What are the benefits of using IBM Cloud\u00ae Virtual Private Cloud (VPC)?"}
+{"_id": "f5a8ca2f2bc12180940167fb920bb018<::>1", "text": "What are the categories or classifications of dialog nodes in conversational AI systems?"}
+{"_id": "f5a8ca2f2bc12180940167fb920bb018<::>2", "text": "What are intents in the context of dialog nodes and user interaction with assistants?"}
+{"_id": "f5a8ca2f2bc12180940167fb920bb018<::>3", "text": "How are intents created in Watson Assistant?"}
+{"_id": "f5a8ca2f2bc12180940167fb920bb018<::>5", "text": "What are the requirements for creating a dialogue in Watson Assistant?"}
+{"_id": "f5a8ca2f2bc12180940167fb920bb018<::>6", "text": "What is the difference between a Dialog Skill and a Dialog Node?"}
+{"_id": "f5a8ca2f2bc12180940167fb920bb018<::>7", "text": "What types of dialog nodes can a user create?"}
+{"_id": "f5a8ca2f2bc12180940167fb920bb018<::>8", "text": "What are the advantages of adding skills to a Watson Assistant service?"}
+{"_id": "f5a8ca2f2bc12180940167fb920bb018<::>9", "text": "What are the advantages of adding a search skill to an assistant?"}
+{"_id": "1065ea5ad1ae2b90e6fce67d851a7a66<::>1", "text": "Are there alternative methods for mobile SDK installation that address the limitations of the current approach?"}
+{"_id": "1065ea5ad1ae2b90e6fce67d851a7a66<::>2", "text": "What is Carthage in the context of installing the IBM Cloud Functions SDK for mobile?"}
+{"_id": "1065ea5ad1ae2b90e6fce67d851a7a66<::>4", "text": "Can you provide a source code example for installing the IBM Cloud Functions SDK for mobile using Carthage?"}
+{"_id": "1065ea5ad1ae2b90e6fce67d851a7a66<::>5", "text": "Is the IBM Cloud Functions SDK for mobile a part of the IBM Cloud service and are there any additional charges for using it?"}
+{"_id": "1065ea5ad1ae2b90e6fce67d851a7a66<::>6", "text": "What is the pricing for the IBM Cloud Functions SDK for Node.js?"}
+{"_id": "1065ea5ad1ae2b90e6fce67d851a7a66<::>7", "text": "How to configure the IBM Cloud Functions SDK for mobile to work with different installations of Cloud Functions?"}
+{"_id": "674aa142d92a6b4262de254df0c3f7b2<::>1", "text": "What steps can be taken to optimize Watson Assistant's integration with universal cosmic energy and transcend API limitations for enhanced data connectivity?"}
+{"_id": "674aa142d92a6b4262de254df0c3f7b2<::>2", "text": "Can IBM Watson Assistant detect and interpret human emotions?"}
+{"_id": "674aa142d92a6b4262de254df0c3f7b2<::>3", "text": "What are the browser requirements for using IBM Watson Assistant?"}
+{"_id": "674aa142d92a6b4262de254df0c3f7b2<::>4", "text": "What are some example words that IBM Watson Assistant's Emotion Analysis feature can detect as expressing disgust?"}
+{"_id": "674aa142d92a6b4262de254df0c3f7b2<::>5", "text": "Why is specific information about words triggering emotion detection not provided in the documentation?"}
+{"_id": "747a810abfd6da4a9c37cdb74feec95e<::>1", "text": "What is the process for developing a client application using dialogue nodes?"}
+{"_id": "747a810abfd6da4a9c37cdb74feec95e<::>2", "text": "What are worker nodes in the context of building a client application using dialog nodes?"}
+{"_id": "747a810abfd6da4a9c37cdb74feec95e<::>3", "text": "What is the definition and purpose of VPC clusters in the context of cloud computing and application deployment?"}
+{"_id": "747a810abfd6da4a9c37cdb74feec95e<::>4", "text": "What are the steps to create a cluster in IBM Cloud Kubernetes Service?"}
+{"_id": "747a810abfd6da4a9c37cdb74feec95e<::>5", "text": "What is the cost of IBM Cloud Schematics templates?"}
+{"_id": "747a810abfd6da4a9c37cdb74feec95e<::>6", "text": "What are the charges for using IBM Cloud Virtual Private Cloud (VPC) services?"}
+{"_id": "747a810abfd6da4a9c37cdb74feec95e<::>7", "text": "What is the cost of storage in the IBM Cloud VPC pricing model?"}
+{"_id": "47b2471404382af6e973013ab1cf96b9<::>1", "text": "What are the account types that can access the Lite pricing plans in IBM Cloud?"}
+{"_id": "47b2471404382af6e973013ab1cf96b9<::>2", "text": "What are the Lite pricing plans in IBM Cloud?"}
+{"_id": "47b2471404382af6e973013ab1cf96b9<::>3", "text": "Define an IBM Cloud account."}
+{"_id": "47b2471404382af6e973013ab1cf96b9<::>4", "text": "What are the steps to create an IBM Cloud account?"}
+{"_id": "47b2471404382af6e973013ab1cf96b9<::>5", "text": "What are the monthly usage quotas for the IBM Cloud Lite plan?"}
+{"_id": "47b2471404382af6e973013ab1cf96b9<::>7", "text": "How many types of IBM Cloud accounts are there?"}
+{"_id": "47b2471404382af6e973013ab1cf96b9<::>8", "text": "What are the features and benefits of an Enterprise IBM Cloud account?"}
+{"_id": "47b2471404382af6e973013ab1cf96b9<::>9", "text": "What support options are available for IBM Cloud users?"}
+{"_id": "2f013337236ea4635ad106813275dab7<::>1", "text": "What are the pros and cons of immutable data storage?"}
+{"_id": "2f013337236ea4635ad106813275dab7<::>2", "text": "What is the business focus of Cohasset Associates, Inc.?"}
+{"_id": "2f013337236ea4635ad106813275dab7<::>3", "text": "What is the maximum retention period for Immutable Object Storage?"}
+{"_id": "2f013337236ea4635ad106813275dab7<::>8", "text": "What are the definitive answers to the questions about IBM's Immutable Object Storage?"}
+{"_id": "20c2cbd18c16c12c9c2bbead6aef1a21<::>1", "text": "What are the key distinctions between good bots and bad bots?"}
+{"_id": "20c2cbd18c16c12c9c2bbead6aef1a21<::>2", "text": "What are the key features and functionalities of the CIS bot?"}
+{"_id": "20c2cbd18c16c12c9c2bbead6aef1a21<::>3", "text": "What are the strategies and technologies employed by CIS to effectively manage and differentiate between good and bad bots?"}
+{"_id": "20c2cbd18c16c12c9c2bbead6aef1a21<::>4", "text": "What is the process for updating machine learning models?"}
+{"_id": "20c2cbd18c16c12c9c2bbead6aef1a21<::>6", "text": "Can bots access and retrieve private user information?"}
+{"_id": "20c2cbd18c16c12c9c2bbead6aef1a21<::>7", "text": "What is the definition of a secret in the context of cybersecurity and bot management?"}
+{"_id": "20c2cbd18c16c12c9c2bbead6aef1a21<::>8", "text": "What measures can be taken to safeguard personal information and maintain privacy online?"}
+{"_id": "c6c3b02ca32795af64c903dd76700517<::>1", "text": "Does Vulnerability Advisor support scanning encrypted images or videos?"}
+{"_id": "c6c3b02ca32795af64c903dd76700517<::>2", "text": "What are the capabilities and functionalities of Vulnerability Advisor?"}
+{"_id": "c6c3b02ca32795af64c903dd76700517<::>3", "text": "What are the features and capabilities of Vulnerability Advisor version 3?"}
+{"_id": "c6c3b02ca32795af64c903dd76700517<::>4", "text": "What is the process to update to Vulnerability Advisor version 4?"}
+{"_id": "c6c3b02ca32795af64c903dd76700517<::>5", "text": "What are the key differences between Vulnerability Advisor version 3 and version 4?"}
+{"_id": "c6c3b02ca32795af64c903dd76700517<::>6", "text": "How can I create an encrypted image that is not scannable by Vulnerability Advisor?"}
+{"_id": "c6c3b02ca32795af64c903dd76700517<::>7", "text": "What is IBM Cloud\u00ae Container Registry?"}
+{"_id": "c6c3b02ca32795af64c903dd76700517<::>8", "text": "How to grant access to IBM Cloud Container Registry?"}
+{"_id": "c6c3b02ca32795af64c903dd76700517<::>9", "text": "How do I set up namespaces in IBM Cloud Container Registry?"}
+{"_id": "4c86c8740c3d49e06b7aca9d308119fa<::>1", "text": "What is the procedure to update the master node of a cluster?"}
+{"_id": "4c86c8740c3d49e06b7aca9d308119fa<::>2", "text": "What is the CIS Kubernetes Benchmark?"}
+{"_id": "4c86c8740c3d49e06b7aca9d308119fa<::>3", "text": "Are IBM Cloud\u00ae Kubernetes Service clusters available exclusively in the USA?"}
+{"_id": "4c86c8740c3d49e06b7aca9d308119fa<::>4", "text": "What are the recommended best practices for IBM Cloud Kubernetes Service?"}
+{"_id": "4c86c8740c3d49e06b7aca9d308119fa<::>5", "text": "What is Kubernetes?"}
+{"_id": "4c86c8740c3d49e06b7aca9d308119fa<::>6", "text": "What are the benefits and functionality of IBM Cloud Kubernetes Service?"}
+{"_id": "4c86c8740c3d49e06b7aca9d308119fa<::>7", "text": "What are the recommended security measures and access controls for securing an IBM Cloud Kubernetes Service cluster?"}
+{"_id": "4c86c8740c3d49e06b7aca9d308119fa<::>8", "text": "What are the service support options for IBM Cloud Kubernetes Service in case of issues or troubleshooting?"}
+{"_id": "b4614daadceeecb400f7baf0aa48dcb8<::>1", "text": "What are the key distinctions between query parameters and message parameters in web development?"}
+{"_id": "b4614daadceeecb400f7baf0aa48dcb8<::>2", "text": "What is WebSocket API and how does it work?"}
+{"_id": "b4614daadceeecb400f7baf0aa48dcb8<::>3", "text": "What are the steps to use the WebSocket API for the IBM Watson Speech to Text service?"}
+{"_id": "b4614daadceeecb400f7baf0aa48dcb8<::>4", "text": "What is the customization ID in the WebSocket API for IBM Watson services?"}
+{"_id": "b4614daadceeecb400f7baf0aa48dcb8<::>5", "text": "How can I secure a phone connection before integration with the WebSocket API?"}
+{"_id": "b4614daadceeecb400f7baf0aa48dcb8<::>6", "text": "How can I secure a phone connection before a phone interaction and optimize actions for phone integration with IBM Watson Assistant?"}
+{"_id": "b4614daadceeecb400f7baf0aa48dcb8<::>7", "text": "Are there any limits to the number of phone numbers that can be used for interaction with the system?"}
+{"_id": "b4614daadceeecb400f7baf0aa48dcb8<::>8", "text": "How can I handle call and transfer failures when using third-party providers for phone interactions?"}
+{"_id": "927077bd895f0c292618f4a34789bef3<::>1", "text": "What are the differences between software versions 6.15.0 and 6.14.0?"}
+{"_id": "927077bd895f0c292618f4a34789bef3<::>2", "text": "What are the details of the new commands introduced in version 6.15.0 of the IBM Cloud\u00ae Virtual Private Cloud (VPC) command line interface (CLI)?"}
+{"_id": "927077bd895f0c292618f4a34789bef3<::>3", "text": "What is the syntax and usage of the image-obsolete and image-deprecate commands in the IBM Cloud\u00ae Virtual Private Cloud (VPC) command line interface (CLI) version 6.15.0?"}
+{"_id": "927077bd895f0c292618f4a34789bef3<::>4", "text": "Can the scheduling functionality in the IBM Cloud\u00ae Virtual Private Cloud (VPC) command line interface (CLI) be used to schedule a status change to obsolete in one month and to deprecated in two months?"}
+{"_id": "5815bb4a99e2a0d8a986348da4c49083<::>1", "text": "What are the advantages of Dynamic secret over Static secret?"}
+{"_id": "5815bb4a99e2a0d8a986348da4c49083<::>2", "text": "Which type of secret, dynamic or static, provides better protection against vulnerabilities?"}
+{"_id": "5815bb4a99e2a0d8a986348da4c49083<::>3", "text": "Do dynamic and static secrets both support secret rotation?"}
+{"_id": "5815bb4a99e2a0d8a986348da4c49083<::>4", "text": "Define IAM credential in the context of secret management."}
+{"_id": "5815bb4a99e2a0d8a986348da4c49083<::>5", "text": "How can I track user activity and behavior on my platform or application?"}
+{"_id": "5815bb4a99e2a0d8a986348da4c49083<::>6", "text": "What are the serverless instances available on IBM Cloud?"}
+{"_id": "5815bb4a99e2a0d8a986348da4c49083<::>7", "text": "What is Apache Spark in the context of IBM Analytics Engine?"}
+{"_id": "5815bb4a99e2a0d8a986348da4c49083<::>8", "text": "What is the Hive metastore client in the context of IBM Analytics Engine?"}
+{"_id": "adf9b1f61c73d715809bc7b37ac02724<::>1", "text": "What are the billing plan options and their distinct features?"}
+{"_id": "adf9b1f61c73d715809bc7b37ac02724<::>2", "text": "What tools or methods are available to estimate costs for IBM Cloud billing plans?"}
+{"_id": "adf9b1f61c73d715809bc7b37ac02724<::>3", "text": "What are the different types of charges or costs associated with the IBM Cloud billing plans?"}
+{"_id": "adf9b1f61c73d715809bc7b37ac02724<::>4", "text": "What are the differences between Fixed, Metered, Tiered, and Reserved charges in IBM Cloud billing?"}
+{"_id": "adf9b1f61c73d715809bc7b37ac02724<::>5", "text": "How do I update my pricing plan and view my usage on IBM Cloud?"}
+{"_id": "adf9b1f61c73d715809bc7b37ac02724<::>6", "text": "Are support costs included in the charges for IBM Cloud services?"}
+{"_id": "adf9b1f61c73d715809bc7b37ac02724<::>7", "text": "How do I manage my payments for IBM Cloud services?"}
+{"_id": "adf9b1f61c73d715809bc7b37ac02724<::>8", "text": "How can I view my invoices and payment status on the IBM Cloud console?"}
+{"_id": "adf9b1f61c73d715809bc7b37ac02724<::>9", "text": "What are the reasons for not being able to apply a subscription code?"}
+{"_id": "adf9b1f61c73d715809bc7b37ac02724<::>10", "text": "What are the reasons for not being able to apply a feature code in IBM Cloud?"}
+{"_id": "adf9b1f61c73d715809bc7b37ac02724<::>11", "text": "What are the possible reasons for errors when updating a credit card on the IBM Cloud\u00ae console?"}
+{"_id": "adf9b1f61c73d715809bc7b37ac02724<::>12", "text": "What is the solution for the error message \"Could not place order. Problem authorizing the credit card. We are unable to process your request: Transaction Rejected\"?"}

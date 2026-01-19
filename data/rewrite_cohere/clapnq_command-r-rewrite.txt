@@ -1,0 +1,208 @@
+{"_id": "dd6b6ffd177f2b311abe676261279d2f<::>2", "text": "Are the Arizona Cardinals' home games located outside the United States?"}
+{"_id": "dd6b6ffd177f2b311abe676261279d2f<::>3", "text": "Are the Arizona Cardinals and the Chicago Cardinals the same franchise?"}
+{"_id": "dd6b6ffd177f2b311abe676261279d2f<::>4", "text": "How many teams are there in the National Football League (NFL)?"}
+{"_id": "dd6b6ffd177f2b311abe676261279d2f<::>5", "text": "How many teams participate in the NFL playoffs?"}
+{"_id": "dd6b6ffd177f2b311abe676261279d2f<::>6", "text": "Which NFL team has won the most Super Bowl championships?"}
+{"_id": "dd6b6ffd177f2b311abe676261279d2f<::>7", "text": "How many Super Bowl appearances have the New England Patriots made?"}
+{"_id": "dd6b6ffd177f2b311abe676261279d2f<::>8", "text": "Who is the head coach of the New England Patriots?"}
+{"_id": "3f5fa378239f7475baac89fa40288aaa<::>1", "text": "What are the causes of the moon's changing phases and shapes?"}
+{"_id": "3f5fa378239f7475baac89fa40288aaa<::>2", "text": "What is the average distance between the Moon and Earth?"}
+{"_id": "3f5fa378239f7475baac89fa40288aaa<::>3", "text": "What is the age of the Moon?"}
+{"_id": "3f5fa378239f7475baac89fa40288aaa<::>6", "text": "What artifacts, samples, or data were collected during lunar missions and what scientific insights were gained from these collections?"}
+{"_id": "29e3ec96a6e8916a0326ebcdab78abae<::>1", "text": "Who was the viceroy of India during the Quit India Movement?"}
+{"_id": "29e3ec96a6e8916a0326ebcdab78abae<::>2", "text": "What were Lord Linlithgow's actions during the Quit India Movement?"}
+{"_id": "29e3ec96a6e8916a0326ebcdab78abae<::>3", "text": "Who was the opposition leader during the Quit India Movement?"}
+{"_id": "29e3ec96a6e8916a0326ebcdab78abae<::>4", "text": "Who was Sardar Vallabhbhai Patel in the context of the Indian independence movement?"}
+{"_id": "29e3ec96a6e8916a0326ebcdab78abae<::>6", "text": "Did the Quit India Movement remain non-violent throughout?"}
+{"_id": "29e3ec96a6e8916a0326ebcdab78abae<::>7", "text": "What was the population of India during the Quit India Movement?"}
+{"_id": "29e3ec96a6e8916a0326ebcdab78abae<::>8", "text": "When did the Indian economy experience significant growth and prosperity post-independence?"}
+{"_id": "b2805ee4c478194c234e2384ffb0a6bf<::>1", "text": "What are the origins of the cotton gin and its current global distribution?"}
+{"_id": "b2805ee4c478194c234e2384ffb0a6bf<::>2", "text": "Did the invention and widespread use of the cotton gin lead to an increased demand for cotton workers?"}
+{"_id": "b2805ee4c478194c234e2384ffb0a6bf<::>3", "text": "What was the increase in cotton production attributed to the invention and use of the cotton gin?"}
+{"_id": "b2805ee4c478194c234e2384ffb0a6bf<::>4", "text": "How did the invention of the cotton gin contribute to the American Civil War?"}
+{"_id": "b2805ee4c478194c234e2384ffb0a6bf<::>5", "text": "Did Britain rely on cotton from the American South?"}
+{"_id": "b2805ee4c478194c234e2384ffb0a6bf<::>6", "text": "What are the key features and advancements of modern cotton gins compared to historical models?"}
+{"_id": "b2805ee4c478194c234e2384ffb0a6bf<::>7", "text": "When did the use of slave labor end in the American cotton industry?"}
+{"_id": "79f0d0539d9ec0acbf90cb3388b30c17<::>1", "text": "What distinguishes primary sources from archaeological sources?"}
+{"_id": "79f0d0539d9ec0acbf90cb3388b30c17<::>2", "text": "What are primary sources in historical research and analysis?"}
+{"_id": "79f0d0539d9ec0acbf90cb3388b30c17<::>3", "text": "How did colonialists influence archaeological discoveries and their interpretation?"}
+{"_id": "79f0d0539d9ec0acbf90cb3388b30c17<::>4", "text": "What is the relationship between the Celts and archaeological sources or discoveries?"}
+{"_id": "79f0d0539d9ec0acbf90cb3388b30c17<::>5", "text": "What is the historical significance of the Celts?"}
+{"_id": "79f0d0539d9ec0acbf90cb3388b30c17<::>6", "text": "Can primary sources be used in literature?"}
+{"_id": "79f0d0539d9ec0acbf90cb3388b30c17<::>7", "text": "What is a secondary source in historical research?"}
+{"_id": "5c13daa9432149f6243aa1115629cd1a<::>1", "text": "Where is bone marrow located in the body, and what are its functions?"}
+{"_id": "5c13daa9432149f6243aa1115629cd1a<::>2", "text": "What are the consequences of bone marrow dysfunction or disease?"}
+{"_id": "5c13daa9432149f6243aa1115629cd1a<::>3", "text": "What are the treatment options for sickle cell disease?"}
+{"_id": "5c13daa9432149f6243aa1115629cd1a<::>4", "text": "Can sickle cell disease be fatal?"}
+{"_id": "5c13daa9432149f6243aa1115629cd1a<::>5", "text": "What are the success rates and risks of bone marrow transplants for sickle cell disease?"}
+{"_id": "5c13daa9432149f6243aa1115629cd1a<::>6", "text": "What is the inheritance pattern of Huntington's disease?"}
+{"_id": "5c13daa9432149f6243aa1115629cd1a<::>7", "text": "Are there any cures for Huntington's disease?"}
+{"_id": "3a07680acfb0f951fc3210a8c1a282c9<::>1", "text": "Who should get a flu vaccine as a priority?"}
+{"_id": "3a07680acfb0f951fc3210a8c1a282c9<::>2", "text": "What were the most significant pandemics worldwide before COVID-19 in 2020?"}
+{"_id": "3a07680acfb0f951fc3210a8c1a282c9<::>3", "text": "How many people did the HIV pandemic kill?"}
+{"_id": "3a07680acfb0f951fc3210a8c1a282c9<::>4", "text": "What is the origin of HIV and where did the first cases emerge?"}
+{"_id": "3a07680acfb0f951fc3210a8c1a282c9<::>5", "text": "What is the current status of a cure for HIV?"}
+{"_id": "3a07680acfb0f951fc3210a8c1a282c9<::>6", "text": "What is the lethality and transmission of herpes?"}
+{"_id": "3a07680acfb0f951fc3210a8c1a282c9<::>7", "text": "What are the current prevention methods and vaccine development status for herpes simplex virus (HSV) infections?"}
+{"_id": "3a07680acfb0f951fc3210a8c1a282c9<::>8", "text": "What is the process of vaccine development and production?"}
+{"_id": "dd82f0f978316e73618cf0addd369cd8<::>1", "text": "What are the rules and format of the MLS All-Star Game?"}
+{"_id": "dd82f0f978316e73618cf0addd369cd8<::>2", "text": "What was the inaugural year of the Major League Soccer All-Star Game?"}
+{"_id": "dd82f0f978316e73618cf0addd369cd8<::>3", "text": "Have European teams participated in the MLS All-Star Games?"}
+{"_id": "dd82f0f978316e73618cf0addd369cd8<::>4", "text": "Who are the greatest soccer players of all time?"}
+{"_id": "dd82f0f978316e73618cf0addd369cd8<::>5", "text": "What are the key attributes and skills that define a successful soccer player?"}
+{"_id": "dd82f0f978316e73618cf0addd369cd8<::>6", "text": "Is soccer the most watched sport globally?"}
+{"_id": "dd82f0f978316e73618cf0addd369cd8<::>7", "text": "What is the popularity of American Football compared to soccer?"}
+{"_id": "dd82f0f978316e73618cf0addd369cd8<::>8", "text": "What is the popularity of basketball in America compared to other sports?"}
+{"_id": "dd82f0f978316e73618cf0addd369cd8<::>9", "text": "What is the popularity of ice hockey as a sport in the United States?"}
+{"_id": "1534a095279f2cb888fb0bea17bd70da<::>1", "text": "Who are the photographers specializing in aerial plane photography?"}
+{"_id": "1534a095279f2cb888fb0bea17bd70da<::>2", "text": "Who takes photos of planes in the air while in the air?"}
+{"_id": "1534a095279f2cb888fb0bea17bd70da<::>4", "text": "What is the difficulty level of air-to-air photography compared to ground-to-air photography?"}
+{"_id": "1534a095279f2cb888fb0bea17bd70da<::>5", "text": "What are the different types of aviation photography?"}
+{"_id": "694e275f1a01ad0e8ac448ad809f7930<::>1", "text": "What is the sport with the oldest international trophy?"}
+{"_id": "694e275f1a01ad0e8ac448ad809f7930<::>2", "text": "What is the oldest sport in the world, and is it still played today?"}
+{"_id": "694e275f1a01ad0e8ac448ad809f7930<::>3", "text": "What are the key differences between soccer and American football as popular sports with global audiences?"}
+{"_id": "694e275f1a01ad0e8ac448ad809f7930<::>4", "text": "Are soccer and American football exclusively male sports or can women also participate?"}
+{"_id": "694e275f1a01ad0e8ac448ad809f7930<::>5", "text": "What are the qualities and skills needed to become a good soccer player?"}
+{"_id": "694e275f1a01ad0e8ac448ad809f7930<::>6", "text": "What is the recommended diet for athletes to enhance their performance in sports like soccer?"}
+{"_id": "694e275f1a01ad0e8ac448ad809f7930<::>7", "text": "Is a meat-based diet beneficial for athletes and sports performance?"}
+{"_id": "694e275f1a01ad0e8ac448ad809f7930<::>8", "text": "What is the importance of a good diet for athletes and sports performance?"}
+{"_id": "cfbcfa3e382f12aed450b10f87a72aeb<::>1", "text": "What is the typical sleeping habitat of wild guinea pigs?"}
+{"_id": "cfbcfa3e382f12aed450b10f87a72aeb<::>2", "text": "What are the living conditions and daily activities of domestic guinea pigs?"}
+{"_id": "cfbcfa3e382f12aed450b10f87a72aeb<::>3", "text": "What are the physical characteristics and appearance of guinea pigs?"}
+{"_id": "cfbcfa3e382f12aed450b10f87a72aeb<::>4", "text": "Are there different species or breeds of guinea pigs, and if so, what are their origins and distinguishing characteristics?"}
+{"_id": "cfbcfa3e382f12aed450b10f87a72aeb<::>5", "text": "What is the origin of the name \"guinea pig\" for the species Cavia porcellus?"}
+{"_id": "cfbcfa3e382f12aed450b10f87a72aeb<::>6", "text": "What are the considerations for keeping a guinea pig as a pet?"}
+{"_id": "1c0e5e78f1a16ea2eb2165b6aa31dc61<::>1", "text": "What is Toby's fate in the series finale of the TV show \"The Office\"?"}
+{"_id": "1c0e5e78f1a16ea2eb2165b6aa31dc61<::>2", "text": "What are the reasons for Toby Flenderson's departure from Scranton in The Office?"}
+{"_id": "1c0e5e78f1a16ea2eb2165b6aa31dc61<::>3", "text": "What was the main competitor or rival show to The Office series?"}
+{"_id": "1c0e5e78f1a16ea2eb2165b6aa31dc61<::>4", "text": "What caused the 46% drop in viewership for the season 9 premiere of The Office, and who comprised the show's audience demographic?"}
+{"_id": "1c0e5e78f1a16ea2eb2165b6aa31dc61<::>5", "text": "What awards did the TV series \"The Office\" win?"}
+{"_id": "1c0e5e78f1a16ea2eb2165b6aa31dc61<::>7", "text": "Which TV series is considered the best in history?"}
+{"_id": "1c0e5e78f1a16ea2eb2165b6aa31dc61<::>8", "text": "What is the next series that aired after the finale of The Office?"}
+{"_id": "1c0e5e78f1a16ea2eb2165b6aa31dc61<::>9", "text": "What streaming services offer the series \"The Office\"?"}
+{"_id": "33431330abb38298cc79b96b2f4fde2a<::>1", "text": "What is the origin of the name \"Byzantine Empire\" for the Eastern Roman Empire?"}
+{"_id": "33431330abb38298cc79b96b2f4fde2a<::>2", "text": "What was the dominant religion in the Byzantine Empire?"}
+{"_id": "33431330abb38298cc79b96b2f4fde2a<::>3", "text": "When was the Byzantine Empire reorganized?"}
+{"_id": "33431330abb38298cc79b96b2f4fde2a<::>4", "text": "What were the main reasons for the fall of the Byzantine Empire?"}
+{"_id": "33431330abb38298cc79b96b2f4fde2a<::>5", "text": "When was the Byzantine Empire founded?"}
+{"_id": "33431330abb38298cc79b96b2f4fde2a<::>6", "text": "What were the boundaries of the Roman Empire within the current borders of Italy?"}
+{"_id": "33431330abb38298cc79b96b2f4fde2a<::>8", "text": "When did the Roman Empire officially adopt Catholicism?"}
+{"_id": "33431330abb38298cc79b96b2f4fde2a<::>9", "text": "Did the Roman Empire conquer Israel?"}
+{"_id": "c1e53df98a28f19448f4af244304b89a<::>1", "text": "What is the publication date of Robert Louis Stevenson's \"A Child's Garden of Verses\"?"}
+{"_id": "c1e53df98a28f19448f4af244304b89a<::>2", "text": "What languages is Robert Louis Stevenson's \"A Child's Garden of Verses\" available in?"}
+{"_id": "c1e53df98a28f19448f4af244304b89a<::>3", "text": "What are the poems included in Robert Louis Stevenson's \"A Child's Garden of Verses\"?"}
+{"_id": "c1e53df98a28f19448f4af244304b89a<::>4", "text": "Who are some famous poets that I should know about?"}
+{"_id": "c1e53df98a28f19448f4af244304b89a<::>5", "text": "Provide biographical details and a summary of the literary works of E. E. Cummings."}
+{"_id": "c1e53df98a28f19448f4af244304b89a<::>6", "text": "What events and experiences influenced E. E. Cummings's life and poetry?"}
+{"_id": "fd99b316e5e64f19ff938598aea9b285<::>1", "text": "What are the rules and format of the MLS All-Star Game?"}
+{"_id": "fd99b316e5e64f19ff938598aea9b285<::>2", "text": "What is the name of the MLS All-Star Game outside of the USA?"}
+{"_id": "fd99b316e5e64f19ff938598aea9b285<::>3", "text": "Are women allowed to play association football?"}
+{"_id": "fd99b316e5e64f19ff938598aea9b285<::>4", "text": "What is the most popular form of football worldwide?"}
+{"_id": "fd99b316e5e64f19ff938598aea9b285<::>5", "text": "What is the origin of association football?"}
+{"_id": "fd99b316e5e64f19ff938598aea9b285<::>6", "text": "Is American football derived from association football?"}
+{"_id": "fd99b316e5e64f19ff938598aea9b285<::>7", "text": "What countries have a high popularity of American football?"}
+{"_id": "fd99b316e5e64f19ff938598aea9b285<::>8", "text": "What are the similarities between American football and rugby?"}
+{"_id": "fd99b316e5e64f19ff938598aea9b285<::>9", "text": "How many teams are there in American football?"}
+{"_id": "d5f0e7023ab90fe0240b7fc46cf00c26<::>1", "text": "What are the source and mouth of the Penobscot River?"}
+{"_id": "d5f0e7023ab90fe0240b7fc46cf00c26<::>2", "text": "Where does the West Branch of the Penobscot River originate?"}
+{"_id": "d5f0e7023ab90fe0240b7fc46cf00c26<::>3", "text": "What are the other significant river systems in Maine, besides the Penobscot River?"}
+{"_id": "d5f0e7023ab90fe0240b7fc46cf00c26<::>4", "text": "What is the best river for fishing in the United States?"}
+{"_id": "d5f0e7023ab90fe0240b7fc46cf00c26<::>5", "text": "What is the length of the Snake River?"}
+{"_id": "d5f0e7023ab90fe0240b7fc46cf00c26<::>6", "text": "What is the largest river in the United States of America?"}
+{"_id": "d5f0e7023ab90fe0240b7fc46cf00c26<::>7", "text": "Which is the largest river in North America?"}
+{"_id": "d5f0e7023ab90fe0240b7fc46cf00c26<::>8", "text": "Which rivers in the United States are navigable?"}
+{"_id": "d5f0e7023ab90fe0240b7fc46cf00c26<::>9", "text": "What is the significance of the Hudson River?"}
+{"_id": "0208bf26ec357a803445290fa88a2e9e<::>1", "text": "What is the typical sleeping habitat of wild guinea pigs?"}
+{"_id": "0208bf26ec357a803445290fa88a2e9e<::>2", "text": "What is the diet of guinea pigs?"}
+{"_id": "0208bf26ec357a803445290fa88a2e9e<::>5", "text": "Are guinea pigs raised for human consumption?"}
+{"_id": "0208bf26ec357a803445290fa88a2e9e<::>6", "text": "What does the term \"human guinea pig\" refer to?"}
+{"_id": "0208bf26ec357a803445290fa88a2e9e<::>7", "text": "What role do guinea pigs play in Vitamin C research?"}
+{"_id": "91204c45fc829e328f9a3643d9dd4c2b<::>1", "text": "What is the source of Doctor Strange's supernatural abilities?"}
+{"_id": "91204c45fc829e328f9a3643d9dd4c2b<::>2", "text": "What was Doctor Strange's profession and life like before he acquired his mystical powers?"}
+{"_id": "91204c45fc829e328f9a3643d9dd4c2b<::>3", "text": "How many films has Doctor Strange appeared in?"}
+{"_id": "91204c45fc829e328f9a3643d9dd4c2b<::>4", "text": "Does Doctor Strange appear in the Captain America film franchise?"}
+{"_id": "91204c45fc829e328f9a3643d9dd4c2b<::>6", "text": "Does Doctor Strange possess an Infinity Stone or Infinity Gem?"}
+{"_id": "91204c45fc829e328f9a3643d9dd4c2b<::>7", "text": "How many Infinity Stones are there in the Marvel Cinematic Universe?"}
+{"_id": "91204c45fc829e328f9a3643d9dd4c2b<::>8", "text": "What is the name for the combined power of all Infinity Stones?"}
+{"_id": "a2698b2973ea7db1ee5adb5e70ec02e4<::>1", "text": "What happens to water after it enters a storm drain?"}
+{"_id": "a2698b2973ea7db1ee5adb5e70ec02e4<::>2", "text": "What is the purpose and design of a catchbasin in storm drain systems?"}
+{"_id": "a2698b2973ea7db1ee5adb5e70ec02e4<::>3", "text": "Does a catchbasin effectively capture litter and debris from urban runoff?"}
+{"_id": "a2698b2973ea7db1ee5adb5e70ec02e4<::>4", "text": "Can storm drain water be recycled for household chores like cleaning and gardening?"}
+{"_id": "a2698b2973ea7db1ee5adb5e70ec02e4<::>5", "text": "Are there federal guidelines or laws for building sustainable storm drains to enable water recycling?"}
+{"_id": "a2698b2973ea7db1ee5adb5e70ec02e4<::>6", "text": "How do storm drain systems function and manage stormwater in different countries and regions outside the United States?"}
+{"_id": "a2698b2973ea7db1ee5adb5e70ec02e4<::>7", "text": "What methods did ancient civilizations use to manage stormwater?"}
+{"_id": "a2698b2973ea7db1ee5adb5e70ec02e4<::>8", "text": "How many people worldwide lack access to proper sewage treatment?"}
+{"_id": "a2698b2973ea7db1ee5adb5e70ec02e4<::>9", "text": "When were the first sewage treatment facilities built?"}
+{"_id": "a3f07e9ed5f257db6aecd30511f03af1<::>1", "text": "What is the interpretation of the lyrics in Bruno Mars' song \"Grenade\"?"}
+{"_id": "a3f07e9ed5f257db6aecd30511f03af1<::>2", "text": "Who wrote and performed the song \"Grenade\" by Bruno Mars?"}
+{"_id": "a3f07e9ed5f257db6aecd30511f03af1<::>3", "text": "When was the song \"Grenade\" by Bruno Mars released?"}
+{"_id": "a3f07e9ed5f257db6aecd30511f03af1<::>4", "text": "What was the commercial success of Bruno Mars' song \"Grenade\"?"}
+{"_id": "a3f07e9ed5f257db6aecd30511f03af1<::>5", "text": "Did Bruno Mars perform at the Super Bowl?"}
+{"_id": "a3f07e9ed5f257db6aecd30511f03af1<::>6", "text": "Which singers performed at the Super Bowl halftime show in the last few years?"}
+{"_id": "6a738cc02c5aa0b74319acd0e8a809dd<::>1", "text": "What are the different types and causes of infertility in men and women?"}
+{"_id": "6a738cc02c5aa0b74319acd0e8a809dd<::>3", "text": "Are there regional differences in the prevalence and treatment of infertility?"}
+{"_id": "6a738cc02c5aa0b74319acd0e8a809dd<::>4", "text": "Does chemotherapy affect fertility in individuals who undergo it before puberty?"}
+{"_id": "6a738cc02c5aa0b74319acd0e8a809dd<::>5", "text": "Are there any effective strategies or treatments to mitigate the impact of chemotherapy on fertility in individuals who undergo treatment before puberty?"}
+{"_id": "6a738cc02c5aa0b74319acd0e8a809dd<::>6", "text": "Is infertility caused by chemotherapy hereditary?"}
+{"_id": "6a738cc02c5aa0b74319acd0e8a809dd<::>7", "text": "When was in vitro conception developed?"}
+{"_id": "6a738cc02c5aa0b74319acd0e8a809dd<::>8", "text": "Is egg donation a lucrative business?"}
+{"_id": "6a738cc02c5aa0b74319acd0e8a809dd<::>9", "text": "How are egg donation programs organized in terms of donor-recipient relationships?"}
+{"_id": "95a0893567c7519c090ecbcdd14daccd<::>1", "text": "What are the primary materials and construction techniques used in the building of the Great Wall of China?"}
+{"_id": "95a0893567c7519c090ecbcdd14daccd<::>2", "text": "What is the total length of the Great Wall of China?"}
+{"_id": "95a0893567c7519c090ecbcdd14daccd<::>3", "text": "Who were the enemies that the Great Wall of China was built to defend against?"}
+{"_id": "95a0893567c7519c090ecbcdd14daccd<::>4", "text": "What were the achievements and legacy of Qin Shi Huang?"}
+{"_id": "95a0893567c7519c090ecbcdd14daccd<::>5", "text": "What was Meng Tian's role in the construction or defense of the Great Wall of China?"}
+{"_id": "95a0893567c7519c090ecbcdd14daccd<::>6", "text": "Is the Great Wall of China a popular tourist destination in the present day?"}
+{"_id": "aea2634b0e5f1c2444550d31c41adc94<::>1", "text": "What is the content and purpose of the Defense of Marriage Act (DOMA) enacted in 1996?"}
+{"_id": "aea2634b0e5f1c2444550d31c41adc94<::>2", "text": "How is marriage defined under the Defense of Marriage Act (DOMA) of 1996?"}
+{"_id": "aea2634b0e5f1c2444550d31c41adc94<::>3", "text": "What are the traditional and modern customs and rituals associated with wedding celebrations?"}
+{"_id": "aea2634b0e5f1c2444550d31c41adc94<::>4", "text": "What is the significance of breaking glass at a Jewish wedding ceremony?"}
+{"_id": "aea2634b0e5f1c2444550d31c41adc94<::>5", "text": "Are same-sex marriages legal in all US states?"}
+{"_id": "aea2634b0e5f1c2444550d31c41adc94<::>8", "text": "What are the restrictions to immigration for same-sex couples?"}
+{"_id": "717ca9138f07b4621887812f47499d74<::>1", "text": "What were the salaries of the cast members of the TV show \"Friends\"?"}
+{"_id": "717ca9138f07b4621887812f47499d74<::>2", "text": "Describe Jennifer Aniston's character introduction in the TV show \"Friends.\""}
+{"_id": "717ca9138f07b4621887812f47499d74<::>3", "text": "What is the total number of seasons in the TV show \"Friends\" and when did the series premiere and finale air?"}
+{"_id": "717ca9138f07b4621887812f47499d74<::>4", "text": "Was the TV show \"Friends\" aired internationally and did it win any awards?"}
+{"_id": "717ca9138f07b4621887812f47499d74<::>5", "text": "Describe the final episode of Friends and the cast's relationship post-finale."}
+{"_id": "717ca9138f07b4621887812f47499d74<::>6", "text": "Why did the cast of Friends negotiate for equal salaries as a group?"}
+{"_id": "717ca9138f07b4621887812f47499d74<::>7", "text": "Where was the TV show \"Friends\" filmed?"}
+{"_id": "717ca9138f07b4621887812f47499d74<::>8", "text": "What is the best way to introduce the TV show Friends to family and friends?"}
+{"_id": "5b9edac124aea30a2256705d27226d7f<::>1", "text": "What was the reception and popularity of Shakespeare's plays during his lifetime?"}
+{"_id": "5b9edac124aea30a2256705d27226d7f<::>2", "text": "What is the total number of film adaptations of Shakespeare's play Hamlet?"}
+{"_id": "5b9edac124aea30a2256705d27226d7f<::>3", "text": "How many film adaptations of Romeo and Juliet are there?"}
+{"_id": "5b9edac124aea30a2256705d27226d7f<::>4", "text": "What is the relationship between Hamnet and Shakespeare's Hamlet?"}
+{"_id": "5b9edac124aea30a2256705d27226d7f<::>6", "text": "What is the origin of the quote \"A horse, a horse, my kingdom for a horse\"?"}
+{"_id": "5b9edac124aea30a2256705d27226d7f<::>7", "text": "What is the historical accuracy of Shakespeare's play Richard III?"}
+{"_id": "5b9edac124aea30a2256705d27226d7f<::>8", "text": "What is the most popular Shakespearean play in China?"}
+{"_id": "41a4006bfa6841516188c1695ebaf16c<::>1", "text": "What was the date when the Berlin Wall fell?"}
+{"_id": "41a4006bfa6841516188c1695ebaf16c<::>2", "text": "What was the date of the official reunification of Germany?"}
+{"_id": "41a4006bfa6841516188c1695ebaf16c<::>3", "text": "What is the estimated number of fatalities associated with attempts to cross the Berlin Wall?"}
+{"_id": "41a4006bfa6841516188c1695ebaf16c<::>4", "text": "What methods did people use to escape over or under the Berlin Wall?"}
+{"_id": "41a4006bfa6841516188c1695ebaf16c<::>5", "text": "Which government agencies moved to Berlin after the reunification of Germany?"}
+{"_id": "41a4006bfa6841516188c1695ebaf16c<::>6", "text": "Who was the leader of East Germany in November 1989?"}
+{"_id": "41a4006bfa6841516188c1695ebaf16c<::>7", "text": "Who was Willy Brandt and what was his role in German politics?"}
+{"_id": "13a398b30067d58d179fa8cbc2592449<::>1", "text": "What are the snowiest places in North Carolina?"}
+{"_id": "13a398b30067d58d179fa8cbc2592449<::>2", "text": "What are the typical weather conditions and enjoyment factors during the summer months in North Carolina?"}
+{"_id": "13a398b30067d58d179fa8cbc2592449<::>3", "text": "How many hurricanes does North Carolina experience during the summer months?"}
+{"_id": "13a398b30067d58d179fa8cbc2592449<::>4", "text": "What are the weather conditions like in North Carolina during spring and fall?"}
+{"_id": "13a398b30067d58d179fa8cbc2592449<::>5", "text": "What are the characteristics of the Appalachian Mountains in North Carolina?"}
+{"_id": "13a398b30067d58d179fa8cbc2592449<::>6", "text": "What is the economy of North Carolina like?"}
+{"_id": "13a398b30067d58d179fa8cbc2592449<::>7", "text": "What was North Carolina's role in the American Revolution?"}
+{"_id": "13a398b30067d58d179fa8cbc2592449<::>8", "text": "What was North Carolina's involvement in the US Civil War?"}
+{"_id": "13a398b30067d58d179fa8cbc2592449<::>9", "text": "What was the impact of the US Civil War on North Carolina?"}
+{"_id": "a277cf5022616282aa819ee76c9343de<::>1", "text": "What were the reasons behind the United States' demand for trade with Japan?"}
+{"_id": "a277cf5022616282aa819ee76c9343de<::>2", "text": "Did Japan's petroleum dependence on the United States lead to the start of World War II?"}
+{"_id": "a277cf5022616282aa819ee76c9343de<::>3", "text": "What was the Japanese military's goal of conquering all of Asia called?"}
+{"_id": "a277cf5022616282aa819ee76c9343de<::>4", "text": "Why didn't General Douglas MacArthur criminalize Emperor Hirohito after World War II?"}
+{"_id": "a277cf5022616282aa819ee76c9343de<::>5", "text": "Was Japan better off after World War II due to General MacArthur's decision not to criminalize Emperor Hirohito?"}
+{"_id": "a277cf5022616282aa819ee76c9343de<::>6", "text": "Was Japan better off being occupied by the US instead of the USSR after World War II?"}
+{"_id": "a277cf5022616282aa819ee76c9343de<::>7", "text": "Why did the Soviet Union take two northern islands from Japan at the end of World War II?"}
+{"_id": "a277cf5022616282aa819ee76c9343de<::>8", "text": "What was Franklin D. Roosevelt's involvement in the negotiations and decisions regarding the Soviet Union's occupation of Japanese territories?"}
+{"_id": "6528deeee4180c1b2b770a2929482e82<::>1", "text": "What is the largest employment-providing industry in India?"}
+{"_id": "6528deeee4180c1b2b770a2929482e82<::>2", "text": "What is the significance of agriculture in India's economy and employment?"}
+{"_id": "6528deeee4180c1b2b770a2929482e82<::>3", "text": "What are the main agricultural products of India?"}
+{"_id": "6528deeee4180c1b2b770a2929482e82<::>4", "text": "Do Indian farmers earn a living wage?"}
+{"_id": "6528deeee4180c1b2b770a2929482e82<::>5", "text": "What are cashew kernels and cashew nut shell liquid?"}
+{"_id": "6528deeee4180c1b2b770a2929482e82<::>6", "text": "What is the current state of the retail industry in India?"}
+{"_id": "6528deeee4180c1b2b770a2929482e82<::>7", "text": "What are the major industries in India, apart from agriculture and retail?"}
+{"_id": "6528deeee4180c1b2b770a2929482e82<::>8", "text": "What is the growth rate of India's economy?"}

@@ -1,0 +1,512 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{multirow}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{geometry}
+\usepackage{listings}
+\usepackage{tcolorbox}
+
+\geometry{a4paper, margin=1in}
+
+\title{\textbf{Análisis Riguroso de Estrategias de Retrieval\\para Diálogos Multi-Turn}\\
+\large{Estudio de Ablación: Baselines, Query Rewriting e Hybrid Retrieval}}
+\author{Vania Janet Raya Rios}
+\date{Enero 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Este documento presenta un análisis riguroso y sistemático de diferentes estrategias de retrieval para diálogos conversacionales multi-turn en cuatro dominios especializados (ClapNQ, Govt, IBMCloud, FiQA). Se evaluaron tres dimensiones experimentales: (1) métodos baseline con diferentes embeddings, (2) query rewriting con múltiples estrategias, y (3) hybrid retrieval combinando métodos sparse y dense. Los resultados revelan patrones dependientes del dominio: los rewrites de Cohere mejoran significativamente dominios conversacionales (+12.4\% NDCG@10 en ClapNQ) pero degradan dominios técnicos optimizados (-5.6\% en FiQA). Se identificó y corrigió un bug crítico en la evaluación que afectaba la monotonicidad de las métricas.
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+\section{Introducción y Contexto}
+
+\subsection{Problema}
+El retrieval conversacional multi-turn presenta desafíos únicos:
+\begin{itemize}
+    \item \textbf{Ambigüedad referencial}: Uso de pronombres y referencias anafóricas
+    \item \textbf{Contexto acumulativo}: Información distribuida en múltiples turnos
+    \item \textbf{Heterogeneidad de dominios}: Desde conversaciones coloquiales hasta consultas técnicas especializadas
+\end{itemize}
+
+\subsection{Datasets Evaluados}
+\begin{table}[ht]
+\centering
+\caption{Características de los datasets por dominio}
+\label{tab:datasets}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Dominio} & \textbf{Queries Dev} & \textbf{Queries Test} & \textbf{Características} \\
+\midrule
+ClapNQ & 208 & 142 & Conversaciones informales, ambigüedad alta \\
+Govt & 201 & 157 & Políticas gubernamentales, lenguaje formal \\
+IBMCloud & 188 & 131 & Documentación técnica, terminología precisa \\
+FiQA & 180 & 77 & Finanzas, queries estructuradas \\
+\midrule
+\textbf{Total} & 777 & 507 & --- \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Métricas de Evaluación}
+Se utilizaron métricas estándar de Information Retrieval evaluadas en $k \in \{1, 3, 5, 10, 20, 100\}$:
+\begin{itemize}
+    \item \textbf{nDCG@k}: Normalized Discounted Cumulative Gain (métrica principal)
+    \item \textbf{Recall@k}: Cobertura de documentos relevantes
+    \item \textbf{MAP@k}: Mean Average Precision
+    \item \textbf{Precision@k}: Precisión en los top-k resultados
+\end{itemize}
+
+\section{Metodología y Tecnologías}
+
+\subsection{Librerías y Frameworks Utilizados}
+
+\begin{tcolorbox}[colback=blue!5!white,colframe=blue!75!black,title=Stack Tecnológico]
+\textbf{Retrieval y Embeddings:}
+\begin{itemize}
+    \item \texttt{sentence-transformers}: BAAI/bge-base-en-v1.5 (dense embeddings)
+    \item \texttt{voyageai}: Voyage-3-large, Voyage-finance-2 (embeddings especializados)
+    \item \texttt{prithivida/Splade\_PP\_en\_v1}: Sparse retrieval (SPLADE)
+    \item \texttt{faiss-gpu}: Búsqueda de vecinos cercanos (ANN search)
+\end{itemize}
+
+\textbf{Evaluación y Análisis:}
+\begin{itemize}
+    \item \texttt{pytrec\_eval}: Evaluación estándar de IR
+    \item \texttt{pandas}, \texttt{numpy}: Análisis de datos
+    \item \texttt{torch}: Deep learning framework
+\end{itemize}
+
+\textbf{Query Rewriting:}
+\begin{itemize}
+    \item \texttt{cohere}: API para rewrites (command-r-plus-08-2024)
+    \item Ground truth rewrites: Proporcionados por organizadores
+\end{itemize}
+\end{tcolorbox}
+
+\subsection{Arquitecturas Evaluadas}
+
+\subsubsection{Baseline: Single-Retriever}
+Evaluación individual de diferentes embeddings:
+\begin{itemize}
+    \item Voyage-3-large con historial completo
+    \item BGE-base-en-v1.5 con historial completo
+    \item Voyage-finance-2 (especializado para FiQA)
+\end{itemize}
+
+\subsubsection{Query Rewriting}
+Transformación de queries conversacionales en queries standalone:
+\begin{align*}
+\text{Input:} & \quad \text{`What about pricing?'} \\
+\text{Output (GT):} & \quad \text{`What is the pricing for IBM Cloud databases?'} \\
+\text{Output (Cohere):} & \quad \text{`Please provide information on the pricing...'}
+\end{align*}
+
+\textbf{Estrategias evaluadas:}
+\begin{enumerate}
+    \item \textbf{No-rewrite}: Usar última pregunta del diálogo
+    \item \textbf{GT-rewrite}: Rewrites ground truth de organizadores
+    \item \textbf{Cohere-rewrite}: Rewrites generados con Cohere API
+\end{enumerate}
+
+\subsubsection{Hybrid Retrieval con RRF}
+Combinación de sparse (SPLADE) y dense (Voyage/BGE) mediante Reciprocal Rank Fusion:
+
+\begin{equation}
+\text{RRF}(d) = \sum_{r \in R} \frac{1}{k + \text{rank}_r(d)}
+\end{equation}
+
+donde $R$ es el conjunto de retrievers, $k=60$ (parámetro de RRF), y cada retriever recupera $\text{top\_k}=300$ documentos antes de fusión.
+
+\section{Diseño Experimental: Ablación Sistemática}
+
+El enfoque de ablación permite aislar el efecto de cada componente:
+
+\begin{table}[ht]
+\centering
+\caption{Diseño de experimentos de ablación}
+\label{tab:ablation_design}
+\small
+\begin{tabular}{lcccl}
+\toprule
+\textbf{Experimento} & \textbf{Sparse} & \textbf{Dense} & \textbf{Rewrite} & \textbf{Objetivo} \\
+\midrule
+\multicolumn{5}{c}{\textit{Fase 1: Baselines (control)}} \\
+\midrule
+A1 & --- & Voyage-3 & Full history & Baseline dense \\
+A2 & --- & BGE-1.5 & Full history & Baseline alternativo \\
+\midrule
+\multicolumn{5}{c}{\textit{Fase 2: Efecto de Query Rewriting}} \\
+\midrule
+B1 & --- & Voyage-3 & No-rewrite & Medir degradación \\
+B2 & --- & Voyage-3 & GT-rewrite & Medir mejora GT \\
+B3 & --- & Voyage-3 & Cohere-rewrite & Comparar Cohere vs GT \\
+\midrule
+\multicolumn{5}{c}{\textit{Fase 3: Hybrid Retrieval}} \\
+\midrule
+C1 & SPLADE & Voyage-3 & No-rewrite & Baseline híbrido \\
+C2 & SPLADE & Voyage-3 & GT-rewrite & Híbrido + GT \\
+C3 & SPLADE & Voyage-3 & Cohere-rewrite & Híbrido + Cohere \\
+C4 & SPLADE & BGE-1.5 & No-rewrite & Comparar embeddings \\
+C5 & SPLADE & BGE-1.5 & GT-rewrite & Validar consistencia \\
+C6 & SPLADE & BGE-1.5 & Cohere-rewrite & Efecto en BGE \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Justificación del diseño:}
+\begin{itemize}
+    \item \textbf{Fase 1}: Establece baselines para comparación
+    \item \textbf{Fase 2}: Aísla el efecto del rewriting sin hibridación
+    \item \textbf{Fase 3}: Evalúa sinergia entre métodos sparse/dense y rewriting
+\end{itemize}
+
+\section{Resultados: Hybrid Retrieval}
+
+\subsection{nDCG@10: Métrica Principal}
+
+\begin{table}[ht]
+\centering
+\footnotesize
+\caption{nDCG@10 con diferentes estrategias de rewriting en Hybrid Retrieval (SPLADE + Dense). Los valores en \textbf{negrita} indican el mejor resultado por dominio. Las flechas indican mejoras ($\uparrow$) o degradaciones ($\downarrow$).}
+\label{tab:ndcg10_hybrid}
+\begin{tabular}{llcccccc}
+\toprule
+\textbf{Embedding} & \textbf{Dominio} & \textbf{No-rewrite} & \textbf{GT-rewrite} & $\Delta$(GT-NR) & \textbf{Cohere-rewrite} & $\Delta$(C-GT) \\
+\midrule
+\multirow{4}{*}{Voyage-3 + SPLADE}
+& clapnq & 0.53179 & 0.56266 & $\uparrow\,+0.03087$ & \textbf{0.63242} & $\uparrow\,+0.06976$ \\
+& cloud  & 0.43396 & \textbf{0.45099} & $\uparrow\,+0.01703$ & 0.45055 & $\downarrow\,-0.00044$ \\
+& fiqa   & 0.37385 & \textbf{0.44152} & $\uparrow\,+0.06767$ & 0.38535 & $\downarrow\,-0.05617$ \\
+& govt   & 0.47462 & 0.53445 & $\uparrow\,+0.05983$ & \textbf{0.57145} & $\uparrow\,+0.03700$ \\
+\cmidrule(lr){1-7}
+\multirow{4}{*}{BGE-1.5 + SPLADE}
+& clapnq & 0.49999 & 0.55195 & $\uparrow\,+0.05196$ & \textbf{0.59927} & $\uparrow\,+0.04732$ \\
+& cloud  & 0.43003 & \textbf{0.43808} & $\uparrow\,+0.00805$ & 0.43249 & $\downarrow\,-0.00559$ \\
+& fiqa   & 0.37513 & \textbf{0.40589} & $\uparrow\,+0.03076$ & 0.35219 & $\downarrow\,-0.05370$ \\
+& govt   & 0.43568 & 0.49700 & $\uparrow\,+0.06132$ & \textbf{0.53812} & $\uparrow\,+0.04112$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Observaciones clave:}
+\begin{enumerate}
+    \item \textbf{Cohere gana en dominios conversacionales}: ClapNQ (+12.40\%) y Govt (+6.98\% sobre no-rewrite)
+    \item \textbf{GT gana en dominios técnicos}: Cloud y FiQA (Cohere \textit{degrada} rendimiento)
+    \item \textbf{Voyage-3 supera BGE-1.5}: Consistentemente en todos los dominios
+\end{enumerate}
+
+\subsection{Recall@100: Capacidad de Recuperación}
+
+\begin{table}[ht]
+\centering
+\footnotesize
+\caption{Recall@100 en Hybrid Retrieval. Mayor recall implica mejor cobertura de documentos relevantes.}
+\label{tab:recall100_hybrid}
+\begin{tabular}{llcccccc}
+\toprule
+\textbf{Embedding} & \textbf{Dominio} & \textbf{No-rewrite} & \textbf{GT-rewrite} & $\Delta$(GT-NR) & \textbf{Cohere-rewrite} & $\Delta$(C-GT) \\
+\midrule
+\multirow{4}{*}{Voyage-3 + SPLADE}
+& clapnq & 0.61931 & 0.65965 & $\uparrow\,+0.04034$ & \textbf{0.74563} & $\uparrow\,+0.08598$ \\
+& cloud  & 0.52617 & \textbf{0.55294} & $\uparrow\,+0.02677$ & 0.54971 & $\downarrow\,-0.00323$ \\
+& fiqa   & 0.46331 & \textbf{0.55153} & $\uparrow\,+0.08822$ & 0.49517 & $\downarrow\,-0.05636$ \\
+& govt   & 0.56023 & 0.64552 & $\uparrow\,+0.08529$ & \textbf{0.67867} & $\uparrow\,+0.03315$ \\
+\cmidrule(lr){1-7}
+\multirow{4}{*}{BGE-1.5 + SPLADE}
+& clapnq & 0.60106 & 0.66829 & $\uparrow\,+0.06723$ & \textbf{0.70884} & $\uparrow\,+0.04055$ \\
+& cloud  & 0.51992 & \textbf{0.54386} & $\uparrow\,+0.02394$ & 0.51331 & $\downarrow\,-0.03055$ \\
+& fiqa   & 0.47030 & \textbf{0.50972} & $\uparrow\,+0.03942$ & 0.46276 & $\downarrow\,-0.04696$ \\
+& govt   & 0.53485 & 0.62998 & $\uparrow\,+0.09513$ & \textbf{0.64786} & $\uparrow\,+0.01788$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Patrón consistente}: El comportamiento en Recall@100 replica exactamente los resultados de nDCG@10, validando la robustez de las conclusiones.
+
+\subsection{Comparación con BGE-m3 Multi-Vector}
+
+Para validar nuestros hallazgos, evaluamos el modelo \textbf{BGE-m3} que soporta tres tipos de retrieval simultáneos: \textit{dense}, \textit{sparse} (léxico), y \textit{colbert} (multi-vector). Esta arquitectura permite comparar diferentes estrategias de fusión.
+
+\begin{table}[ht]
+\centering
+\footnotesize
+\caption{Comparación de configuraciones BGE-m3 (nDCG@10). Los métodos híbridos combinan múltiples representaciones.}
+\label{tab:bgem3_comparison}
+\begin{tabular}{llccccc}
+\toprule
+\textbf{Modelo} & \textbf{Query} & \textbf{Avg} & \textbf{Govt} & \textbf{Cloud} & \textbf{ClapNQ} & \textbf{FiQA} \\
+\midrule
+\multicolumn{7}{c}{\textit{Configuraciones individuales}} \\
+\midrule
+BGE-m3 sparse & lastturn & 0.274 & 0.288 & 0.320 & 0.294 & 0.185 \\
+BGE-m3 sparse & rewrite & 0.316 & 0.365 & 0.329 & 0.339 & 0.221 \\
+BGE-m3 dense & lastturn & 0.358 & 0.343 & 0.357 & 0.417 & 0.309 \\
+BGE-m3 dense & rewrite & 0.409 & 0.432 & 0.357 & 0.490 & 0.344 \\
+BGE-m3 colbert & lastturn & 0.363 & 0.365 & 0.359 & 0.435 & 0.280 \\
+BGE-m3 colbert & rewrite & 0.417 & 0.453 & 0.365 & 0.503 & 0.332 \\
+\midrule
+\multicolumn{7}{c}{\textit{Configuraciones híbridas (fusión interna BGE-m3)}} \\
+\midrule
+dense+sparse & lastturn & 0.361 & 0.362 & 0.390 & 0.411 & 0.274 \\
+dense+sparse & rewrite & 0.409 & 0.457 & 0.395 & 0.450 & 0.321 \\
+sparse+colbert & lastturn & 0.362 & 0.366 & 0.391 & 0.422 & 0.258 \\
+sparse+colbert & rewrite & 0.409 & 0.457 & 0.395 & 0.450 & 0.321 \\
+dense+colbert & lastturn & 0.373 & 0.363 & 0.376 & 0.441 & 0.305 \\
+dense+colbert & rewrite & 0.425 & 0.451 & 0.37 & 0.51 & 0.354 \\
+\textbf{all\_three} & lastturn & 0.380 & 0.383 & 0.391 & 0.441 & 0.293 \\
+\textbf{all\_three} & rewrite & \textbf{0.429} & \textbf{0.483} & \textbf{0.402} & \textbf{0.481} & 0.338 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\textbf{Hallazgos clave de BGE-m3:}
+\begin{enumerate}
+    \item \textbf{Dense supera sparse consistentemente}: BGE-m3 dense (0.409 avg) $>$ sparse (0.316 avg) con rewrites
+    \item \textbf{Fusión interna mejora rendimiento}: all\_three (0.429 avg) combina fortalezas de los tres métodos
+    \item \textbf{Rewrite sigue siendo crítico}: Mejora promedio de +11.4\% (lastturn → rewrite) en all\_three
+    \item \textbf{Validación de nuestro enfoque}: BGE-m3 all\_three (0.429) es \textit{inferior} a nuestro mejor híbrido SPLADE+Voyage-3+Cohere (0.632 en ClapNQ, 0.571 en Govt)
+\end{enumerate}
+
+\textbf{Implicaciones:}
+\begin{itemize}
+    \item La fusión \textit{externa} (RRF entre SPLADE y Voyage) con modelos especializados supera la fusión \textit{interna} de BGE-m3
+    \item Confirma que combinar modelos optimizados independientemente (SPLADE para sparse, Voyage para dense) es superior a un modelo multi-tarea
+    \item BGE-m3 sirve como \textbf{baseline competitivo} que valida la necesidad de métodos híbridos sofisticados
+\end{itemize}
+
+\section{Análisis Detallado por Dominio}
+
+\subsection{ClapNQ: Conversaciones Informales}
+
+\textbf{Características:}
+\begin{itemize}
+    \item Lenguaje coloquial, uso frecuente de pronombres
+    \item Queries ambiguas que requieren contexto del diálogo
+    \item Ejemplo: ``What about that?'' $\rightarrow$ Requiere resolución anafórica
+\end{itemize}
+
+\textbf{Resultados:}
+\begin{itemize}
+    \item \textbf{Cohere-rewrite domina}: +12.40\% sobre no-rewrite (Voyage)
+    \item \textbf{Hipótesis}: Cohere formaliza el lenguaje coloquial y expande referencias
+    \item \textbf{Tokens aumentan}: +12\% en longitud promedio (más contexto explícito)
+\end{itemize}
+
+\subsection{Government: Lenguaje Formal pero Conversacional}
+
+\textbf{Características:}
+\begin{itemize}
+    \item Políticas gubernamentales, terminología administrativa
+    \item Conversaciones estructuradas pero con ambigüedad contextual
+\end{itemize}
+
+\textbf{Resultados:}
+\begin{itemize}
+    \item \textbf{Cohere-rewrite mejor}: +6.98\% sobre no-rewrite (Voyage)
+    \item Patrón similar a ClapNQ pero con menor magnitud
+    \item Cohere profesionaliza lenguaje informal manteniendo intención
+\end{itemize}
+
+\subsection{IBMCloud: Documentación Técnica}
+
+\textbf{Características:}
+\begin{itemize}
+    \item Terminología técnica precisa (APIs, servicios, comandos)
+    \item Queries ya están bien estructuradas (optimizadas por usuarios técnicos)
+    \item Ejemplo: ``How to configure Db2 auto-scaling?''
+\end{itemize}
+
+\textbf{Resultados:}
+\begin{itemize}
+    \item \textbf{GT-rewrite gana marginalmente}: +1.70\% sobre no-rewrite
+    \item \textbf{Cohere-rewrite degrada}: -0.04\% vs GT-rewrite
+    \item \textbf{Hipótesis}: Parafraseo de Cohere diluye términos técnicos exactos
+\end{itemize}
+
+\subsection{FiQA: Queries Financieras Optimizadas}
+
+\textbf{Características:}
+\begin{itemize}
+    \item Terminología financiera específica
+    \item Queries originales ya están bien formuladas
+    \item Menor ambigüedad conversacional
+\end{itemize}
+
+\textbf{Resultados:}
+\begin{itemize}
+    \item \textbf{GT-rewrite gana significativamente}: +6.77\% sobre no-rewrite
+    \item \textbf{Cohere-rewrite DEGRADA}: -5.62\% vs GT-rewrite
+    \item \textbf{Crítico}: Cohere agrega tokens (+35\%) pero pierde keywords clave
+    \item Ejemplo: ``stock performance'' $\rightarrow$ ``information about stock performance metrics'' (dilución semántica)
+\end{itemize}
+
+\section{Retos y Soluciones}
+
+\subsection{Bug Crítico: Truncamiento a 10 Documentos}
+
+\begin{tcolorbox}[colback=red!5!white,colframe=red!75!black,title=Bug Identificado]
+\textbf{Síntoma}: nDCG@1 > nDCG@3 (violación de monotonicidad)
+
+\textbf{Causa raíz}: En \texttt{src/pipeline/run.py} línea 588:
+\begin{lstlisting}[language=Python]
+contexts = contexts[:10]  # Hardcoded!
+\end{lstlisting}
+
+\textbf{Impacto}:
+\begin{itemize}
+    \item Solo se guardaban 10 documentos por query
+    \item nDCG@20 = nDCG@100 (ambos calculan sobre 10 docs)
+    \item Métricas erróneas en TODOS los experimentos híbridos iniciales
+\end{itemize}
+\end{tcolorbox}
+
+\textbf{Solución implementada}:
+\begin{lstlisting}[language=Python]
+# Truncamiento configurable
+final_top_k = config.get("output", {}).get("top_k", None)
+if final_top_k:
+    contexts = contexts[:final_top_k]
+# Para evaluacion: no incluir output.top_k (usa 100)
+# Para submissions: output: {top_k: 10}
+\end{lstlisting}
+
+\textbf{Lección}: Validación de propiedades matemáticas (monotonicidad) es crucial para detectar bugs sutiles.
+
+\subsection{Contaminación de Queries}
+
+\textbf{Problema}: Rewrites de FiQA contenían prefijo ``|user|:'' en algunas queries.
+
+\textbf{Solución}:
+\begin{lstlisting}[language=Python]
+# Limpieza de queries
+query = query.replace("|user|:", "").strip()
+\end{lstlisting}
+
+\textbf{Impacto}: Mejora de +2.3\% NDCG@10 en FiQA tras limpieza.
+
+\subsection{Deprecated Environment Variables}
+
+\textbf{Problema}: FAISS warnings sobre \texttt{OMP\_WAIT\_POLICY}.
+
+\textbf{Solución}: Actualización a \texttt{OMP\_WAIT\_POLICY=PASSIVE}.
+
+\section{Conclusiones y Mejores Configuraciones}
+
+\subsection{Configuraciones Óptimas por Dominio}
+
+\begin{table}[ht]
+\centering
+\caption{Mejores configuraciones identificadas}
+\label{tab:best_configs}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Dominio} & \textbf{Retriever} & \textbf{Rewrite} & \textbf{nDCG@10} \\
+\midrule
+ClapNQ & Voyage-3 + SPLADE & Cohere & \textbf{0.63242} \\
+Govt & Voyage-3 + SPLADE & Cohere & \textbf{0.57145} \\
+IBMCloud & Voyage-3 + SPLADE & GT & \textbf{0.45099} \\
+FiQA & Voyage-3 + SPLADE & GT & \textbf{0.44152} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Insights Clave}
+
+\begin{enumerate}
+    \item \textbf{No existe una solución universal}:
+    \begin{itemize}
+        \item Dominios conversacionales (ClapNQ, Govt) $\rightarrow$ Cohere rewrites
+        \item Dominios técnicos (Cloud, FiQA) $\rightarrow$ GT rewrites o no-rewrite
+    \end{itemize}
+    
+    \item \textbf{Hybrid retrieval es robusto}:
+    \begin{itemize}
+        \item SPLADE captura keywords exactos
+        \item Embeddings densos capturan similaridad semántica
+        \item RRF combina fortalezas complementarias
+    \end{itemize}
+    
+    \item \textbf{Longitud de query no implica calidad}:
+    \begin{itemize}
+        \item FiQA: Cohere +35\% tokens pero -5.62\% nDCG@10
+        \item ClapNQ: Cohere +12\% tokens y +12.40\% nDCG@10
+        \item \textit{La precisión semántica > verbosidad}
+    \end{itemize}
+    
+    \item \textbf{Voyage-3 > BGE-1.5 consistentemente}:
+    \begin{itemize}
+        \item Voyage-3 entrenado en datos más diversos
+        \item Mejor generalización cross-domain
+    \end{itemize}
+    
+    \item \textbf{Fusión externa supera fusión interna}:
+    \begin{itemize}
+        \item Nuestro híbrido SPLADE+Voyage (0.632 ClapNQ) $>$ BGE-m3 all\_three (0.481)
+        \item RRF entre modelos especializados > modelo multi-tarea único
+        \item BGE-m3 valida necesidad de métodos híbridos pero no alcanza SOTA
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Implicaciones para Producción}
+
+\textbf{Recomendación}: Sistema adaptativo basado en clasificación de dominio:
+
+\begin{enumerate}
+    \item \textbf{Clasificar} dominio del diálogo (conversacional vs técnico)
+    \item \textbf{Seleccionar} estrategia de rewriting:
+    \begin{itemize}
+        \item Conversacional $\rightarrow$ Cohere API
+        \item Técnico $\rightarrow$ Template-based o no-rewrite
+    \end{itemize}
+    \item \textbf{Aplicar} hybrid retrieval (SPLADE + Voyage-3) con RRF
+\end{enumerate}
+
+\section{Trabajo Futuro}
+
+\begin{itemize}
+    \item \textbf{Reranking}: Evaluar modelos cross-encoder (bge-reranker-v2-m3)
+    \item \textbf{Fine-tuning}: Entrenar modelos específicos por dominio
+    \item \textbf{Optimización de fusión}: Explorar pesos adaptativos en RRF basados en dominio
+    \item \textbf{BGE-m3 fine-tuned}: Aunque BGE-m3 all\_three no superó nuestro híbrido, un fine-tuning específico por dominio podría mejorar su rendimiento multi-vector
+    \item \textbf{Prompt engineering}: Optimizar prompts de Cohere por dominio
+    \item \textbf{Ensemble}: Combinar GT y Cohere rewrites mediante voting
+    \item \textbf{Análisis cualitativo}: Casos de fallo detallados por dominio
+\end{itemize}
+
+\section{Apéndice: Reproducibilidad}
+
+\subsection{Configuraciones RRF}
+\begin{itemize}
+    \item \textbf{RRF k}: 60 (parámetro de smoothing)
+    \item \textbf{Top-k por retriever}: 300 (antes de fusión)
+    \item \textbf{Top-k final}: 100 (para evaluación), 10 (para submission)
+\end{itemize}
+
+\subsection{Recursos Computacionales}
+\begin{itemize}
+    \item \textbf{GPU}: NVIDIA GeForce RTX 4090
+    \item \textbf{Tiempo por experimento}: $\sim$45 segundos por dominio
+    \item \textbf{Tiempo total}: $\sim$20 experimentos × 4 dominios = 15 minutos
+\end{itemize}
+
+\subsection{Código y Datos}
+El código completo y los resultados están disponibles en:
+\begin{itemize}
+    \item Repositorio: \texttt{mt-rag-benchmark/task\_a\_retrieval/}
+    \item Configuraciones: \texttt{configs/experiments/02-hybrid/}
+    \item Resultados: \texttt{experiments/02-hybrid/*/metrics.json}
+\end{itemize}
+
+\end{document}

@@ -57,6 +57,7 @@ def compute_results(results, qrels, k_values: List[int] = [1, 3, 5, 10, 20, 100]
 
     if len(results) == 0:
         ndcg = _map = recall = precision = mrr = {i: '-' for i in k_values}
+        scores_per_query_id = {}
     else:
         scores_per_query_id, ndcg, _map, recall, precision = evaluate(qrels, results, k_values)
 

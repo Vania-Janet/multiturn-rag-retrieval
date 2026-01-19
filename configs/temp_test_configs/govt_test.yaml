@@ -1,0 +1,24 @@
+data:
+  domains:
+  - govt
+  query_file: data/retrieval_tasks/govt/govt_test_questions.jsonl
+  query_mode: rewrite
+experiment:
+  description: Hybrid SPLADE + Voyage-3 with RRF and ground truth rewrites - for clapnq
+    and govt
+  name: hybrid_splade_voyage_rewrite
+output:
+  results_dir: experiments/test_submission/govt
+query_transform:
+  enabled: false
+retrieval:
+  dense:
+    method: voyage
+    model_name: voyage-3-large
+    top_k: 300
+  fusion_method: rrf
+  rrf_k: 60
+  sparse:
+    method: splade
+    top_k: 300
+  type: hybrid

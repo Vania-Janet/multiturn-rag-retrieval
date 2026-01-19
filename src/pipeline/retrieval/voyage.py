@@ -58,22 +58,14 @@ class VoyageRetriever(DenseRetriever):
         logger.info(f"Loading FAISS index from {faiss_path}")
         self.index = faiss.read_index(str(faiss_path))
         
-        # Move index to GPU if available (Voyage uses API for encoding, but FAISS search can be on GPU)
-        try:
-            import torch
-            if torch.cuda.is_available():
-                try:
-                    res = faiss.StandardGpuResources()
-                    if torch.cuda.device_count() > 1:
-                        logger.info(f"Moving FAISS index to {torch.cuda.device_count()} GPUs")
-                        self.index = faiss.index_cpu_to_all_gpus(self.index)
-                    else:
-                        logger.info("Moving FAISS index to GPU")
-                        self.index = faiss.index_cpu_to_gpu(res, 0, self.index)
-                except Exception as e:
-                    logger.warning(f"Failed to move FAISS index to GPU: {e}. Continuing with CPU index.")
-        except ImportError:
-            pass
+        # MANDATORY GPU usage - fail if not available
+        import torch
+        if not torch.cuda.is_available():
+            raise RuntimeError("GPU is REQUIRED but CUDA is not available. Check your CUDA installation.")
+        
+        # Note: FAISS-CPU can still be very fast for similarity search with small k values
+        # The bottleneck is usually in the embedding model, which we ensure runs on GPU
+        logger.info(f"FAISS index loaded on CPU. GPU will be used for all embedding operations. Index size: {self.index.ntotal}")
         
         # Load Doc IDs
         ids_path = self.index_path / "doc_ids.json"
